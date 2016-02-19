@@ -10,3 +10,4 @@
     <content src="index.html" />
     <access origin="*" />
 </widget>
+<allow-navigation href="*" />
