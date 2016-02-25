@@ -8,5 +8,9 @@
         Bracket Dash team
     </author>
     <content src="index.html" />
-    <access origin="*" />
+  <plugin name="cordova-plugin-whitelist" version="1" />
+    <access origin="*" subdomains="true"/>
+    <access origin="*"/>
+  <icon src="Logo.png" width="57" height="57"/>
+
 </widget>

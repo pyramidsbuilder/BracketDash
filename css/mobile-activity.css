@@ -1,0 +1,500 @@
+@charset "UTF-8";
+@media only screen and (max-width: 600px){
+/*activity css*/
+div{
+    color:#293c6b;
+    font-family:arial;
+    font-size:12px;
+}
+.activity-log-content {
+    width: 300px;
+	margin:10px auto !important;
+}
+.explore-content, .panel-content, .demo-content{
+	width:300px;
+	margin:10px auto !important;
+	padding:5px !important;
+	}
+.activity-wrapper{
+    width:300px;
+    border:1px solid #bec4d2;
+    border-radius:4px;
+	background:white;
+	overflow:hidden;
+}
+.activity-header{
+    width:300px;
+}
+.activity-header>div{
+   display:inline-block;
+   vertical-align:top;
+}
+.activity-host-avatar{
+	width:40px;
+    margin:5px;
+    height:40px;
+    border-radius:100%;
+    overflow:hidden;
+	}
+.section-avatar, .bracket-section-avatar{
+    width:40px;
+    margin:auto;
+    height:40px;
+    border-radius:100%;
+    overflow:hidden;
+}
+.activity-host-avatar>img, .section-avatar>img, .bracket-section-avatar>img{
+    width:40px;
+}
+.activity-header-txt{
+    margin:5px; 
+	max-width:240px;
+}
+.activity-header-txt-top-section>div{
+    display:inline-block;
+    vertical-align:top;
+    margin-right:5px;
+}
+.host-username, .activity-date{
+    font-weight:bold;
+}
+.activity-date{color:#949db5 !important;}
+.activity-title{font-size:18px; font-weight:bold; word-wrap:break-word;}
+.activity-type{color:#949db5 !important;}
+.exhibition-thumbnail{
+    margin:5px auto;
+}
+.exhibition-thumbnail, .exhibition-thumbnail>img{
+    width:280px;
+    height:158px;
+}
+.exhibition-thumbnail>.play-button{
+    margin:65px 127.5px;
+}
+.play-button{
+    width:25px;
+    height:27px;
+    background:url("http://www.bracketdash.com/images/icons/play-video-button.png");
+    background-size:cover;
+    position:absolute;
+    opacity:.7;
+    cursor:pointer;
+}
+.likes-ratings{
+    padding:4px 10px;
+}
+.likes-ratings>div{
+    display:inline-block;
+    vertical-align:top;
+    margin:0px 3px;
+}
+.like-button{
+    background:url("http://bracketdash.com/images/icons/likeButton.png");
+    background-size:cover;
+    background-repeat:no-repeat;
+    width:14px;
+    height:14px;
+    cursor:pointer;
+    opacity:.5;
+}
+.like-count{
+    font-weight:bold;
+    color:#697697;
+}
+.rank{
+    padding:4px 10px;
+    font-weight:bold;
+}
+.contestant-section{
+     padding:4px 10px;   
+}
+.contestant-section>div{
+    display:inline-block;
+    vertical-align:top;
+    margin:5px;
+}
+.section-thumbnail{
+    width:100px;
+    height:56px;
+    overflow:hidden;
+}
+.section-thumbnail>img{
+    width:100px;
+    height:56px;
+}
+.section-thumbnail-and-ratings>div{
+    display:inline-block;
+    vertical-align:top;
+}
+.section-options-button-wrapper{
+    float:right;
+}
+.section-options-button{
+   background:url("http://www.bracketdash.com/images/icons/vertical-options-button.png");
+    background-size:cover;
+    width:6px;
+    height:20px;
+    opacity:.7;
+    cursor:pointer;
+}
+.bracket-section{
+     padding:4px 10px; 
+}
+.bracket-section>div{
+    display:inline-block;
+    vertical-align:top;
+}
+/*.bracket-section-frame-wrapper>div{
+	position:relative;
+	}*/
+.bracket-section-frame{
+    background:url("http://www.bracketdash.com/images/icons/bracketFrame.png");
+    background-size:30px 65px;
+    width:30px;
+    height:65px;
+    margin:24px 0px;
+}
+.bracket-section-content-wrapper, .bracket-section-content{
+    width:245px;
+}
+.bracket-section-content{
+    height:65px;
+}
+.bracket-section-content-wrapper>div{
+    text-align:center;
+}
+.bracket-section-content>div{
+    display:inline-block;
+    vertical-align:top;
+    float:right;
+}
+.bracket-section-avatar-wrapper{
+    width:60px;
+}
+.bracket-section-thumbnail{
+    width:100px;
+    height:56px;
+    overflow:hidden;
+}
+.bracket-section-thumbnail>img{
+    width:100px;
+    height:56px;
+}
+.bracket-section-options-button-wrapper{
+    float:left !important;
+}
+.bracket-section-options-button{
+   background:url("http://www.bracketdash.com/images/icons/vertical-options-button.png");
+    background-size:cover;
+    width:6px;
+    height:20px;
+    opacity:.7;
+    cursor:pointer;
+}
+.bracket-section-avatar-wrapper, .section-badge{
+	text-align:center;
+	}
+/*play button for battle, bracket, open challenge*/
+.section-thumbnail>.play-button, .bracket-section-thumbnail>.play-button{
+    margin:12px 37.5px;
+}
+/*contestant username or bracket section username*/
+.section-username, .bracket-section-username{
+    width:55px;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    font-size:10px;
+    font-weight:bold;
+    margin:auto;
+	text-align:center;
+}
+/*for battle 1 v 1*/
+.vs-divider>div{
+    width:32px;
+    height:28px;
+    display:block;
+    margin:4px auto;
+    font-weight:bold;
+    color:#949db5 !important;
+    font-size:25px;
+}
+.activity-divider{
+	background:#949db5;
+	font-weight:bold;
+	padding:5px 0px;
+	text-align:center;
+	margin:5px 0px;
+	}
+/******************/
+.activity-footer{
+    background-color:#F7E5E5;
+    padding:10px;
+}
+.activity-description{margin:auto;}
+.activity-options-button{
+    background:url("http://www.bracketdash.com/images/icons/options-button.png");
+    background-size:cover;
+    width:25px;
+    height:7px;
+    margin:5px auto 0px auto;
+	cursor:pointer;
+	opacity:0.7;
+}
+/******************/
+}
+@media only screen and (min-width: 600px){
+.explore-content, .panel-content, .demo-content{
+	width:500px;
+	margin:10px auto !important;
+	padding:5px !important;
+	}
+div{
+    color:#293c6b;
+    font-family:arial;
+    font-size:12px;
+}
+.activity-log-content{
+    width: 500px;
+	margin:10px auto !important;
+}
+.activity-wrapper{
+    width:500px;
+    border:1px solid #bec4d2;
+    border-radius:4px;
+	background:white;
+	text-align:left;
+}
+.activity-header{
+    width:500px;
+}
+.activity-header>div{
+   display:inline-block;
+   vertical-align:top;
+}
+.activity-host-avatar{
+	width:50px;
+    margin:5px;
+    height:50px;
+    border-radius:100%;
+    overflow:hidden;
+	}
+.section-avatar, .bracket-section-avatar{
+    width:50px;
+    margin:auto;
+    height:50px;
+    border-radius:100%;
+    overflow:hidden;
+}
+.activity-host-avatar>img, .section-avatar>img, .bracket-section-avatar>img{
+    width:50px;
+}
+.activity-header-txt{
+    margin:5px;
+	max-width:415px;
+}
+.activity-header-txt-top-section>div{
+    display:inline-block;
+    vertical-align:top;
+    margin-right:5px;
+}
+.host-username, .activity-date{
+    font-weight:bold;
+}
+.activity-date{color:#949db5 !important;}
+.activity-title{font-size:24px; font-weight:bold;width:100%;}
+.activity-type{color:#949db5 !important;width:100%;}
+.exhibition-thumbnail{
+    margin:5px auto;
+}
+.exhibition-thumbnail, .exhibition-thumbnail>img{
+    width:460px;
+    height:259px;
+}
+.exhibition-thumbnail>.play-button{
+    margin:114.5px 215px;
+}
+.play-button{
+    width:30px;
+    height:30px;
+    background:url("http://www.bracketdash.com/images/icons/play-video-button.png");
+    background-size:cover;
+    position:absolute;
+    opacity:.8;
+    cursor:pointer;
+}
+.likes-ratings{
+    padding:4px 10px;
+}
+.likes-ratings>div{
+    display:inline-block;
+    vertical-align:top;
+    margin:0px 3px;
+}
+.like-button{
+    background:url("http://bracketdash.com/images/icons/likeButton.png");
+    background-size:cover;
+    background-repeat:no-repeat;
+    width:16px;
+    height:16px;
+    cursor:pointer;
+    opacity:.5;
+}
+.like-count{
+    font-weight:bold;
+    color:#697697;
+	font-size:16px;
+}
+.rank{
+    padding:4px 10px;
+    font-weight:bold;
+	font-size:12px;
+}
+.contestant-section{
+     padding:10px 10px 10px 75px;   
+}
+.contestant-section>div{
+    display:inline-block;
+    vertical-align:top;
+    margin:5px;
+}
+.section-thumbnail{
+    width:120px;
+    height:70px;
+    overflow:hidden;
+}
+.section-thumbnail>img{
+    width:120px;
+    height:70px;
+}
+.section-thumbnail-and-ratings>div{
+    display:inline-block;
+    vertical-align:top;
+}
+.section-options-button-wrapper{
+    float:right;
+}
+.section-options-button{
+   background:url("http://www.bracketdash.com/images/icons/vertical-options-button.png");
+    background-size:cover;
+    width:6px;
+    height:20px;
+    opacity:.7;
+    cursor:pointer;
+}
+.bracket-section{
+     padding:5px 10px; 
+	 border:1px solide blue;  
+}
+.bracket-section>div{
+    display:inline-block;
+    vertical-align:top;
+}
+/*.bracket-section-frame-wrapper>div{
+	position:relative;
+	}*/
+.bracket-section-frame{
+    background:url("http://www.bracketdash.com/images/icons/bracketFrame.png");
+    background-size:30px 85px;
+    width:30px;
+    height:85px;
+    margin:25px 0px;
+}
+.bracket-section-content-wrapper, .bracket-section-content{
+    width:390px;
+}
+.bracket-section-content{
+    height:85px;
+}
+.bracket-section-content-wrapper>div{
+    text-align:center;
+}
+.bracket-section-content>div{
+    display:inline-block;
+    vertical-align:top;
+    float:right;
+}
+.bracket-section-avatar-wrapper{
+    width:90px;
+}
+.bracket-section-thumbnail{
+    width:120px;
+    height:70px;
+    overflow:hidden;
+}
+.bracket-section-thumbnail>img{
+    width:120px;
+    height:70px;
+}
+.bracket-section-options-button-wrapper{
+    float:left !important;
+}
+.bracket-section-options-button{
+   background:url("http://www.bracketdash.com/images/icons/vertical-options-button.png");
+    background-size:cover;
+    width:6px;
+    height:20px;
+    opacity:.7;
+    cursor:pointer;
+}
+.bracket-section-avatar-wrapper, .section-badge{
+	text-align:center;
+	}
+/*play button for battle, bracket, open challenge*/
+.section-thumbnail>.play-button, .bracket-section-thumbnail>.play-button{
+    margin:20px 45px;
+}
+/*contestant username or bracket section username*/
+.section-username, .bracket-section-username{
+    width:90px;
+    white-space:nowrap;
+    text-overflow:ellipsis;
+    overflow:hidden;
+    font-size:12px;
+    font-weight:bold;
+    margin:auto;
+	padding:0px 5px;
+}
+/*for battle 1 v 1*/
+.vs-divider>div{
+    width:40px;
+    height:34px;
+    display:block;
+    margin:4px auto;
+    font-weight:bold;
+    color:#949db5;
+    font-size:32px;
+}
+.activity-divider{
+	background:#949db5;
+	font-weight:bold;
+	padding:5px 0px;
+	text-align:center;
+	margin:5px 0px;
+	}
+/******************/
+.activity-footer{
+    background-color:#F7E5E5;
+    padding:10px;
+}
+.activity-description{margin:auto;}
+.activity-options-button{
+    background:url("http://www.bracketdash.com/images/icons/options-button.png");
+    background-size:cover;
+    width:30px;
+    height:8px;
+    margin:5px auto 0px auto;
+	cursor:pointer;
+	opacity:0.7;
+}
+/*view more responses*/
+.view-more-responses{
+	background:#949DB5;
+	width:100px;
+	padding:5px 25px;
+	font-weight:bold;
+	text-align:center;
+	margin:0px auto;
+	cursor:pointer;
+	}
+}
