@@ -1,6 +1,6 @@
 
-angular.module('app', ['onsen', 'ngAnimate'])
-    .controller('BracketDashController', function ($scope, $rootScope) {
+angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
+    .controller('BracketDashController', function ($scope, $rootScope, $filter, $sce) {
         $scope.feed = {};
         $scope.bio = {};
         $scope.NewActivity = { type: '', title: '', desc: '', cat: 'Entertainmnet', visibility: 'Public', branchlength: 4, branches: [], battleusers:[] };
@@ -12,8 +12,26 @@ angular.module('app', ['onsen', 'ngAnimate'])
         $scope.searchuserminlen = '';
         $scope.myaudience = [];
         $scope.listusers = [];
+        $scope.searchquery = { q: '' };
+        $scope.searchqueryminlen = 1;
+        $scope.searchresult = {people:[], activity:[]};
+        $scope.showsingleactivity = {};
+        $scope.viewuserinfo = {};
+
+        $scope.currentfeed = {};
+
+
+        $scope.ProfileForm = { Fullname: $scope.viewuserinfo.Fullname, City: '', State: '', Country: '', Hobbies: '', About: '', Website: '' };
+        $scope.AccountSettingsForm = { Current_password: '', New_password: '', Confirm_password: ''};
+        $scope.PrivacyForm = { Public_audience: true };
+        $scope.isloading = false;
+        $scope.isplaying = '';
+
+        $scope.newcomment = '';
+        $scope.newreport = '';
+
         var self = this;
-        self.isloading = false;
+
         self.activityexpand = false;
         self.accountexpand = false;
         self.settingsexpand = false;
@@ -35,7 +53,6 @@ angular.module('app', ['onsen', 'ngAnimate'])
                 }
         };
         self.userinfo = null;
-        self.viewuserinfo = null;
 
         self.setMainPage = function (page, args, Title) {
 
@@ -75,9 +92,9 @@ angular.module('app', ['onsen', 'ngAnimate'])
                     self.issearching = false;
                
             } else {
-                self.overlaylement('searchinput', 'searchicon',0, 0,20, 0, null, null, 'slide-right');
+                self.overlaylement('searchinput', 'searchicon',null,35,null, null, null, null, 'slide-right');
                 //self.overlaylement('icncancelsearch', 'txtsearch', 1, 0, 0, null, null, 'slide-right');
-                
+                self.setMainPage('Search.html', {}, 'Search');
                 self.issearching = true;
             }
 
@@ -127,7 +144,7 @@ angular.module('app', ['onsen', 'ngAnimate'])
         self.logout = function () {
             localStorage.removeItem('access_token');
             self.getfeed('explore', 'Explore')
-
+            self.isloggedin = false;
         }
         self.validateactivity = function ()
         {
@@ -204,8 +221,41 @@ angular.module('app', ['onsen', 'ngAnimate'])
             return true;
         }
 
-        self.search = function () {
-            return true;
+        $scope.search = function (q) {
+            var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
+            var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
+            $.ajax({
+                type: 'POST',
+                crossDomain: true,
+                url: 'http://www.bracketdash.com/api/api.php',
+                data: { action: 'search_activity', searchquery: q,limit: 10 },
+                success: function (data) {
+                    console.log(data);
+                    var obj = JSON.parse(data);
+                    $scope.searchresult.activity = obj.search_result;
+                    angular.extend($scope.searchresult.activity, obj.search_result);
+
+                    $.ajax({
+                        type: 'POST',
+                        crossDomain: true,
+                        url: 'http://www.bracketdash.com/api/api.php',
+                        data: { action: 'search_user', searchquery: q, limit: 10 },
+                        success: function (userdata) {
+                            console.log(userdata);
+                            var objuser = JSON.parse(userdata);
+                            $scope.searchresult.people = objuser.search_result;
+                            angular.extend($scope.searchresult.people, objuser.search_result);
+                            $scope.$apply();
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
+                        },
+                    });
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error, status = " + textStatus + ", " +"error thrown: " + errorThrown);
+                },
+            });
         }
         self.showlogo = function () {
             if (self.issearching == true)
@@ -218,27 +268,21 @@ angular.module('app', ['onsen', 'ngAnimate'])
         self.feedexpand = -1;
         self.expandfeed = function (id) {
             if (self.feedexpand == id) {
-                self.feedexpand = -1;
+                $scope.currentfeed = {};
                 modcomments.hide();
             }
             else {
                 self.feedexpand = id;
-                self.showcomments(1, 1);
-                //var modal = angular.element(document.querySelector('#feedmodal' + id));
+                $scope.currentfeed = $filter('filter')($scope.feed, { activity_id: id })[0];
+                self.showcomments(id, 1);
+                
                 modcomments.show();
             }
         }
         self.showcomments = function (id, mode) {
-            var comments = angular.element(document.querySelector('#comments' + id));
-            var reports = angular.element(document.querySelector('#reports' + id));
-            if (mode == 1) {
-                comments.removeClass("ng-hide");
-                reports.addClass("ng-hide");
-            } else {
-                reports.removeClass("ng-hide");
-                comments.addClass("ng-hide");
-            }
-
+            
+            $scope.currentfeed.mode = mode;
+            
         }
 
         self.showbio = function () {
@@ -260,8 +304,8 @@ angular.module('app', ['onsen', 'ngAnimate'])
                     //var obj = json_obj.obj;
                     // console.log(obj);
                     if (profile_username == null) {
-                        self.viewuserinfo = json_obj;
-                        angular.extend(self.viewuserinfo, json_obj);
+                        $scope.viewuserinfo = json_obj;
+                        angular.extend($scope.viewuserinfo, json_obj);
                     }
                     else{
                     self.userinfo = json_obj;
@@ -285,9 +329,14 @@ angular.module('app', ['onsen', 'ngAnimate'])
                 success: function (data) {
                     var json_obj = JSON.parse(data);
                     console.log(data);
+                    for (var i = 0; i < json_obj.search_result.length; i++)
+                    {
+                        json_obj.search_result.selected = false;
+
+                    }
                     $scope.usersearchresult = json_obj.search_result;
                     angular.extend($scope.usersearchresult, json_obj.search_result);
-                    $scope.$apply();
+                     $scope.$apply();
                    
                 }
             });
@@ -296,41 +345,79 @@ angular.module('app', ['onsen', 'ngAnimate'])
         }
 
         $scope.showuserlist = function ($event,userlist) {
-            $scop.userlist = userlist;
+            $scope.userlist = userlist;
             $scope.popoveruserlist.show($event);
 
         }
         
-        self.selectuser = function ($event, username, avatar, fullname) {
-            if ($scope.NewActivity.type == 'bracket')
-            {
-                $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Username = username;
-                $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Avatar_link = avatar;
-                $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Fullname = fullname;
-                $scope.popoveruserselect.hide($event);
-            }
+        self.popselectuser = function ($event, branchindex, userindex) {
+            //self.overlaylement('selectbattleusers', 'popselect', -20, -20, 0, 0, null, null, 'slide-right');
+            $scope.searchuserquery = {};
             if ($scope.NewActivity.type == 'battle')
             {
-                var newuser = { Username: username, Avatar_link: avatar, Fullname: fullname };
-                $scope.NewActivity.battleusers.push(newuser);
+                //alert(JSON.stringify($scope.NewActivity.battleusers));
+                $scope.usersearchresult = $scope.NewActivity.battleusers;
             }
-
-        }
-        self.popselectuser = function ($event, branchindex, userindex) {
-            self.overlaylement('btnclosesearchuser', 'popselect', -20, -20, 0, 0, null, null, 'slide-right');
-            $scope.currentbranchuser.branchindex = branchindex;
-            $scope.currentbranchuser.userindex = userindex;
+            else
+            {
+               
+                $scope.usersearchresult = [];
+                $scope.currentbranchuser.branchindex = branchindex;
+                $scope.currentbranchuser.userindex = userindex;
+                if ($scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Username.length > 0)
+                {
+                    //alert('there is user');
+                    $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].selected = true;
+                    $scope.usersearchresult.push($scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex]);
+                }
+            }
             $scope.popoveruserselect.show($event);
+
         }
 
-
+        $scope.checkuser = function ($event,user) {
+            if ($scope.NewActivity.type == 'bracket') {
+                if (user.selected) {
+                    if ($scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[0].Username == user.Username || $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[1].Username == user.Username)
+                    {
+                        alert('Please select two different users!');
+                        return;
+                    }
+                    $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Username = user.Username;
+                    $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Avatar_link = user.Avatar_link;
+                    $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Fullname = user.Fullname;
+                    //$scope.popoveruserselect.hide($event);
+                }
+                else {
+                    $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Username = '';
+                    $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Avatar_link = '';
+                    $scope.NewActivity.branches[$scope.currentbranchuser.branchindex].users[$scope.currentbranchuser.userindex].Fullname = '';
+                    //$scope.usersearchresult = [];
+                }
+            }
+            if ($scope.NewActivity.type == 'battle') {
+                var exist = $filter('filter')($scope.NewActivity.battleusers, { Username: user.Username }).length > 0;
+                var newuser = { Username: user.Username, Avatar_link: user.Avatar_link, Fullname: user.Fullname,selected : true };
+                if (exist && !user.selected) {
+                    var ind = $scope.NewActivity.battleusers.indexOf(newuser);
+                    $scope.NewActivity.battleusers.splice(ind, 1);
+                }
+                else {
+                    if (user.selected == true) {
+                        $scope.NewActivity.battleusers.push(newuser);
+                        //alert(JSON.stringify($scope.user));
+                    }
+                }
+            }
+            $scope.searchuserquery.q = '';
+        }
         self.getbio = function ajax_bio(profile_username) {
            
             if (profile_username == null) {
                 console.log("self.userinfo" + JSON.stringify(self.userinfo))
                 profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
-                self.viewuserinfo = self.userinfo;
-                console.log("viewuserinfo" + JSON.stringify(self.viewuserinfo))
+                $scope.viewuserinfo = self.userinfo;
+                console.log("viewuserinfo" + JSON.stringify($scope.viewuserinfo))
 
             }
             else
@@ -353,14 +440,14 @@ angular.module('app', ['onsen', 'ngAnimate'])
                     angular.extend($scope.bio, json_obj);
                     console.log("bio"+JSON.stringify($scope.bio))
                     //self.setMainPage('BioContent.html', { closeMenu: true }, "Bio");
-                    self.isloading = false;
+                    $scope.isloading = false;
                 }
             });
         }
         self.getfeed = function (action,title) {
             try {
                 
-            self.isloading = true;
+            $scope.isloading = true;
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             $.ajax({
@@ -369,6 +456,7 @@ angular.module('app', ['onsen', 'ngAnimate'])
                 data: { action: action, limit: 10 },
                 crossDomain: true,
                 success: function (data) {
+
                     console.log(data);
                     var json_obj = JSON.parse(data);
                     console.log(json_obj);
@@ -376,29 +464,61 @@ angular.module('app', ['onsen', 'ngAnimate'])
                     console.log(obj);
                     $scope.feed = json_obj.obj;
                     angular.extend($scope.feed, json_obj.obj);
+                    
                     self.setMainPage('page1.html', { closeMenu: true }, title);
-                    self.isloading = false;
+                    $scope.isloading = false;
                 },
                 error: function (data) {
                     alert(JSON.stringify(data));
-                    self.isloading = false;
+                    $scope.isloading = false;
                 }
             });
             } catch (e) { alert(e);}
         }
 
+        self.loadmorefeed = function () {
+            try {
+                alert('not implemented');
+                return;
+                $scope.isloading = true;
+                var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
+                var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
+                $.ajax({
+                    type: 'GET',
+                    url: "http://www.bracketdash.com/api/api.php",
+                    data: { action: action, limit: 10 },
+                    crossDomain: true,
+                    success: function (data) {
+
+                        console.log(data);
+                        var json_obj = JSON.parse(data);
+                        console.log(json_obj);
+                        var obj = json_obj.obj;
+                        console.log(obj);
+                        $scope.feed = json_obj.obj;
+                        angular.extend($scope.feed, json_obj.obj);
+
+                        self.setMainPage('page1.html', { closeMenu: true }, title);
+                        $scope.isloading = false;
+                    },
+                    error: function (data) {
+                        alert(JSON.stringify(data));
+                        $scope.isloading = false;
+                    }
+                });
+            } catch (e) { alert(e); }
+        }
+
         self.getpanel = function (action, title) {
-            self.isloading = true;
+            $scope.isloading = true;
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             var data = { action: action, profile_username: profile_username, limit: 10 };
             $.ajax({
                 type: 'GET',
                 url: "http://www.bracketdash.com/api/api.php",
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader("Authorization", "Bearer " + access_token);
-                },
-                data: { action: action, profile_username: profile_username, limit: 10 },
+                
+                data: { action: action, profile_username: profile_username, limit: 10,authorization: "Bearer " + access_token },
                 crossDomain: true,
                 success: function (data) {
                     console.log(data);
@@ -409,10 +529,92 @@ angular.module('app', ['onsen', 'ngAnimate'])
                     $scope.feed = json_obj.obj;
                     angular.extend($scope.feed, json_obj.obj);
                     self.setMainPage('page1.html', { closeMenu: true }, title);
-                    self.isloading = false;
+                    $scope.isloading = false;
                 },
                 error: function (data) {
-                    self.isloading = false;
+                    $scope.isloading = false;
+                }
+            });
+        }
+
+        self.getactivityinprogress = function (title) {
+            $scope.isloading = true;
+            var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
+            var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
+            var data = { action: 'activity_in_progress', profile_username: profile_username, limit: 10, authorization: "Bearer " + access_token };
+            $.ajax({
+                type: 'GET',
+                url: "http://www.bracketdash.com/api/api.php",
+
+                data: data,
+                crossDomain: true,
+                success: function (data) {
+                    console.log(data);
+                    var json_obj = JSON.parse(data);
+                    console.log(json_obj);
+                    var obj = json_obj.obj;
+                    console.log(obj);
+                    $scope.feed = json_obj.obj;
+                    angular.extend($scope.feed, json_obj.obj);
+                    self.setMainPage('page1.html', { closeMenu: true }, title);
+                    $scope.isloading = false;
+                },
+                error: function (data) {
+                    $scope.isloading = false;
+                }
+            });
+        }
+
+        self.getactivitylog = function (title) {
+            $scope.isloading = true;
+            var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
+            var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
+            var data = { action: 'activity_log', profile_username: profile_username, limit: 10, authorization: "Bearer " + access_token };
+            $.ajax({
+                type: 'GET',
+                url: "http://www.bracketdash.com/api/api.php",
+
+                data: data,
+                crossDomain: true,
+                success: function (data) {
+                    console.log(data);
+                    var json_obj = JSON.parse(data);
+                    console.log(json_obj);
+                    var obj = json_obj.obj;
+                    console.log(obj);
+                    $scope.feed = json_obj.obj;
+                    angular.extend($scope.feed, json_obj.obj);
+                    self.setMainPage('page1.html', { closeMenu: true }, title);
+                    $scope.isloading = false;
+                },
+                error: function (data) {
+                    $scope.isloading = false;
+                }
+            });
+        }
+
+        self.getsingleactivity = function (activity_id, title) {
+            $scope.isloading = true;
+            var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
+            var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
+            var data =  {action: "output_activity", activity_id : activity_id};
+            $.ajax({
+                type: 'GET',
+                url: "http://www.bracketdash.com/api/api.php",
+
+                data: data,
+                crossDomain: true,
+                success: function (data) {
+                    console.log(data);
+                    var json_obj = JSON.parse(data);
+                    $scope.showsingleactivity = json_obj;
+                    angular.extend($scope.showsingleactivity, json_obj);
+                    alert(JSON.stringify($scope.showsingleactivity));
+                    self.setMainPage('SingleActivity.html', { closeMenu: true }, title);
+                    $scope.isloading = false;
+                },
+                error: function (data) {
+                    $scope.isloading = false;
                 }
             });
         }
@@ -436,16 +638,237 @@ angular.module('app', ['onsen', 'ngAnimate'])
                 }
             });
         }
+
+        $scope.playvideo = function (videolink) {
+
+            $scope.isplaying = $sce.trustAsResourceUrl(videolink);
+
+        }
+        $scope.closevideo = function () {
+            $scope.isplaying = '';
+            var myVideo = document.getElementsByTagName('video')[0];
+            myVideo.pause();
+            myVideo.src('');
+            myVideo.children('source').prop('src', '');
+            myVideo.remove().length = 0;
+
+        }
+
+        $scope.getnotifications = function () {
+            var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
+            $.ajax({
+                type: 'GET',
+                url: "http://www.bracketdash.com/api/api.php",
+                crossDomain: true,
+                data: { action: 'audience', profile_username: profile_username, limit: 10 },
+                success: function (data) {
+                    var json_obj = JSON.parse(data);
+                    console.log(json_obj);
+                    var obj = json_obj.obj;
+                    console.log(obj);
+                    $scope.myaudience = json_obj.obj;
+                    angular.extend($scope.myaudience, json_obj.obj);
+                    alert(JSON.stringify($scope.myaudience));
+                    self.setMainPage('Audience.html', { closeMenu: true }, 'Audience');
+                }
+            });
+        }
         self.explore = function(){
             
         }
+        self.saveprofile = function () {
+            if (self.loginemail.length == 0 || self.loginpassword.length == 0)
+            { return; }
+            var data = { "action": "login", "email": self.loginemail, "password": self.loginpassword, "remember_me": "true" };
+            $.ajax({
+                url: "http://www.bracketdash.com/api/api.php",
+                type: 'POST',
+                data: data,
+                crossDomain: true,
+                success: function (data) {
+                    console.log(data);
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    if (obj.request_status == 'success') {
+                        var access_token = obj.response.access_token;
+                        console.log(access_token);
+                        var exp = obj.response.exp;
+                        console.log(exp);
+                        var username = obj.response.username;
+                        console.log(username);
+                        self.storetoken(access_token, username, exp, login_obj.remember_me);
+                        $('input').not('[type="button"]').val('');
+                        //doChange('#profile');
+                    } else if (obj.request_status == 'invalid_password') {
+                        alert("Invalid password");
+                    } else if (obj.request_status == 'invalid_email') {
+                        alert("Invalid email address");
+                    }
 
-   
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
+                }
+            });
+            return true;
+        }
+        self.savesettings = function () {
+            if (self.loginemail.length == 0 || self.loginpassword.length == 0)
+            { return; }
+            var data = { "action": "login", "email": self.loginemail, "password": self.loginpassword, "remember_me": "true" };
+            $.ajax({
+                url: "http://www.bracketdash.com/api/api.php",
+                type: 'POST',
+                data: data,
+                crossDomain: true,
+                success: function (data) {
+                    console.log(data);
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    if (obj.request_status == 'success') {
+                        var access_token = obj.response.access_token;
+                        console.log(access_token);
+                        var exp = obj.response.exp;
+                        console.log(exp);
+                        var username = obj.response.username;
+                        console.log(username);
+                        self.storetoken(access_token, username, exp, login_obj.remember_me);
+                        $('input').not('[type="button"]').val('');
+                        //doChange('#profile');
+                    } else if (obj.request_status == 'invalid_password') {
+                        alert("Invalid password");
+                    } else if (obj.request_status == 'invalid_email') {
+                        alert("Invalid email address");
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
+                }
+            });
+            return true;
+        }
+        self.saveprivacy = function () {
+            if (self.loginemail.length == 0 || self.loginpassword.length == 0)
+            { return; }
+            var data = { "action": "login", "email": self.loginemail, "password": self.loginpassword, "remember_me": "true" };
+            $.ajax({
+                url: "http://www.bracketdash.com/api/api.php",
+                type: 'POST',
+                data: data,
+                crossDomain: true,
+                success: function (data) {
+                    console.log(data);
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    if (obj.request_status == 'success') {
+                        var access_token = obj.response.access_token;
+                        console.log(access_token);
+                        var exp = obj.response.exp;
+                        console.log(exp);
+                        var username = obj.response.username;
+                        console.log(username);
+                        self.storetoken(access_token, username, exp, login_obj.remember_me);
+                        $('input').not('[type="button"]').val('');
+                        //doChange('#profile');
+                    } else if (obj.request_status == 'invalid_password') {
+                        alert("Invalid password");
+                    } else if (obj.request_status == 'invalid_email') {
+                        alert("Invalid email address");
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
+                }
+            });
+            return true;
+        }
+
+        self.savecomment = function () {
+            if (self.loginemail.length == 0 || self.loginpassword.length == 0)
+            { return; }
+            var data = { "action": "savecomment", "text": $scope.newcomment, "id": $scope.currentfeed.activity_id};
+            $.ajax({
+                url: "http://www.bracketdash.com/api/api.php",
+                type: 'POST',
+                data: data,
+                crossDomain: true,
+                success: function (data) {
+                    console.log(data);
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    if (obj.request_status == 'success') {
+                        var access_token = obj.response.access_token;
+                        console.log(access_token);
+                        var exp = obj.response.exp;
+                        console.log(exp);
+                        var username = obj.response.username;
+                        console.log(username);
+                        self.storetoken(access_token, username, exp, login_obj.remember_me);
+                        $('input').not('[type="button"]').val('');
+                        //doChange('#profile');
+                    } else if (obj.request_status == 'invalid_password') {
+                        alert("Invalid password");
+                    } else if (obj.request_status == 'invalid_email') {
+                        alert("Invalid email address");
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
+                }
+            });
+            return true;
+        }
+
+        self.savereport = function () {
+            if (self.loginemail.length == 0 || self.loginpassword.length == 0)
+            { return; }
+            var data = { "action": "savecomment", "text": $scope.newreport, "id": $scope.currentfeed.activity_id };
+            $.ajax({
+                url: "http://www.bracketdash.com/api/api.php",
+                type: 'POST',
+                data: data,
+                crossDomain: true,
+                success: function (data) {
+                    console.log(data);
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    if (obj.request_status == 'success') {
+                        var access_token = obj.response.access_token;
+                        console.log(access_token);
+                        var exp = obj.response.exp;
+                        console.log(exp);
+                        var username = obj.response.username;
+                        console.log(username);
+                        self.storetoken(access_token, username, exp, login_obj.remember_me);
+                        $('input').not('[type="button"]').val('');
+                        //doChange('#profile');
+                    } else if (obj.request_status == 'invalid_password') {
+                        alert("Invalid password");
+                    } else if (obj.request_status == 'invalid_email') {
+                        alert("Invalid email address");
+                    }
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
+                }
+            });
+            return true;
+        }
+
         $scope.$watch('NewActivity.branchlength', function (value) {
             for (var i = 0; i < $scope.NewActivity.branchlength /2 ; i++) {
                 var b = { branchindex: i, users: [{ Username: '', Fullname: '', Avatar_link: '' }, { Username: '', Fullname: '', Avatar_link: '' }] };
                 $scope.NewActivity.branches.push(b);
             }
+        });
+
+        $scope.$watch('NewActivity.type', function (value) {
+            $scope.searchuserquery = {q:''};
+            $scope.usersearchresult = [];
         });
 
         $scope.$watch('searchuserquery.q', function (value) {
@@ -455,6 +878,35 @@ angular.module('app', ['onsen', 'ngAnimate'])
             }
         });
 
+        $scope.$watch('searchquery.q', function (value) {
+            if (value.length >= $scope.searchqueryminlen) {
+                
+                $scope.search(value);
+            }
+        });
+
+        $scope.$watch('isloading', function (value) {
+            if (value) {
+                modloading.show();
+            }
+            else
+                modloading.hide();
+        });
+
+        $scope.$watch('isplaying', function (value) {
+            if ($scope.isplaying.toString().length > 0) {
+                modvideo.show();
+                var myVideo = document.getElementsByTagName('video')[0];
+                myVideo.src = $scope.isplaying;
+                myVideo.load();
+                myVideo.play();
+            }
+            else
+                modvideo.hide();
+        });
+
+
+        
 
         ons.ready(function () {
             self.checklogin();
@@ -483,7 +935,7 @@ angular.module('app', ['onsen', 'ngAnimate'])
         $scope.contestants = [];
 
         
-        self.overlaylement = function (elem,target,top,right,left,bottom,elemwidth,elemheight,anim) {
+        self.overlaylement = function (elem, target, top, right, bottom, left, elemwidth, elemheight, anim) {
             var element = $('#' + elem);
             if (elemwidth != null && elemwidth >0)
                 element.width(elemwidth);
@@ -534,5 +986,5 @@ angular.module('app', ['onsen', 'ngAnimate'])
             }
         
         
-    });
-
+    })
+   

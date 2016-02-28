@@ -10,6 +10,7 @@
     <script src="scripts/platformOverrides.js"></script>
     <script src="lib/angular/angular.js"></script>
     <script src="lib/angular/angular-animate.min.js"></script>
+    <script src="lib/angular/angular-sanitize.js"></script>
     <script src="lib/onsen/js/onsenui.js"></script>
     
     <!-- CSS dependencies -->
@@ -35,6 +36,22 @@
 
 <body id="body" ng-controller="BracketDashController as bd">
     <div id="divOverlay" class="ng-hide slide-right"></div>
+    <ons-modal var="modloading" ng-show="isloading" >
+        <ons-icon icon="ion-load-c" style="color:#FFF" spin="true"></ons-icon>
+        <br>
+        <br><span style="color:#FFF" > Loading Please wait.</span>
+        <br>
+    </ons-modal>
+
+    <ons-modal var="modvideo" ng-show="isplaying.toString().length > 0">
+        <span style="color:#FFF"> 
+      <ons-button ng-click="closevideo()" style="position: absolute;top: 0px;left: 40%;" >Close</ons-button>
+            <video width="320" height="240" controls>
+                <source type="video/mp4">
+                </video> 
+        </span>
+        
+    </ons-modal>
     <!-- Cordova reference -->
     <!-- -->
             <ons-toolbar fixed-style style="z-index:1000">
@@ -43,12 +60,12 @@
                         <ons-icon icon="ion-navicon" size="28px" fixed-width="false"></ons-icon>
                     </ons-toolbar-button>
                 </div>
-                <div class="center" id="logo" ng-click="bd.setMainPage('page1.html', {closeMenu: true},'Home')"><img ng-show="bd.showlogo()"  class="logo" src="data:image/png;base64,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WHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE1LTAyLTE5VDE1OjM4OjA4PC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgKE1hY2ludG9zaCk8L3htcDpDcmVhdG9yVG9vbD4KICAgICAgICAgPHhtcDpDcmVhdGVEYXRlPjIwMTQtMTEtMjdUMTQ6Mjc6MzM8L3htcDpDcmVhdGVEYXRlPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj43MjwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+NzI8L3RpZmY6WFJlc29sdXRpb24+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+MTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+Nzc8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24+NzM8L2V4aWY6UGl4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"></div>
+                <div class="center" id="logo" ><img ng-click="bd.setMainPage('page1.html', {closeMenu: true},'Home')" ng-show="bd.showlogo()"  class="logo" src="data:image/png;base64,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WHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE1LTAyLTE5VDE1OjM4OjA4PC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgKE1hY2ludG9zaCk8L3htcDpDcmVhdG9yVG9vbD4KICAgICAgICAgPHhtcDpDcmVhdGVEYXRlPjIwMTQtMTEtMjdUMTQ6Mjc6MzM8L3htcDpDcmVhdGVEYXRlPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj43MjwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+NzI8L3RpZmY6WFJlc29sdXRpb24+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+MTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+Nzc8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24+NzM8L2V4aWY6UGl4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"></div>
                 <div class="right" style="position:relative;">
                   
                     <div id="searchinput" style="width:160px;height:25px;" ng-show="bd.issearching" class="slide-right">
                         <div style="position:relative; height:95%;">
-                            <input type="text" id="txtsearch" ng-model="bd.searchquery" style="width:140px; height:100%;"  />
+                            <input type="text" id="txtsearch" ng-model="searchquery.q" style="width:140px; height:100%;" class="searchinput text-input--underbar"  />
                             <ons-icon id="icncancelsearch" icon="fa-search" ng-click="bd.search"  size="18px" 
                                        style="width:20px;position:absolute;right:-20px; vertical-align:baseline;top:4px" fixed-width="false"></ons-icon>
                         </div>
@@ -72,7 +89,7 @@
             <ons-toolbar modifier="transparent"></ons-toolbar>
 
             <ons-list class="menu-list">
-                <ons-list-item ng-if="bd.isloggedin"  class="menu-item" ng-click="bd.expandaccount()">
+                <ons-list-item ng-if="bd.isloggedin" modifier="chevron" class="menu-item" ng-click="bd.expandaccount()">
                     <!--<ons-icon icon="minus-square-o" ng-show="bd.accountexpand"></ons-icon>
                     <ons-icon icon="plus-square-o" ng-show="!bd.accountexpand"></ons-icon>-->
                         <ons-row >
@@ -98,12 +115,12 @@
                         New Activity
                     </ons-list-item>
 
-                    <ons-list-item class="menu-item" ng-click="bd.setMainPage('ActivityLog.html', {closeMenu: true},'Activity Log')">
+                    <ons-list-item class="menu-item" ng-click="bd.getactivitylog('Activity Log')">
                         <ons-icon  size="18px" icon="ion-android-film"></ons-icon>
                         Activities
                     </ons-list-item>
 
-                    <ons-list-item class="menu-item" ng-click="bd.setMainPage('ActivityInProgress.html', {closeMenu: true},'Activity In Progress')">
+                    <ons-list-item class="menu-item" ng-click="bd.getactivityinprogress('Activity In Progress')">
                         <ons-icon  size="18px" icon="fa-random"></ons-icon>
                         Activities In Progress
                     </ons-list-item>
@@ -131,13 +148,13 @@
 
 
 
-                <ons-list-item ng-if="bd.isloggedin" class="menu-item" ng-click="bd.setMainPage('Messages.html', {closeMenu: true},Messages)">
+                <ons-list-item ng-if="bd.isloggedin" class="menu-item" ng-click="bd.getnotifications()">
                     <ons-icon size="18px" icon="fa-bell-o"></ons-icon>
                     Notifications
                 </ons-list-item>
 
               
-                <ons-list-item ng-if="bd.isloggedin" class="menu-item" ng-click="bd.expandsettings()">
+                <ons-list-item ng-if="bd.isloggedin" modifier="chevron" class="menu-item" ng-click="bd.expandsettings()">
                     <ons-icon icon="minus-square-o"  size="18px" ng-show="bd.settingsexpand"></ons-icon>
                     <ons-icon icon="plus-square-o" size="18px" ng-show="!bd.settingsexpand"></ons-icon>
                     Settings
@@ -159,7 +176,7 @@
 
                     </ons-list>
                  
-                <ons-list-item ng-if="bd.isloggedin" class="menu-item" ng-click="bd.setMainPage('Notifications.html', {closeMenu: true},Notifications)">
+                <ons-list-item ng-if="bd.isloggedin" class="menu-item" ng-click="bd.setMainPage('Messages.html', {closeMenu: true},Notifications)">
                     <ons-icon icon="fa-envelope-o"  size="18px"></ons-icon>
                      Messages
                     <div  class="ng-hide notification menu-notification"></div>
@@ -186,7 +203,17 @@
         <ons-page >
             <div class="headergap"></div>
             {{bd.CurrentPage}}
+            <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="feed.length==0">
+                No Activities to show
+            </div>
             <div data-role="content" class="demo-content">
+                <div class="profile-card" ng-show="bd.CurrentPage =='Activity Log' ||  bd.CurrentPage =='Activity In Progress'">
+                    <img src="{{bd.viewuserinfo.Avatar_link}}" class="profile-image">
+                    <div class="profile-name">{{bd.viewuserinfo.Fullname}}</div>
+                    <div class="profile-id">{{bd.viewuserinfo.Username}}</div>
+                    <div class="profile-desc">{{bd.viewuserinfo.about}}</div>
+                </div>
+
                 <div class="activity-wrapper" ng-if="f.activity_type == 'battle'"  ng-repeat="f in feed">
                     <div class="activity-header" >
                         <div class="activity-host-avatar">
@@ -208,7 +235,7 @@
                                     <img src="{{con.avatar_link}}" alt="">
                                 </div>
                                 <div class="section-username">{{con.contestant_username}}</div>
-                            </div><div class="section-thumbnail-and-ratings"><div class="section-thumbnail" data-video-link="{{con.video_link}}"><div class="play-button" data-vlink="{{con.video_link}}"></div>
+                            </div><div ng-click="playvideo(con.video_link)" class="section-thumbnail-and-ratings"><div class="section-thumbnail" data-video-link="{{con.video_link}}"><div class="play-button" data-vlink="{{con.video_link}}"></div>
                             <img src="{{con.thumbnail_link}}" alt=""></div><div class="section-ratings">
                             <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
                             <div class="rank">Rank #{{con.rank}}</div></div></div><div class="section-options-button-wrapper">
@@ -217,14 +244,14 @@
                     </div>
                     <div class="activity-footer ng-binding">
                     <div class="activity-description">{{f.activity_description}}</div>
-                    <div class="activity-options-button" ng-click="bd.expandfeed(1);"></div>
+                    <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
                     </div>
                 </div>
-
                 <div class="activity-wrapper" ng-if="f.activity_type == 'open challenge'" ng-repeat="f in feed">
                 <div class="activity-header">
                     <div class="activity-host-avatar">
-                    <img src="{{f.activity_host_info.avatar_link}}" alt=""></div>
+                    <img src="{{f.activity_host_info.avatar_link
+}}" alt=""></div>
                     <div class="activity-header-txt"><div class="activity-header-txt-top-section">
                         <div class="host-username">{{f.activity_host_info.username}}</div><div class="activity-date">{{f.activity_date}}</div></div>
                     <div class="activity-title">{{f.activity_title}}</div>
@@ -276,11 +303,9 @@
                     </div>
                     <div class="activity-footer">
                         <div class="activity-description">{{f.activity_description}}</div>
-                        <div class="activity-options-button" ng-click="bd.expandfeed(1);"></div>
+                        <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
                     </div>
                 </div>          
-       
-                
                 <div class="activity-wrapper" ng-if="f.activity_type == 'bracket'" ng-repeat="f in feed">
                     <div class="activity-header">
                         <div class="activity-host-avatar">
@@ -332,100 +357,72 @@
 
                     <div class="activity-footer">
                         <div class="activity-description">{{f.activity_description}}</div>
-                        <div class="activity-options-button" ng-click="bd.expandfeed(1);"></div>
+                        {{f | json}}
+                        <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
                     </div>
                 </div>
-                      <ons-modal  var="modcomments" class="modal">
-                <div class="commentcontainer" ng-show="bd.feedexpand == 1">
+                
+                <ons-button class="button button--material btnwide" ng-click="bd.loadmorefeed">Load more</ons-button>
+                <ons-modal  var="modcomments" class="modal">
+                <div class="commentcontainer" ng-show="currentfeed.activity_id">
                     <div class="button-bar" style="width:280px;">
                         <div class="button-bar__item">
                             <button class="button-bar__button" >Comments</button>
                         </div>
                         <div class="button-bar__item">
-                            <button class="button-bar__button" ng-click="bd.showcomments(1,2)">Report</button>
+                            <button class="button-bar__button" ng-click="bd.showcomments(currentfeed.activity_id,2)">Report</button>
                         </div>
                         <div class="button-bar__item">
-                            <button class="button-bar__button" ng-click="bd.expandfeed(1)">Close</button>
+                            <button class="button-bar__button" ng-click="bd.expandfeed(currentfeed.activity_id)">Close</button>
                         </div>
                     </div>
                     <ons-scroller style="height: 200px; width: 100%">
-                        <div class="ng-hide" id="comments1">
-                            <ons-row>
-                                <ons-col width="20%" class="avatarcolwrapper">
-                                    <img src="https://bracketdash-users.s3.amazonaws.com/9/profile-picture.jpg" class="avatar">
-                                    <br />
-                                    <span class="name"> <strong>  tkuniijbhbhubyub </strong></span>
-                                </ons-col>
-                                <ons-col width="60%">
-                                    <textarea class="textarea textarea--transparent" placeholder="Add Comment" style="width: 100%; height: 80px;"></textarea>
-                                </ons-col>
-                                <ons-col width="20%">
-                                    <ons-button modifier="small">Add</ons-button>
-                                </ons-col>
-                            </ons-row>
-                            <ons-list class="commentlist">
-                                <ons-list-item class="list-item-container">
-                                    <ons-row>
-                                        <ons-col width="20%" class="avatarcolwrapper">
-                                            <img src="https://bracketdash-users.s3.amazonaws.com/9/profile-picture.jpg" class="avatar">
-                                            <br />
-                                            <span class="name"> <strong>  tkuniijbhbhubyub </strong></span><br /><span class="subtext"> 5 months ago</span>
-                                        </ons-col>
-                                        <ons-col width="80%" class="description">
-                                            <span class="comment"> This is my comment about the video added 5 months ago</span>
-                                        </ons-col>
-                                    </ons-row>
-                                </ons-list-item>
-                                <ons-list-item class="list-item-container">
-                                    <ons-row>
-                                        <ons-col width="20%" class="avatarcolwrapper">
-                                            <img src="https://bracketdash-users.s3.amazonaws.com/9/profile-picture.jpg" class="avatar">
-                                            <br />
-                                            <span class="name"> <strong>  tkuniijbhbhubyub </strong></span><br /><span class="subtext"> 5 months ago</span>
-                                        </ons-col>
-                                        <ons-col width="80%" class="description">
-                                            <span class="comment"> This is my comment about the video added 5 months ago</span>
-                                        </ons-col>
-                                    </ons-row>
-                                </ons-list-item>
-                                <ons-list-item class="list-item-container">
-                                    <ons-row>
-                                        <ons-col width="20%" class="avatarcolwrapper">
-                                            <img src="https://bracketdash-users.s3.amazonaws.com/9/profile-picture.jpg" class="avatar">
-                                            <br />
-                                            <span class="name"> <strong>  tkuniijbhbhubyub </strong></span><br /><span class="subtext"> 5 months ago</span>
-                                        </ons-col>
-                                        <ons-col width="80%" class="description">
-                                            <span class="comment"> This is my comment about the video added 5 months ago</span>
-                                        </ons-col>
-                                    </ons-row>
-                                </ons-list-item>
-                            </ons-list>
+                        <div ng-show="currentfeed.mode ==1" ng-attr-id="{{'comments' + currentfeed.activity_id}}">
+                            <div class="options-content-wrapper">
+                                <div class="comment-input-wrapper">
+                                    <div class="comment-input-avatar comment-avatar">
+                                        <img class="avatar" src="{{viewuserinfo.Avatar_link}}">
+                                    </div>
+                                    <div class="comment-text-input">
+                                        <textarea data-id="5" ng-model="newcomment" class="comment-input" placeholder="comment..."></textarea>
+                                    </div>
+                                    <div style="margin-left:60px;"><button class="btnsmall button button--material btnsecond" modifier="small" ng-click="savecomment()">Add comment</button></div>
+                                </div>
+                                <div class="comment-section-wrapper">
+                                    <div class="comment-wrapper">
+                                        <div class="comment-avatar">
+                                            <img class="avatar" src="https://bracketdash-users.s3.amazonaws.com/default/default-profile-picture.png">
+                                        </div>
+                                        <div class="comment-text-wrapper">
+                                            <div class="comment-id">
+                                                <div class="comment-id-username">Jrideout</div>
+                                                <div class="comment-date">5 months ago</div>
+                                                <div class="report-comment" data-comment-id="3">report</div>
+                                            </div>
+                                            <div class="comment-text">Brilliant</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
-                        <div class="ng-hide" id="reports1">
-                            <ons-row>
-                                <ons-col width="20%" class="avatarcolwrapper">
-                                    <img src="https://bracketdash-users.s3.amazonaws.com/9/profile-picture.jpg" class="avatar">
-                                    <br />
-                                    <span class="name"> <strong>  tkuniijbhbhubyub </strong></span>
-                                </ons-col>
-                                <ons-col width="60%">
-                                    <textarea class="textarea textarea--transparent" placeholder="Provide your report details" style="width: 100%; height: 80px;"></textarea>
-                                </ons-col>
-                                <ons-col width="20%">
-                                    <ons-button modifier="small" class="login-button" ng-click="bd.login()">Add Report</ons-button>
-                                </ons-col>
-                            </ons-row>
+                        <div ng-show="currentfeed.mode ==2"  ng-attr-id="{{'reports' + currentfeed.activity_id}}">
+                            <div class="comment-input-wrapper">
+                                <div class="comment-input-avatar comment-avatar">
+                                    <img class="avatar" src="{{viewuserinfo.Avatar_link}}">
+                                </div>
+                                <div class="comment-text-input">
+                                    <textarea data-id="5" ng-model="newreport" class="comment-input" placeholder="comment..."></textarea>
+                                </div>
+                                <div style="margin-left:60px;"><button  class="btnsmall button button--material btnsecond" ng-click="savereport()">Add Report</button></div>
+                            </div>
 
                         </div>
                     </ons-scroller>
                 </div>
             </ons-modal>
-                    
                    </div>
                     </ons-page>
-        
     </ons-template>
 
 
@@ -476,7 +473,7 @@
         </div>
         </ons-template>
 
-        <ons-template id="Bio.html">
+    <ons-template id="Bio.html">
             <ons-page>
                 <div class="headergap"></div>
                 
@@ -573,7 +570,7 @@
     </ons-template>
 
 
-        <ons-template id="Profile.html">
+    <ons-template id="Profile.html">
             <ons-page>
                 <div class="headergap"></div>
                 <ons-row>
@@ -615,38 +612,145 @@
         </ons-template>
 
 
-        <ons-template id="ProfileSettings.html">
+    <ons-template id="ProfileSettings.html">
             <ons-page>
-                <ons-row>
-                    <ons-col>
-                        Profile form
-                    </ons-col>
-                </ons-row>
+                <div class="contentwrapper">
+                    <ons-row>
+                        <ons-col>
+
+                            <div style="text-align: center; padding: 10px 0;">
+                                <input type="text" class="text-input--underbar" required style="width:95%"
+                                       placeholder="Fullname" ng-model="ProfileForm.Fullname" value="">
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <input type="text" class="text-input--underbar" required style="width:95%"
+                                       placeholder="City" ng-model="ProfileForm.City" value="">
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <input type="text" class="text-input--underbar" required style="width:95%"
+                                       placeholder="State" ng-model="ProfileForm.State" value="">
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <input type="text" class="text-input--underbar" required style="width:95%"
+                                       placeholder="Country" ng-model="ProfileForm.Country" value="">
+                            </div>
+
+
+                            <div style="text-align: center; padding: 10px 0;">
+
+                                <textarea class="text-input" required style="width:95%;height:70px;"
+                                          placeholder="Hobbies" ng-model="ProfileForm.Hobbies" value=""></textarea>
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+
+                                <textarea class="text-input" required style="width:95%;height:70px;"
+                                          placeholder="About" ng-model="ProfileForm.About" value=""></textarea>
+                            </div>
+
+                            <div style="text-align: center; padding: 10px 0;">
+                                <input type="text" class="text-input" required style="width:95%"
+                                       placeholder="Links" ng-model="ProfileForm.Website" value="">
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="bd.addprofile()">
+                                    Save Profile
+                                </ons-botton>
+                            </div>
+
+                        </ons-col>
+                    </ons-row>
+                </div>
+                        </ons-page>
+        </ons-template>
+
+    <ons-template id="AccountSettings.html">
+
+            <ons-page>
+                <div class="headergap"></div>
+                <div class="contentwrapper">
+                    <ons-row>
+                        <ons-col>
+                            <div style="text-align: center; padding: 10px 0;">
+                               <span required style="width:95%" ng-model="viewuserinfo.Username" value="">
+                                   </span>
+                            </div>
+                            <div class="ng-hide" style="text-align: center; padding: 10px 0;">
+                                <span required style="width:95%" ng-model="viewuserinfo.Username" value=""></span>
+                            </div>
+                            
+                        </ons-col>
+                    </ons-row>
+                </div>
+
+                <div class="contentwrapper">
+                    <ons-row>
+                        <ons-col>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <input type="text" class="text-input--underbar" required style="width:95%"
+                                                  placeholder="Current Password" ng-model="AccountSettingsForm.Current_password" value="">
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <input type="text" class="text-input--underbar" required style="width:95%"
+                                               placeholder="New Password" ng-model="AccountSettingsForm.New_password" value="">
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <input type="text" class="text-input--underbar" required style="width:95%"
+                                                      placeholder="Confirm Password" ng-model="AccountSettingsForm.Confirm_password" value="">
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="bd.savesettings()">
+                                    Save Settings
+                                </ons-botton>
+                            </div>
+
+                        </ons-col>
+                    </ons-row>
+                </div>
             </ons-page>
         </ons-template>
 
-        <ons-template id="AccountSettings.html">
+    <ons-template id="PrivacySettings.html">
             <ons-page>
-                <ons-row>
-                    <ons-col>
-                        Profile form
-                    </ons-col>
-                </ons-row>
+                <div class="headergap"></div>
+                <div class="contentwrapper">
+                    <ons-row>
+                        <ons-col>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <span required style="width:95%" >
+                                    Who can join my audience?
+                                </span>
+                            </div>
+                            <div  style="text-align: center; padding: 10px 0;">
+                                <ons-list>
+
+                                    
+                                    <ons-list-item modifier="tappable">
+                                        <label class="radio-button radio-button--list-item">
+                                            <input type="radio" name="a" checked="checked">
+                                            <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
+                                            Anyone
+                                        </label>
+                                    </ons-list-item>
+
+                                    <ons-list-item modifier="tappable">
+                                        <label class="radio-button radio-button--list-item">
+                                            <input type="radio" name="a">
+                                            <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
+                                            Only if approved
+                                        </label>
+                                    </ons-list-item>
+                                </ons-list>
+                            </div>
+
+                        </ons-col>
+                    </ons-row>
+                </div>
+
             </ons-page>
         </ons-template>
 
-        <ons-template id="PrivacySettings.html">
-            <ons-page>
-                <ons-row>
-                    <ons-col>
-                        Profile form
-                    </ons-col>
-                </ons-row>
-            </ons-page>
-        </ons-template>
 
-
-        <ons-template id="Login.html">
+    <ons-template id="Login.html">
             <ons-page>
                 <div class="headergap"></div>
                 <ons-row>
@@ -683,6 +787,208 @@
         </ons-page>
     </ons-template>
 
+
+    <ons-template id="Notifications.html">
+        <ons-page>
+            <div class="headergap"></div>
+            <ons-row>
+                <ons-col>
+                   
+                    <div class="invitations-wrapper">
+                        <div class="header">
+                            Invitations
+                        </div><div class="notifications-list-wrapper">
+                            <a href="http://www.bracketdash.com/notifications?p=invitation&amp;a_id=28">
+                                <div class="notification-wrapper" data-activity-id="28">
+                                    <div class="notification-avatar">
+                                        <img src="https://bracketdash-users.s3.amazonaws.com/1/profile-picture.jpg" alt="">
+                                    </div>
+                                    <div class="notification-data">
+                                        <div class="notification-text">
+                                            <b>eliezerkombe</b> would like you to take part in an activity: <b>Test</b>
+                                        </div>
+                                        <div class="notification-time-stamp">Feb 13th, 2016 / 7:57 pm</div>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </ons-col>
+            </ons-row>
+        </ons-page>
+    </ons-template>
+
+
+    <ons-template id="SingleActivity.html">
+        <ons-page>
+            <div class="headergap"></div>
+            <ons-row>
+                <ons-col>
+                    <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'battle'" >
+                        <div class="activity-header">
+                            <div class="activity-host-avatar">
+                                <img src="{{showsingleactivity.activity_host_info.avatar_link}}" alt="">
+                            </div>
+                            <div class="activity-header-txt">
+                                <div class="activity-header-txt-top-section">
+                                    <div class="host-username">{{showsingleactivity.activity_host_info.username}}</div>
+                                    <div class="activity-date">{{showsingleactivity.activity_date}}</div>
+                                </div>
+                                <div class="activity-title">{{showsingleactivity.activity_title}}</div>
+                                <div class="activity-type"> ({{showsingleactivity.activity_category}} / {{showsingleactivity.activity_type}})</div>
+                            </div>
+                        </div>
+                        <div class="activity-body">
+                            <div class="contestant-section" ng-repeat="con in showsingleactivity.contestants_info">
+                                <div class="section-badge">
+                                    <div class="section-avatar">
+                                        <img src="{{con.avatar_link}}" alt="">
+                                    </div>
+                                    <div class="section-username">{{con.contestant_username}}</div>
+                                </div><div class="section-thumbnail-and-ratings">
+                                    <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                        <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                        <img src="{{con.thumbnail_link}}" alt="">
+                                    </div><div class="section-ratings">
+                                        <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                        <div class="rank">Rank #{{con.rank}}</div>
+                                    </div>
+                                </div><div class="section-options-button-wrapper">
+                                    <div class="section-options-button"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="activity-footer ng-binding">
+                            <div class="activity-description">{{showsingleactivity.activity_description}}</div>
+{{showsingleactivity}}
+                            <div class="activity-options-button" ng-click="bd.expandfeed(showsingleactivity.id);"></div>
+                        </div>
+                    </div>
+                    <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'open challenge'" ng-repeat="f in feed">
+                        <div class="activity-header">
+                            <div class="activity-host-avatar">
+                                <img src="{{showsingleactivity.activity_host_info.avatar_link
+}}" alt="">
+                            </div>
+                            <div class="activity-header-txt">
+                                <div class="activity-header-txt-top-section">
+                                    <div class="host-username">{{showsingleactivity.activity_host_info.username}}</div><div class="activity-date">{{showsingleactivity.activity_date}}</div>
+                                </div>
+                                <div class="activity-title">{{showsingleactivity.activity_title}}</div>
+                                <div class="activity-type"> ({{showsingleactivity.activity_category}} / {{showsingleactivity.activity_type}})</div>
+                            </div>
+                        </div>
+                        <div class="activity-body">
+                            <div class="oc_challenge_wrapper">
+                                <div class="activity-divider">Challenge</div>
+                                <div class="contestant-section" ng-repeat="con in showsingleactivity.contestants_info" ng-if="$index == 0">
+                                    <div class="section-badge">
+                                        <div class="section-avatar">
+                                            <img src="{{con.avatar_link}}" alt="">
+                                        </div><div class="section-username">{{con.contestant_username}}</div>
+                                    </div>
+                                    <div class="section-thumbnail-and-ratings">
+                                        <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                            <div class="play-button" data-vlink="{{con.video_link}}"></div><img src="{{con.thumbnail_link}}" alt="">
+                                        </div>
+                                        <div class="section-ratings">
+                                            <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                            <div class="rank">Rank #{{con.rank}}</div>
+                                        </div>
+                                    </div><div class="section-options-button-wrapper">
+                                        <div class="section-options-button"></div>
+                                    </div>
+                                </div>
+
+                            </div><div class="oc_response_wrapper">
+                                <div class="activity-divider">Response</div>
+
+                                <div class="contestant-section" ng-repeat="con in showsingleactivity.contestants_info" ng-if="$index > 0">
+                                    <div class="section-badge">
+                                        <div class="section-avatar">
+                                            <img src="{{con.avatar_link}}" alt="">
+                                        </div>
+                                        <div class="section-username">{{con.contestant_username}}</div>
+                                    </div><div class="section-thumbnail-and-ratings">
+                                        <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                            <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                            <img src="{{con.thumbnail_link}}" alt="">
+                                        </div><div class="section-ratings">
+                                            <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                            <div class="rank">Rank #{{con.rank}}</div>
+                                        </div>
+                                    </div><div class="section-options-button-wrapper">
+                                        <div class="section-options-button"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="activity-footer">
+                            <div class="activity-description">{{showsingleactivity.activity_description}}</div>
+                            <div class="activity-options-button" ng-click="bd.expandfeed(showsingleactivity.id);"></div>
+                        </div>
+                    </div>
+                    <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'bracket'" ng-repeat="f in feed">
+                        <div class="activity-header">
+                            <div class="activity-host-avatar">
+                                <img src="{{showsingleactivity.activity_host_info.avatar_link
+}}" alt="">
+                            </div>
+                            <div class="activity-header-txt">
+                                <div class="activity-header-txt-top-section">
+                                    <div class="host-username">{{showsingleactivity.activity_host_info.username}}</div><div class="activity-date">{{showsingleactivity.activity_date}}</div>
+                                </div>
+                                <div class="activity-title">{{showsingleactivity.activity_title}}</div><div class="activity-type"> ({{showsingleactivity.activity_category}} / {{showsingleactivity.activity_type}})</div>
+                            </div>
+                        </div>
+                        <div class="activity-divider">Round {{showsingleactivity.activity_round}}</div><div class="activity-body">
+                            <div ng-repeat="all in showsingleactivity.contestants_info">
+                                <div class="bracket-section" ng-if="$index % 2 === 0" ng-init="group = showsingleactivity.contestants_info.slice($index, $index + 2)">
+                                    <div class="bracket-section-content-wrapper">
+                                        <div ng-repeat="con in group">
+                                            <div class="bracket-section-content">
+                                                <div class="bracket-section-avatar-wrapper">
+                                                    <div class="bracket-section-avatar">
+                                                        <img src="{{con.avatar_link}}">
+                                                    </div>
+                                                    <div class="bracket-section-username">{{con.contestant_username}}</div>
+                                                </div><div class="bracket-section-thumbnail">
+                                                    <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
+                                                    <img src="{{con.thumbnail_link}}" alt="">
+                                                </div>
+                                                <div class="bracket-section-ratings">
+                                                    <div class="likes-ratings">
+                                                        <div class="like-button"></div>
+                                                        <div class="like-count">{{con.likes}}</div>
+                                                    </div>
+                                                </div><div class="bracket-section-options-button-wrapper">
+                                                    <div class="bracket-section-options-button"></div>
+                                                </div>
+
+
+                                            </div>
+
+
+                                        </div>
+                                    </div>
+                                    <div class="bracket-section-frame"></div>
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="activity-footer">
+                            <div class="activity-description">{{showsingleactivity.activity_description}}</div>
+                            <div class="activity-options-button" ng-click="bd.expandfeed(showsingleactivity.id);"></div>
+                        </div>
+                    </div>
+                </ons-col>
+            </ons-row>
+        </ons-page>
+    </ons-template>
+
+
     <ons-template id="ForgotPassword.html">
         <ons-page>
             <div class="headergap"></div>
@@ -701,7 +1007,7 @@
     </ons-template>
 
 
-        <ons-template id="Explore.html">
+    <ons-template id="Explore.html">
             <ons-page>
                 <ons-row>
                     <ons-col>
@@ -711,18 +1017,59 @@
             </ons-page>
         </ons-template>
 
-        <ons-template id="Search.html">
+    <ons-template id="Search.html">
             <ons-page>
-                <ons-row>
+                <div class="headergap"></div>
+                <ons-row >
                     <ons-col>
-                        Search Content
+                        <div ng-show="searchresult.people.length==0 && searchresult.activity.length == 0" style="text-align:center;">
+                            <ons-icon icon="fa-search" style="opacity:0.1" size="100px"></ons-icon>
+                            <br />
+                            <br /><span style="opacity:0.4">search for people or activities</span>
+                        </div>
+                        <div  style="text-align:center">
+                            <div class="main-search-content-wrapper">
+                          
+                                <div ng-show="searchresult.activity.length >0">
+                                    <div class="main-search-divider">Activities</div><div class="main-search-content">
+                                        <div class="main-search-list-wrapper"  ng-repeat="activity in searchresult.activity" ng-click="bd.getsingleactivity(activity.id,activity.title)">
+                                            <div class="main-search-list-avatar" >
+                                            <img src="{{activity.Avatar_link}}" alt=""></div>
+                                    <div class="main-search-list-content">
+                                            <div class="main-search-list-content-first-row">
+                                        <div class="main-search-list-content-host">{{activity.Host_username}}</div><div>&nbsp;•&nbsp;</div>
+                                        <div class="main-search-list-content-date"></div></div>
+                                            <div class="main-search-list-content-title">{{activity.title}}</div>
+                                            <div class="main-search-list-content-type-and-category">{{activity.category}}</div></div>
+                                        </div>
+                                    </div><div class="main-search-expand"></div>
+                                </div>
+
+                                <div ng-show="searchresult.people.length >0">
+                                    <div class="main-search-divider">People</div>
+                                    <div class="main-search-content">
+                                        <div class="main-search-list-wrapper" ng-repeat="user in searchresult.people">
+                                            <div class="main-search-list-avatar">
+                                                <img src="{{user.Avatar_link}}" alt="">
+                                            </div>
+                                            <div class="main-search-list-content">
+                                                <div class="main-search-list-content-fullname">{{user.Fullname}}</div>
+                                                <div class="main-search-list-content-username">{{user.Username}}</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
                     </ons-col>
                 </ons-row>
+
             </ons-page>
         </ons-template>
 
 
-        <ons-template id="Panel.html">
+    <ons-template id="Panel.html">
             <ons-page>
                 <ons-row>
                     <ons-col>
@@ -774,32 +1121,31 @@
         <ons-popover  class="popsearchuser" cancelable  direction="up">
             <!--<button id="btnclosesearchuser" class="close" ng-click="bd.closepopselectuser()"><i class="fa-close"></i></button>-->
 
-            <ons-list  id="popselect">
+            <ons-list >
 
                 <ons-list-header >
                     <div style="width:80%;display:inline;float:left;">
-    <input type="text" class="text-input" ng-model="searchuserquery.q" style="width:80%;float:right;display:inline;" placeholder="Title" >
+    <input type="text" class="text-input" ng-model="searchuserquery.q" style="width:80%;float:right;display:inline;" placeholder="search for users" >
                     </div>
                 <div style="width:20%;float:right;">
                     <button class="ng-hide" ng-click="searchuser(searchuserquery.q)"><ons-icon icon="fa-search" ></ons-icon></button>
                     </div>
 </ons-list-header>
+                <ons-list class="userlist" modifier="inset" ng-repeat="user in usersearchresult" >
+                    <ons-list-item  value="{{ user.Username }}"  modifier="tappable">
+                            <label class="checkbox checkbox--noborder">
+<input type="checkbox" ng-model="user.selected" ng-change="checkuser($event,user)">
+    <div style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark" ></div>
+    <div style="float:left; width:80%; max-width:80%;" ng-click=>
+        <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+        <div style="max-width:60%;float:left">
+            {{user.Fullname}}
+            <span class="subtext"> {{user.Username}}</span>
+        </div>
+    </div>
 
-                <ons-list class="userlist" modifier="inset" ng-repeat="user in usersearchresult">
-                    <ons-list-item  value="{{ user.Username }}" ng-click="bd.selectuser($event,user.Username,user.Avatar_link,user.Fullname)" modifier="tappable">
-                     
-                        <label class="checkbox checkbox--noborder">
-                            <input type="checkbox" >
-                            <div  style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark"></div>
-                            <div style="float:left; width:80%; max-width:90%;">
-                                <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
-                                <div style="max-width:60%;float:left">
-                                    {{user.Fullname}}
-                                    <span class="subtext"> {{user.Username}}</span>
-                                </div>
-                            </div>
-    
-                        </label>
+</label>
+                        
                     </ons-list-item>
                 </ons-list>
 
@@ -811,7 +1157,7 @@
 
     <ons-template id="popoveruserlist.html">
         <ons-popover class="popsearchuser" cancelable direction="up">
-            <ons-list id="popselect">
+            <ons-list>
                 <ons-list class="userlist" modifier="inset" ng-repeat="user in userlist">
                     <ons-list-item value="{{ user.Username }}" ng-click="bd.selectuser($event,user.Username,user.Avatar_link,user.Fullname)" modifier="tappable">
 
@@ -878,10 +1224,10 @@
                             </ons-list>
                             <div class="profile-card">
 
-                                <img src="{{bd.viewuserinfo.Avatar_link}}" class="profile-image">
-                                <div class="profile-name">{{bd.viewuserinfo.Fullname}}</div>
-                                <div class="profile-id">{{bd.viewuserinfo.Username}}</div>
-                                <div class="profile-desc">{{bd.viewuserinfo.about}}</div>
+                                <img src="{{viewuserinfo.Avatar_link}}" class="profile-image">
+                                <div class="profile-name">{{viewuserinfo.Fullname}}</div>
+                                <div class="profile-id">{{viewuserinfo.Username}}</div>
+                                <div class="profile-desc">{{viewuserinfo.about}}</div>
 
                             </div>
 
@@ -941,7 +1287,6 @@
                 <div class="demo-content contentwrapper">
                     <div ng-show="NewActivity.type!=''">
                         <div class="error" ng-if="newactivityvalidation.status==false">{{newactivityvalidation.reason}}</div>
-
                         <div style="text-align: center; padding: 10px 0;">
                             <input type="text" class="text-input" required style="width:95%"
                                    placeholder="Title" ng-model="NewActivity.title" value="">
@@ -969,15 +1314,14 @@
 
 
                         </div>
-
                         <div ng-show="NewActivity.type=='battle'">
                             <div style="text-align: center; padding: 10px 0;">
                                 <input type="hidden" id="drpselectusers" tabindex="1" class="select2">
                                 <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="bd.popselectuser($event,$parent.$index,$index)">
                                     <div ng-if="NewActivity.battleusers.length > 0" style="float:left;" >
-                                        <button ng-click="showuserlist($event,NewActivity.battleusers)" >
+                                        <div  >
                                            
-                                        <ons-icon size="18" icon="fa-group"></ons-icon>{{NewActivity.battleusers.length + ' ' }} Contestants Selected</button>
+                                        <ons-icon size="18" icon="fa-group"></ons-icon>{{NewActivity.battleusers.length + ' ' }} Contestants Selected</div>
                                     </div>
                                     <div style="float:left;" ng-if="NewActivity.battleusers.length == 0"> Select Contestants</div>
                                     <div style="float:right;"> <ons-icon icon="fa-arrow-down"></ons-icon></div>
@@ -986,7 +1330,6 @@
 
 
                         </div>
-
                         <div ng-show="NewActivity.type=='bracket'">
 
                             <div style="text-align: center; padding: 10px 0;">
@@ -1035,12 +1378,10 @@
                                 </ons-botton>
                             </div>
                         </div>
-
                         <div class="subtext" style="font-size:1.4em;text-align:center;" ng-show="NewActivity.type==''">
                             Please select activity type.
 
                         </div>
-
                     </div>
 
             </ons-page>
@@ -1067,4 +1408,4 @@
         </ons-template>
 
 </body>
-</html>
+</html> 
