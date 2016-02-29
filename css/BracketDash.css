@@ -185,7 +185,7 @@ height:50px;
   margin: 60px auto 0;
 }
 
-input[type=email], input[type=password] {
+input[type=email], input[type=password], .txtsignup {
   display: block;
   width: 100%;
   margin: 0 auto;
@@ -727,8 +727,7 @@ color:#FFF !important;}
 	width:220px;
 	}
 .comment-input{
-	padding:5px 10px;
-	width:200px;
+	width:100%;
 	height:50px;
 	resize:none;
 	outline:none;
@@ -797,3 +796,115 @@ color:#FFF !important;}
     width:auto;
     font-size:small;
 }
+
+
+.activity-header-txt {
+    max-width:75% !important;
+}
+.activity-host-avatar {
+        max-width:25% !important;
+}
+
+.vs-divider > div {
+    width: 100%;
+    height: 28px;
+    display: block;
+    margin: 4px auto;
+    font-weight: bold;
+    color: #949db5 !important;
+    font-size: 25px;
+}
+.vs-divider  {width: 80%;}
+
+.list__header {
+    background-color:#F7E5E5 !important;
+    color:#293c6b !important;
+    padding:3px !important;
+}
+.list__item {
+    min-height: 64px;
+}
+.bottom-bar {
+    background-color:orange;
+}
+.smallcolumn {
+    max-width: 20%;
+}
+
+
+.invitations-wrapper{
+	width:100%;
+	border-radius:4px;
+	border:1px solid #BEC4D2;
+	overflow:hidden;
+	background:white;
+	}
+.reminder-wrapper{
+	width:100%;
+	border-radius:4px;
+	border:1px solid #BEC4D2;
+	overflow:hidden;
+	background:white;
+	}
+.updates-wrapper{
+	width:100%;
+	border-radius:4px;
+	border:1px solid #BEC4D2;
+	overflow:hidden;
+	background:white;
+	}
+.header{
+	width:100%;
+	height:20px;
+	background:#F7E5E5;
+	text-align:center;
+	padding:10px 0 0 0;
+	font-weight:bold;
+	}
+.notification-avatar{
+	width:50px;
+	height:50px;
+	margin:5px;
+	overflow:hidden;
+	border-radius:100%;
+	}
+	.notification-avatar>img{
+		width:50px;
+		height:50px;
+		}
+.notifications-content-wrapper{
+	width:100%;
+	}
+.notification-data{
+	width:420px;
+	margin:auto;
+	}
+.notification-wrapper{
+	width:100%;
+	min-height:50px;
+	cursor:pointer;
+	/*border-bottom:1px solid #BEC4D2;*/
+	}
+.notification-wrapper:hover{
+	background:#F1F3F6;
+	}
+.notification-wrapper>div{
+	display:inline-block;
+	vertical-align:top;
+	}
+.notification-text{
+	cursor:pointer;
+	color:#293c6b;
+	font-size:12px;
+	margin:10px 0px 5px 0px;
+	}
+.notification-time-stamp{
+	color:#BEC4D2;
+	display:block;
+	cursor:pointer;
+	}
+.notifications-list-wrapper{
+	max-height:480px;
+	overflow-y:scroll;
+	overflow-x:hidden;
+	}
