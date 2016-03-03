@@ -1,5 +1,5 @@
 .headergap {
-height:50px;
+height:44px;
 }
 .subtext {
     opacity:0.4;
@@ -822,13 +822,13 @@ color:#FFF !important;}
     padding:3px !important;
 }
 .list__item {
-    min-height: 64px;
+    min-height: 44px;
 }
 .bottom-bar {
     background-color:orange;
 }
 .smallcolumn {
-    max-width: 20%;
+    max-width: 30%;
 }
 
 
@@ -908,3 +908,48 @@ color:#FFF !important;}
 	overflow-y:scroll;
 	overflow-x:hidden;
 	}
+
+.btnxsmall {
+        background-color: #428BCA;
+    border-radius: 5px;
+    font-size: 11px;
+    color: white !important;
+    padding: 2px 2px 2px 2px;
+    line-height: 20px;
+}
+.useractivitylist  .list__item{
+    min-height:60px;
+}
+.btnaccept{
+    background-color:green;
+}
+.btnaccept div ,.btnaccept i,.btndecline div ,.btndecline i{
+    color: white !important;
+}
+.btndecline {
+        background-color:red;
+
+}
+.bottomtoolbar {
+    padding-top: 10px;
+}
+.uploadinprogress {
+    background-color: orange;
+    color: black;
+    padding: 4px;
+
+}
+.successtoolbar, .successtoolbar div {
+    background-color:green !important;
+    color: white !important;
+    padding: 4px;
+}
+.errortoolbar, .errortoolbar div {
+    background-color:red  !important;
+    color: white !important;
+    padding: 4px;
+}
+
+.filename {
+    
+}

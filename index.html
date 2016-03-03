@@ -26,12 +26,14 @@
     
     <!-- --------------- App init --------------- -->
 
-    <title>Bracket Dash</title>
+    <title>BracketDash</title>
 
     <script src="cordova.js"></script>
     <script src="scripts/jquery.js"></script>
     <script src="scripts/BracketDash.js"></script>
     <script src="scripts/index.js"></script>
+    <script src="scripts/transloadit.js"></script>
+
 </head>
 
 <body id="body" ng-controller="BracketDashController as bd">
@@ -57,8 +59,8 @@
         </ons-dialog>
     </script>
 
-    <script type="text/ons-template" id="dialogcomment.html">
-        <ons-dialog cancelable >
+    <script type="text/ons-template" id="dialogcomment.html" >
+        <ons-dialog cancelable>
 
             <div class="commentcontainer" ng-show="currentfeed.activity_id">
 
@@ -149,12 +151,21 @@
                     </div>
                     <div ng-show="currentfeed.mode ==3" ng-attr-id="{{'reports' + currentfeed.activity_id}}">
                         <div class="comment-input-wrapper">
-                            Upload
+                            <div class="container" ng-show="!isuploading">
+                                <input ng-show="!file" type="file" id="file_input"  onchange="angular.element(this).scope().setFiles(this,false,false)" /> 
+                                <button ng-show="file && uploadbutton == true" class="button btnsmall" ng-click="bd.initupload()">Upload {{file}}</button>
+                                <button ng-show="file && uploadbutton == false" class="button btnsmall">{{file}} label</button>
+                            </div>
+                            <div class="container" ng-show="isuploading">
+                                There is an upload in progress please come back later.
+                            </div>
+                           
                         </div>
 
                     </div>
                 </ons-scroller>
             </div>
+
 </ons-dialog>
 </script>
 
@@ -196,8 +207,8 @@
                           var="menu" type="reveal" max-slide-distance="260px" swipeable="true">
         </ons-sliding-menu>
 
-        <ons-bottom-toolbar ng-if="bd.userinfo.email_confirmation == 0">
-            <div style="text-align: center; line-height: 15px; font-size:11px; padding:3px"> In order to fully experience bracketdash features.<br>Please confirm your email address<button class="btnsmall">Resend Confirmation</button>   </div>
+        <ons-bottom-toolbar id="confirmationtoolbar" ng-if="bd.userinfo.email_confirmation == 0">
+            <div style="text-align: center; line-height: 15px; font-size:11px; padding:3px"> In order to fully experience bracketdash features.<br>Please confirm your email address. <button class="button btnxsmall">Resend Confirmation</button>   </div>
         </ons-bottom-toolbar>
 
         <ons-template id="menu.html">
@@ -218,11 +229,11 @@
 
                     </ons-list-item>
                     <ons-list ng-show="bd.accountexpand" class="menu-list submenu">
-                        <ons-list-item class="menu-item" ng-click="getprofile(bd.userinfo.Username,true)">
+                        <ons-list-item class="menu-item" ng-click="getprofile(bd.userinfo.Username,true,1)">
                             <ons-icon icon="fa-user" size="18px"></ons-icon>
                             Bio
                         </ons-list-item>
-                        <ons-list-item class="menu-item" ng-click="getaudience(bd.userinfo.Username)">
+                        <ons-list-item class="menu-item" ng-click="getprofile(bd.userinfo.Username,true,2)">
                             <ons-icon size="18px" icon="fa-group"></ons-icon>
                             Audience
                         </ons-list-item>
@@ -231,12 +242,12 @@
                             New Activity
                         </ons-list-item>
 
-                        <ons-list-item class="menu-item" ng-click="bd.getactivitylog(bd.userinfo.Username,'Activity Log')">
+                        <ons-list-item class="menu-item" ng-click="getprofile(bd.userinfo.Username,true,3)">
                             <ons-icon size="18px" icon="ion-android-film"></ons-icon>
                             Activities
                         </ons-list-item>
 
-                        <ons-list-item class="menu-item" ng-click="bd.getactivityinprogress(bd.userinfo.Username,'Activity In Progress')">
+                        <ons-list-item class="menu-item"  ng-click="getprofile(bd.userinfo.Username,true,4)">
                             <ons-icon size="18px" icon="fa-random"></ons-icon>
                             Activities In Progress
                         </ons-list-item>
@@ -276,7 +287,7 @@
                         Settings
                     </ons-list-item>
                     <ons-list ng-show="bd.settingsexpand" class="menu-list  submenu" style="margin-left:10px">
-                        <ons-list-item class="menu-item" ng-click="bd.setMainPage('ProfileSettings.html', {closeMenu: true},'Edit Profile')">
+                        <ons-list-item class="menu-item" ng-click="bd.getsettings()">
                             <ons-icon icon="fa-user" size="18px"></ons-icon>
                             Edit Profile
                         </ons-list-item>
@@ -292,7 +303,7 @@
 
                     </ons-list>
 
-                    <ons-list-item ng-if="bd.isloggedin" class="menu-item" ng-click="bd.setMainPage('Messages.html', {closeMenu: true},Notifications)">
+                    <ons-list-item ng-if="bd.isloggedin" class="menu-item" ng-click="getmessages()">
                         <ons-icon icon="fa-envelope-o" size="18px"></ons-icon>
                         Messages
                         <div class="ng-hide notification menu-notification"></div>
@@ -321,53 +332,7 @@
                 {{bd.CurrentPage}}
                 <div data-role="content" class="demo-content">
 
-                    <div class="profilewrapper" ng-show="bd.CurrentPage =='Activity Log' ||  bd.CurrentPage =='Activity In Progress'">
-                        <ons-row>
-                            <ons-col>
-                                <ons-list>
-                                    <ons-list-item>
-                                        <ons-row>
-                                            <ons-col class="info-col">
-                                                <ons-icon icon="ion-android-person-add" size="28px"></ons-icon>
-                                                Join Audience
-                                            </ons-col>
-                                        </ons-row>
-
-                                    </ons-list-item>
-                                </ons-list>
-                                <div class="profile-card">
-
-                                    <img src="{{viewuserinfo.Avatar_link}}" class="profile-image">
-                                    <div class="profile-name">{{viewuserinfo.Fullname}}</div>
-                                    <div class="profile-id">{{viewuserinfo.Username}}</div>
-                                    <div class="profile-desc">{{viewuserinfo.about}}</div>
-
-                                </div>
-
-                                <ons-list>
-                                    <ons-list-item>
-                                        <ons-row>
-                                            <ons-col class="info-col" ng-click="getaudience(viewuserinfo.Username)">
-                                                <div class="info-num"></div>
-                                                <div class="info-unit">Audience</div>
-                                            </ons-col>
-                                            <ons-col class="info-col" ng-click="bd.getactivitylog(viewuserinfo.Username,'Activity Log')">
-                                                <div class="info-num"></div>
-                                                <div class="info-unit">Activities</div>
-                                            </ons-col>
-                                            <ons-col class="info-col" ng-click="bd.getactivityinprogress(viewuserinfo.Username,'Activity In Progress')">
-                                                <div class="info-num"></div>
-                                                <div class="info-unit">In progress</div>
-                                            </ons-col>
-                                        </ons-row>
-
-                                    </ons-list-item>
-                                </ons-list>
-
-                            </ons-col>
-                        </ons-row>
-                    </div>
-
+         
                     <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="feed.length==0">
                         No Activities to show
                     </div>
@@ -622,7 +587,7 @@
                         <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="myaudience.length==0">
                             No Audience to show
                         </div>
-                        <ons-list modifier="inset" ng-if="myaudience.length > 0">
+                        <ons-list modifier="inset" class="useractivitylist" ng-if="myaudience.length > 0">
                             <ons-list-header>Audience</ons-list-header>
                             <ons-list-item ng-click="getprofile(user.Username,true)" class="timeline-li" modifier="tappable" ng-repeat="user in myaudience">
                                 <div style="float:left; width:100%; max-width:95%;">
@@ -682,20 +647,17 @@
         </ons-template>
 
         <ons-template id="BioContent.html">
+
             <ons-page>
                 <div class="headergap"></div>
                 <div class="profilewrapper">
                     <ons-row>
                         <ons-col>
                             <ons-list ng-if="viewuserinfo.Username != bd.userinfo.Username">
-                                <ons-list-item>
-                                    <ons-row>
-                                        <ons-col class="info-col">
+                                <ons-list-item class="centered">
                                             <ons-icon icon="ion-android-person-add" size="28px"></ons-icon>
                                             Join Audience
-                                        </ons-col>
-                                    </ons-row>
-
+                                    
                                 </ons-list-item>
                             </ons-list>
                             <div class="profile-card">
@@ -706,49 +668,52 @@
                                 <div class="profile-desc">{{viewuserinfo.about}}</div>
 
                             </div>
+                            <div class="tab-bar tab-bar--top" ng-show="viewuserinfo.Username != bd.userinfo.Username">
+                                <label class="tab-bar__item">
+                                    <input type="radio" name="tab-bar-c" ng-model="viewuserinfo.mode" value="1" checked="checked">
+                                    <button class="tab-bar__button">
+                                        <div class="tab-bar__label">Bio</div>
+                                    </button>
+                                </label>
 
-                            <ons-list>
-                                <ons-list-item>
-                                    <ons-row>
-                                        <ons-col class="info-col" ng-click="getaudience(viewuserinfo.Username)">
-                                            <div class="info-num"></div>
-                                            <div class="info-unit">Audience</div>
-                                        </ons-col>
-                                        <ons-col class="info-col" ng-click="bd.getactivitylog(viewuserinfo.Username,'Activity Log')">
-                                            <div class="info-num"></div>
-                                            <div class="info-unit">Activities</div>
-                                        </ons-col>
-                                        <ons-col class="info-col" ng-click="bd.getactivityinprogress(viewuserinfo.Username,'Activity In Progress')">
-                                            <div class="info-num"></div>
-                                            <div class="info-unit">In progress</div>
-                                        </ons-col>
-                                    </ons-row>
+                                <label class="tab-bar__item">
+                                    <input type="radio" name="tab-bar-c" ng-model="viewuserinfo.mode" value="2">
+                                    <button class="tab-bar__button">
+                                        <div class="tab-bar__label">Audience</div>
+                                    </button>
+                                </label>
 
-                                </ons-list-item>
-                            </ons-list>
+                                <label class="tab-bar__item">
+                                    <input type="radio" name="tab-bar-c" ng-model="viewuserinfo.mode" value="3">
+                                    <button class="tab-bar__button">
+                                        <div class="tab-bar__label">Activities</div>
+                                    </button>
+                                </label>
+                            </div>
+
                         </ons-col>
                     </ons-row>
                 </div>
-                <div class="demo-content contentwrapper">
+<div class="demo-content contentwrapper" ng-show="viewuserinfo.mode == 1">
                     <ons-list style="margin-top: 12px;">
                         <ons-list-item>
                             <div class="prop-desc">
                                 <ons-icon icon="fa-map-marker"></ons-icon>
-                                Location : {{bd.bio.location}}
+                                Location : {{viewuserinfo.bio.location}}
                             </div>
                         </ons-list-item>
 
                         <ons-list-item>
                             <div class="prop-desc">
                                 <ons-icon icon="fa-mobile"></ons-icon>
-                                Hobbies:{{bd.bio.hobbies}}
+                                Hobbies:{{viewuserinfo.bio.hobbies}}
                             </div>
                         </ons-list-item>
 
                         <ons-list-item>
                             <div class="prop-desc">
                                 <ons-icon icon="fa-book"></ons-icon>
-                                links:{{bd.bio.links}}
+                                links:{{viewuserinfo.bio.links}}
 
                             </div>
                         </ons-list-item>
@@ -756,6 +721,413 @@
                     </ons-list>
                 </div>
 
+                <div class="demo-content contentwrapper" ng-show="viewuserinfo.mode==2">
+                    <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.audience.length==0">
+                        No Audience to show
+                    </div>
+                    <ons-list modifier="inset" >
+                        <ons-list-item ng-click="getprofile(user.Username,true)" class="timeline-li" modifier="tappable" ng-repeat="user in viewuserinfo.audience">
+                            <div style="float:left; width:100%; max-width:95%;">
+                                <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+                                <div style="max-width:60%;float:left">
+                                    {{user.Fullname}}<br />
+                                    <span class="subtext"> {{user.Username}}</span>
+                                </div>
+                            </div>
+                        </ons-list-item>
+
+                    </ons-list>
+                </div>
+                <div class="demo-content contentwrapper" ng-show="viewuserinfo.mode==3">
+                    <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feed.length==0">
+                        No Activities to show
+                    </div>
+                    <div ng-repeat="f in viewuserinfo.feed">
+                        <div class="activity-wrapper" ng-if="f.activity_type == 'battle'">
+                            <div class="activity-header">
+                                <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
+                                    <img src="{{f.activity_host_info.avatar_link}}" alt="">
+                                </div>
+                                <div class="activity-header-txt">
+                                    <div class="activity-header-txt-top-section">
+                                        <div class="host-username">{{f.activity_host_info.username}}</div>
+                                        <div class="activity-date">{{f.activity_date}}</div>
+                                    </div>
+                                    <div class="activity-title">{{f.activity_title}}</div>
+                                    <div class="activity-type"> ({{f.activity_category}} / {{f.activity_type}})</div>
+                                </div>
+                            </div>
+                            <div class="activity-body">
+                                <div class="contestant-section" ng-repeat="con in f.contestants_info">
+                                    <div class="section-badge">
+                                        <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
+                                            <img src="{{con.avatar_link}}" alt="">
+                                        </div>
+                                        <div class="section-username">{{con.contestant_username}}</div>
+                                    </div><div ng-click="playvideo(con.video_link)" class="section-thumbnail-and-ratings">
+                                        <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                            <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                            <img src="{{con.thumbnail_link}}" alt="">
+                                        </div><div class="section-ratings">
+                                            <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                            <div class="rank">Rank #{{con.rank}}</div>
+                                        </div>
+                                    </div><div class="section-options-button-wrapper">
+                                        <div class="section-options-button"></div>
+                                    </div>
+                                    <div class="vs-divider" ng-show="f.contestants_info.length ==2 && $index ==0"><div>VS</div></div>
+                                </div>
+
+                            </div>
+                            <div class="activity-footer ng-binding">
+                                <div class="activity-description">{{f.activity_description}}</div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
+                            </div>
+                        </div>
+                        <div class="activity-wrapper" ng-if="f.activity_type == 'open challenge'">
+                            <div class="activity-header">
+                                <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
+                                    <img src="{{f.activity_host_info.avatar_link
+}}" alt="">
+                                </div>
+                                <div class="activity-header-txt">
+                                    <div class="activity-header-txt-top-section">
+                                        <div class="host-username">{{f.activity_host_info.username}}</div><div class="activity-date">{{f.activity_date}}</div>
+                                    </div>
+                                    <div class="activity-title">{{f.activity_title}}</div>
+                                    <div class="activity-type"> ({{f.activity_category}} / {{f.activity_type}})</div>
+                                </div>
+                            </div>
+                            <div class="activity-body">
+                                <div class="oc_challenge_wrapper">
+                                    <div class="activity-divider">Challenge</div>
+                                    <div class="contestant-section" ng-repeat="con in f.contestants_info" ng-if="$index == 0">
+                                        <div class="section-badge">
+                                            <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
+                                                <img src="{{con.avatar_link}}" alt="">
+                                            </div><div class="section-username">{{con.contestant_username}}</div>
+                                        </div>
+                                        <div class="section-thumbnail-and-ratings">
+                                            <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                                <div class="play-button" data-vlink="{{con.video_link}}"></div><img src="{{con.thumbnail_link}}" alt="">
+                                            </div>
+                                            <div class="section-ratings">
+                                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                                <div class="rank">Rank #{{con.rank}}</div>
+                                            </div>
+                                        </div><div class="section-options-button-wrapper">
+                                            <div class="section-options-button"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="oc_response_wrapper" ng-show="f.contestants_info.length > 1">
+                                    <div class="activity-divider">Response</div>
+
+                                    <div class="contestant-section" ng-repeat="con in f.contestants_info" ng-if="$index > 0">
+                                        <div class="section-badge">
+                                            <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
+                                                <img src="{{con.avatar_link}}" alt="">
+                                            </div>
+                                            <div class="section-username">{{con.contestant_username}}</div>
+                                        </div><div class="section-thumbnail-and-ratings">
+                                            <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                                <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                                <img src="{{con.thumbnail_link}}" alt="">
+                                            </div><div class="section-ratings">
+                                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                                <div class="rank">Rank #{{con.rank}}</div>
+                                            </div>
+                                        </div><div class="section-options-button-wrapper">
+                                            <div class="section-options-button"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="activity-footer">
+                                <div class="activity-description">{{f.activity_description}}</div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                            </div>
+                        </div>
+                        <div class="activity-wrapper" ng-if="f.activity_type == 'bracket'" >
+                            <div class="activity-header">
+                                <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
+                                    <img src="{{f.activity_host_info.avatar_link}}" alt="">
+                                </div>
+                                <div class="activity-header-txt">
+                                    <div class="activity-header-txt-top-section">
+                                        <div class="host-username">{{f.activity_host_info.username}}</div><div class="activity-date">{{f.activity_date}}</div>
+                                    </div>
+                                    <div class="activity-title">{{f.activity_title}}</div><div class="activity-type"> ({{f.activity_category}} / {{f.activity_type}})</div>
+                                </div>
+                            </div>
+                            <div class="activity-divider">Round {{f.activity_round}}</div><div class="activity-body">
+                                <div ng-repeat="all in f.contestants_info">
+                                    <div class="bracket-section" ng-if="$index % 2 === 0" ng-init="group = f.contestants_info.slice($index, $index + 2)">
+                                        <div class="bracket-section-content-wrapper">
+                                            <div ng-repeat="con in group">
+                                                <div class="bracket-section-content">
+                                                    <div class="bracket-section-avatar-wrapper" ng-click="getprofile(con.contestant_username,true)">
+                                                        <div class="bracket-section-avatar">
+                                                            <img src="{{con.avatar_link}}">
+                                                        </div>
+                                                        <div class="bracket-section-username">{{con.contestant_username}}</div>
+                                                    </div><div class="bracket-section-thumbnail">
+                                                        <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
+                                                        <img src="{{con.thumbnail_link}}" alt="">
+                                                    </div>
+                                                    <div class="bracket-section-ratings">
+                                                        <div class="likes-ratings">
+                                                            <div class="like-button"></div>
+                                                            <div class="like-count">{{con.likes}}</div>
+                                                        </div>
+                                                    </div><div class="bracket-section-options-button-wrapper">
+                                                        <div class="bracket-section-options-button"></div>
+                                                    </div>
+
+
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                        <div class="bracket-section-frame"></div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="activity-footer">
+                                <div class="activity-description">{{f.activity_description}}</div>
+                                {{f | json}}
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                            </div>
+                        </div>
+                        <div class="activity-wrapper" ng-if="f.activity_type == 'performance/exhibition'">
+
+                            <div class="activity-header">
+                                <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
+                                    <img src="{{f.activity_host_info.avatar_link}}" alt="">
+                                </div>
+                                <div class="activity-header-txt">
+                                    <div class="activity-header-txt-top-section">
+                                        <div class="host-username">{{f.activity_host_info.username}}</div>
+                                        <div class="activity-date">{{f.activity_date}}</div>
+                                    </div><div class="activity-title">{{f.activity_title}}</div>
+                                    <div class="activity-type"> ({{f.activity_category}} / {{f.activity_type}})</div>
+                                </div>
+                            </div>
+                            <div class="activity-body" ng-repeat="con in f.contestants_info">
+                                <div class="exhibition-thumbnail">
+                                    <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                    <img src="{{con.thumbnail_link}}">
+                                </div>
+                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                            </div><div class="activity-footer">
+                                <div class="activity-description">{{con.thumbnail_link}}</div>
+                                <div class="activity-options-button"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align:center; margin-top:20px;" ng-if="feed.hasmore"><ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed()">Load more</ons-button></div>
+
+                </div>
+                <div class="demo-content contentwrapper" ng-show="viewuserinfo.mode==4">
+                    <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feedinprogress.length==0">
+                        No Activities to show
+                    </div>
+                    <div ng-repeat="f in viewuserinfo.feedinprogress">
+                        <div class="activity-wrapper" ng-if="f.activity_type == 'battle'">
+                            <div class="activity-header">
+                                <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
+                                    <img src="{{f.activity_host_info.avatar_link}}" alt="">
+                                </div>
+                                <div class="activity-header-txt">
+                                    <div class="activity-header-txt-top-section">
+                                        <div class="host-username">{{f.activity_host_info.username}}</div>
+                                        <div class="activity-date">{{f.activity_date}}</div>
+                                    </div>
+                                    <div class="activity-title">{{f.activity_title}}</div>
+                                    <div class="activity-type"> ({{f.activity_category}} / {{f.activity_type}})</div>
+                                </div>
+                            </div>
+                            <div class="activity-body">
+                                <div class="contestant-section" ng-repeat="con in f.contestants_info">
+                                    <div class="section-badge">
+                                        <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
+                                            <img src="{{con.avatar_link}}" alt="">
+                                        </div>
+                                        <div class="section-username">{{con.contestant_username}}</div>
+                                    </div><div ng-click="playvideo(con.video_link)" class="section-thumbnail-and-ratings">
+                                        <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                            <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                            <img src="{{con.thumbnail_link}}" alt="">
+                                        </div><div class="section-ratings">
+                                            <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                            <div class="rank">Rank #{{con.rank}}</div>
+                                        </div>
+                                    </div><div class="section-options-button-wrapper">
+                                        <div class="section-options-button"></div>
+                                    </div>
+                                    <div class="vs-divider" ng-show="f.contestants_info.length ==2 && $index ==0"><div>VS</div></div>
+                                </div>
+
+                            </div>
+                            <div class="activity-footer ng-binding">
+                                <div class="activity-description">{{f.activity_description}}</div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
+                            </div>
+                        </div>
+                        <div class="activity-wrapper" ng-if="f.activity_type == 'open challenge'">
+                            <div class="activity-header">
+                                <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
+                                    <img src="{{f.activity_host_info.avatar_link
+}}" alt="">
+                                </div>
+                                <div class="activity-header-txt">
+                                    <div class="activity-header-txt-top-section">
+                                        <div class="host-username">{{f.activity_host_info.username}}</div><div class="activity-date">{{f.activity_date}}</div>
+                                    </div>
+                                    <div class="activity-title">{{f.activity_title}}</div>
+                                    <div class="activity-type"> ({{f.activity_category}} / {{f.activity_type}})</div>
+                                </div>
+                            </div>
+                            <div class="activity-body">
+                                <div class="oc_challenge_wrapper">
+                                    <div class="activity-divider">Challenge</div>
+                                    <div class="contestant-section" ng-repeat="con in f.contestants_info" ng-if="$index == 0">
+                                        <div class="section-badge">
+                                            <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
+                                                <img src="{{con.avatar_link}}" alt="">
+                                            </div><div class="section-username">{{con.contestant_username}}</div>
+                                        </div>
+                                        <div class="section-thumbnail-and-ratings">
+                                            <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                                <div class="play-button" data-vlink="{{con.video_link}}"></div><img src="{{con.thumbnail_link}}" alt="">
+                                            </div>
+                                            <div class="section-ratings">
+                                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                                <div class="rank">Rank #{{con.rank}}</div>
+                                            </div>
+                                        </div><div class="section-options-button-wrapper">
+                                            <div class="section-options-button"></div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="oc_response_wrapper" ng-show="f.contestants_info.length > 1">
+                                    <div class="activity-divider">Response</div>
+
+                                    <div class="contestant-section" ng-repeat="con in f.contestants_info" ng-if="$index > 0">
+                                        <div class="section-badge">
+                                            <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
+                                                <img src="{{con.avatar_link}}" alt="">
+                                            </div>
+                                            <div class="section-username">{{con.contestant_username}}</div>
+                                        </div><div class="section-thumbnail-and-ratings">
+                                            <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                                <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                                <img src="{{con.thumbnail_link}}" alt="">
+                                            </div><div class="section-ratings">
+                                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                                <div class="rank">Rank #{{con.rank}}</div>
+                                            </div>
+                                        </div><div class="section-options-button-wrapper">
+                                            <div class="section-options-button"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="activity-footer">
+                                <div class="activity-description">{{f.activity_description}}</div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                            </div>
+                        </div>
+                        <div class="activity-wrapper" ng-if="f.activity_type == 'bracket'">
+                            <div class="activity-header">
+                                <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
+                                    <img src="{{f.activity_host_info.avatar_link}}" alt="">
+                                </div>
+                                <div class="activity-header-txt">
+                                    <div class="activity-header-txt-top-section">
+                                        <div class="host-username">{{f.activity_host_info.username}}</div><div class="activity-date">{{f.activity_date}}</div>
+                                    </div>
+                                    <div class="activity-title">{{f.activity_title}}</div><div class="activity-type"> ({{f.activity_category}} / {{f.activity_type}})</div>
+                                </div>
+                            </div>
+                            <div class="activity-divider">Round {{f.activity_round}}</div><div class="activity-body">
+                                <div ng-repeat="all in f.contestants_info">
+                                    <div class="bracket-section" ng-if="$index % 2 === 0" ng-init="group = f.contestants_info.slice($index, $index + 2)">
+                                        <div class="bracket-section-content-wrapper">
+                                            <div ng-repeat="con in group">
+                                                <div class="bracket-section-content">
+                                                    <div class="bracket-section-avatar-wrapper" ng-click="getprofile(con.contestant_username,true)">
+                                                        <div class="bracket-section-avatar">
+                                                            <img src="{{con.avatar_link}}">
+                                                        </div>
+                                                        <div class="bracket-section-username">{{con.contestant_username}}</div>
+                                                    </div><div class="bracket-section-thumbnail">
+                                                        <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
+                                                        <img src="{{con.thumbnail_link}}" alt="">
+                                                    </div>
+                                                    <div class="bracket-section-ratings">
+                                                        <div class="likes-ratings">
+                                                            <div class="like-button"></div>
+                                                            <div class="like-count">{{con.likes}}</div>
+                                                        </div>
+                                                    </div><div class="bracket-section-options-button-wrapper">
+                                                        <div class="bracket-section-options-button"></div>
+                                                    </div>
+
+
+                                                </div>
+
+
+                                            </div>
+                                        </div>
+                                        <div class="bracket-section-frame"></div>
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="activity-footer">
+                                <div class="activity-description">{{f.activity_description}}</div>
+                                {{f | json}}
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                            </div>
+                        </div>
+                        <div class="activity-wrapper" ng-if="f.activity_type == 'performance/exhibition'">
+
+                            <div class="activity-header">
+                                <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
+                                    <img src="{{f.activity_host_info.avatar_link}}" alt="">
+                                </div>
+                                <div class="activity-header-txt">
+                                    <div class="activity-header-txt-top-section">
+                                        <div class="host-username">{{f.activity_host_info.username}}</div>
+                                        <div class="activity-date">{{f.activity_date}}</div>
+                                    </div><div class="activity-title">{{f.activity_title}}</div>
+                                    <div class="activity-type"> ({{f.activity_category}} / {{f.activity_type}})</div>
+                                </div>
+                            </div>
+                            <div class="activity-body" ng-repeat="con in f.contestants_info">
+                                <div class="exhibition-thumbnail">
+                                    <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                    <img src="{{con.thumbnail_link}}">
+                                </div>
+                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                            </div><div class="activity-footer">
+                                <div class="activity-description">{{con.thumbnail_link}}</div>
+                                <div class="activity-options-button"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="text-align:center; margin-top:20px;" ng-if="feed.hasmore"><ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed()">Load more</ons-button></div>
+
+                </div>
             </ons-page>
         </ons-template>
 
@@ -825,42 +1197,41 @@
                 <div class="contentwrapper">
                     <ons-row>
                         <ons-col>
-
                             <div style="text-align: center; padding: 10px 0;">
                                 <input type="text" class="text-input--underbar" required style="width:95%"
-                                       placeholder="Fullname" ng-model="ProfileForm.Fullname" value="">
+                                       placeholder="Fullname" ng-model="bd.userinfo.profilesettings.fullname" value="">
                             </div>
                             <div style="text-align: center; padding: 10px 0;">
                                 <input type="text" class="text-input--underbar" required style="width:95%"
-                                       placeholder="City" ng-model="ProfileForm.City" value="">
+                                       placeholder="City" ng-model="bd.userinfo.profilesettings.city" value="">
                             </div>
                             <div style="text-align: center; padding: 10px 0;">
                                 <input type="text" class="text-input--underbar" required style="width:95%"
-                                       placeholder="State" ng-model="ProfileForm.State" value="">
+                                       placeholder="State" ng-model="bd.userinfo.profilesettings.state" value="">
                             </div>
                             <div style="text-align: center; padding: 10px 0;">
                                 <input type="text" class="text-input--underbar" required style="width:95%"
-                                       placeholder="Country" ng-model="ProfileForm.Country" value="">
+                                       placeholder="Country" ng-model="bd.userinfo.profilesettings.country" value="">
                             </div>
 
 
                             <div style="text-align: center; padding: 10px 0;">
 
                                 <textarea class="text-input" required style="width:95%;height:70px;"
-                                          placeholder="Hobbies" ng-model="ProfileForm.Hobbies" value=""></textarea>
+                                          placeholder="Hobbies" ng-model="bd.userinfo.profilesettings.hobbies" value=""></textarea>
                             </div>
                             <div style="text-align: center; padding: 10px 0;">
 
                                 <textarea class="text-input" required style="width:95%;height:70px;"
-                                          placeholder="About" ng-model="ProfileForm.About" value=""></textarea>
+                                          placeholder="About" ng-model="bd.userinfo.profilesettings.about" value=""></textarea>
                             </div>
 
                             <div style="text-align: center; padding: 10px 0;">
                                 <input type="text" class="text-input" required style="width:95%"
-                                       placeholder="Links" ng-model="ProfileForm.Website" value="">
+                                       placeholder="Links" ng-model="bd.userinfo.profilesettings.links" value="">
                             </div>
                             <div style="text-align: center; padding: 10px 0;">
-                                <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="bd.addprofile()">
+                                <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="bd.saveprofile()">
                                     Save Profile
                                 </ons-botton>
                             </div>
@@ -879,11 +1250,11 @@
                     <ons-row>
                         <ons-col>
                             <div style="text-align: center; padding: 10px 0;">
-                                <span required style="width:95%" ng-model="viewuserinfo.Username" value="">
+                                <span required style="width:95%" ng-model="bd.userinfo.accountsettings.username" value="">
                                 </span>
                             </div>
                             <div class="ng-hide" style="text-align: center; padding: 10px 0;">
-                                <span required style="width:95%" ng-model="viewuserinfo.Username" value=""></span>
+                                <span required style="width:95%" ng-model="bd.userinfo.profilesettings.email" value=""></span>
                             </div>
 
                         </ons-col>
@@ -934,7 +1305,7 @@
 
                                     <ons-list-item modifier="tappable">
                                         <label class="radio-button radio-button--list-item">
-                                            <input type="radio" name="a" checked="checked">
+                                            <input type="radio" name="a" checked="checked" value="anyone" ng-model="bd.userinfo.accountsettings.join_audience_settings">
                                             <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
                                             Anyone
                                         </label>
@@ -942,7 +1313,7 @@
 
                                     <ons-list-item modifier="tappable">
                                         <label class="radio-button radio-button--list-item">
-                                            <input type="radio" name="a">
+                                            <input type="radio" name="a" value="approved" ng-model="bd.userinfo.accountsettings.join_audience_settings">
                                             <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
                                             Only if approved
                                         </label>
@@ -1002,15 +1373,15 @@
                 <ons-row>
                     <ons-col>
 
-                        <ons-list modifier="inset" >
+                        <ons-list modifier="inset"  class="useractivitylist">
                             <ons-list-header>Invitations</ons-list-header>
-                            <ons-list-item ng-click="bd.getsingleactivity(28,'Test Activity')" class="timeline-li" 
-                                           modifier="tappable" ng-repeat="user in myaudience">
+                            <ons-list-item ng-click="bd.getsingleactivity(28,'Invitation')" class="timeline-li" 
+                                           modifier="tappable" ng-repeat="n in notifications">
                                 <div style="float:left; width:100%; max-width:95%;">
-                                    <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+                                    <div style="width:40%;float:left">  <img src="{{n.from.Avatar_link}}" class="avatar"></div>
                                     <div style="max-width:60%;float:left">
-                                        {{user.Fullname}} would like you to take part in an activity: <b>Test</b><br />
-                                        <span class="subtext"> {{user.Username}}</span>
+                                        {{n.from.Fullname}} would like you to take part in an activity: <b>Test</b><br />
+                                        <span class="subtext"> {{n.from.Username}}</span>
                                     </div>
                                 </div>
                             </ons-list-item>
@@ -1022,10 +1393,84 @@
             </ons-page>
         </ons-template>
 
+        <ons-template id="Messages.html">
+        <ons-page>
+            <div class="headergap"></div>
+            <ons-row>
+                <ons-col>
+                    <ons-list modifier="inset" class="useractivitylist">
+                        <ons-list-header>Messages</ons-list-header>
+                        <ons-list-item  class="timeline-li" ng-click="getconversation(m.conversation_id)"
+                                       modifier="tappable" ng-repeat="m in messages">
+                            <div style="float:left; width:100%; max-width:95%;">
+                                <div style="width:40%;float:left">  <img src="{{m.from.Avatar_link}}" class="avatar"></div>
+                                <div style="max-width:60%;float:left">
+                                    {{m.from.Fullname}} {{m.from.text}}<br />
+                                    <span class="subtext"> {{m.from.Username}}</span>
+                                </div>
+                            </div>
+                        </ons-list-item>
+
+                    </ons-list>
+
+                </ons-col>
+            </ons-row>
+        </ons-page>
+    </ons-template>
+
+        <ons-template id="Conversation.html">
+        <ons-page>
+            <div class="headergap"></div>
+            <ons-row>
+                <ons-col>
+                    <ons-list modifier="inset" class="useractivitylist">
+                        <ons-list-header>Conversation with {{CurrentConversation.from.Fullname}}</ons-list-header>
+                        <ons-list-item class="timeline-li"
+                                       modifier="tappable" ng-repeat="m in CurrentConversation.messages">
+                            <div style="float:left; width:100%; max-width:95%;">
+                                <div style="width:40%;float:left"> {{m.from.Fullname}}:</div>
+                                <div style="max-width:60%;float:left">
+                                     {{m.text}}
+                                </div>
+                            </div>
+                        </ons-list-item>
+
+
+                    </ons-list>
+
+
+                </ons-col>
+            </ons-row>
+
+            <div class="comment-input-wrapper">
+                <ons-row>
+                    <ons-col class="smallcolumn">
+                        <div class="comment-input-avatar comment-avatar">
+                            <img class="avatar" src="{{bd.userinfo.Avatar_link}}">
+                        </div>
+                    </ons-col>
+                    <ons-col style="max-width:70%;">
+                        <textarea data-id="5" ng-model="newmessage.text" class="comment-input" placeholder="reply..."></textarea>
+                    </ons-col>
+                </ons-row>
+                <div>
+
+                </div>
+                <div style="width:60%;" class="comment-text-input">
+
+                </div>
+                <div style="margin-left:60px;"><button class="btnsmall button button--material btnsecond" ng-click="sendreply()">reply</button></div>
+            </div>
+
+        </ons-page>
+    </ons-template>
+
         <ons-template id="SingleActivity.html">
             <ons-page>
                 <div class="headergap"></div>
-                <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'battle'" >
+                <div class="demo-content contentwrapper">
+
+                    <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'battle'">
                         <div class="activity-header">
                             <div class="activity-host-avatar" ng-click="getprofile(showsingleactivity.activity_host_info.username,true)">
                                 <img src="{{showsingleactivity.activity_host_info.avatar_link}}" alt="">
@@ -1046,7 +1491,7 @@
                                         <img src="{{con.avatar_link}}" alt="">
                                     </div>
                                     <div class="section-username">{{con.contestant_username}}</div>
-                                </div><div ng-click="playvideo(con.video_link)" class="section-thumbnail-and-ratings">
+                                </div><div ng-show="!showsingleactivity.isinvitation" ng-click="playvideo(con.video_link)" class="section-thumbnail-and-ratings">
                                     <div class="section-thumbnail" data-video-link="{{con.video_link}}">
                                         <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                         <img src="{{con.thumbnail_link}}" alt="">
@@ -1066,7 +1511,7 @@
                             <div class="activity-options-button" ng-click="bd.expandfeed(showsingleactivity.activity_id);"></div>
                         </div>
                     </div>
-                <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'open challenge'" >
+                    <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'open challenge'">
                         <div class="activity-header">
                             <div class="activity-host-avatar" ng-click="getprofile(showsingleactivity.activity_host_info.username,true)">
                                 <img src="{{showsingleactivity.activity_host_info.avatar_link
@@ -1090,7 +1535,7 @@
                                         </div><div class="section-username">{{con.contestant_username}}</div>
                                     </div>
                                     <div class="section-thumbnail-and-ratings">
-                                        <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                        <div  ng-show="!showsingleactivity.isinvitation" class="section-thumbnail" data-video-link="{{con.video_link}}">
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div><img src="{{con.thumbnail_link}}" alt="">
                                         </div>
                                         <div class="section-ratings">
@@ -1112,7 +1557,7 @@
                                             <img src="{{con.avatar_link}}" alt="">
                                         </div>
                                         <div class="section-username">{{con.contestant_username}}</div>
-                                    </div><div class="section-thumbnail-and-ratings">
+                                    </div><div  ng-show="!showsingleactivity.isinvitation" class="section-thumbnail-and-ratings">
                                         <div class="section-thumbnail" data-video-link="{{con.video_link}}">
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                             <img src="{{con.thumbnail_link}}" alt="">
@@ -1131,7 +1576,7 @@
                             <div class="activity-options-button" ng-click="bd.expandfeed(showsingleactivity.id);"></div>
                         </div>
                     </div>
-                <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'bracket'" >
+                    <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'bracket'">
                         <div class="activity-header">
                             <div class="activity-host-avatar" ng-click="getprofile(showsingleactivity.activity_host_info.username,true)">
                                 <img src="{{showsingleactivity.activity_host_info.avatar_link}}" alt="">
@@ -1154,7 +1599,7 @@
                                                         <img src="{{con.avatar_link}}">
                                                     </div>
                                                     <div class="bracket-section-username">{{con.contestant_username}}</div>
-                                                </div><div class="bracket-section-thumbnail">
+                                                </div><div  ng-show="!showsingleactivity.isinvitation" class="bracket-section-thumbnail">
                                                     <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
                                                     <img src="{{con.thumbnail_link}}" alt="">
                                                 </div>
@@ -1186,7 +1631,7 @@
                             <div class="activity-options-button" ng-click="bd.expandfeed(showsingleactivity.id);"></div>
                         </div>
                     </div>
-                <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'performance/exhibition'" >
+                    <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'performance/exhibition'">
 
                         <div class="activity-header">
                             <div class="activity-host-avatar" ng-click="getprofile(showsingleactivity.activity_host_info.username,true)">
@@ -1201,7 +1646,7 @@
                             </div>
                         </div>
                         <div class="activity-body" ng-repeat="con in f.contestants_info">
-                            <div class="exhibition-thumbnail">
+                            <div  ng-show="!showsingleactivity.isinvitation" class="exhibition-thumbnail">
                                 <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                 <img src="{{con.thumbnail_link}}">
                             </div>
@@ -1211,26 +1656,26 @@
                             <div class="activity-options-button"></div>
                         </div>
                     </div>
+</div>
+                    <div class="tab-bar">
+                        <label class="tab-bar__item btnaccept">
+                            <input type="radio" name="tab-bar-a">
+                            <button class="tab-bar__button">
+                                <i class="tab-bar__icon fa fa-check"></i>
+                                <div class="tab-bar__label">Accept</div>
+                            </button>
+                        </label>
 
-                <div class="tab-bar">
-                    <label class="tab-bar__item">
-                        <input type="radio" name="tab-bar-a" checked="checked">
-                        <button class="tab-bar__button">
-                            <i class="tab-bar__icon fa-correct"></i>
-                            <div class="tab-bar__label">Accept</div>
-                        </button>
-                    </label>
+                        <label class="tab-bar__item btndecline">
+                            <input type="radio" name="tab-bar-a">
+                            <button class="tab-bar__button">
+                                <i class="tab-bar__icon fa fa-times"></i>
+                                <div class="tab-bar__label">Decline</div>
+                            </button>
+                        </label>
 
-                    <label class="tab-bar__item">
-                        <input type="radio" name="tab-bar-a">
-                        <button class="tab-bar__button">
-                            <i class="tab-bar__icon fa-times"></i>
-                            <div class="tab-bar__label">Decline</div>
-                        </button>
-                    </label>
-
-                </div>
-            </ons-page>
+                    </div>
+</ons-page>
         </ons-template>
 
         <ons-template id="ForgotPassword.html">
@@ -1270,7 +1715,7 @@
                             <br />
                             <br /><span style="opacity:0.4">search for people or activities</span>
                         </div>
-                        <div style="text-align:center">
+                        <div style="text-align:center" ng-show ="searchquery.q.toString().length >0">
                             <div class="main-search-content-wrapper">
                                 <div ng-show="searchresult.people.length >0">
                                     <div class="main-search-divider">People</div>
@@ -1332,7 +1777,7 @@
 
                     <ons-list-item modifier="tappable" ng-repeat="option in cats">
                         <label class="radio-button radio-button--list-item">
-                            <input type="radio" name="a" ng-model="NewActivity.cat" value="{{ option }}" ng-click="popover.hide($event)">
+                            <input type="radio" name="a" ng-model="NewActivity.category" value="{{ option }}" ng-click="popover.hide($event)">
                             <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
                             {{ option }}
                         </label>
@@ -1452,6 +1897,7 @@
         <ons-template id="NewActivity.html">
             <ons-page>
                 <div class="headergap"></div>
+
                 <div class="profilewrapper">
                     <ons-row>
                         <ons-col>
@@ -1474,26 +1920,6 @@
                                 <div class="profile-desc">{{viewuserinfo.about}}</div>
 
                             </div>
-
-                            <ons-list>
-                                <ons-list-item>
-                                    <ons-row>
-                                        <ons-col class="info-col" ng-click="getaudience(viewuserinfo.Username)">
-                                            <div class="info-num"></div>
-                                            <div class="info-unit">Audience</div>
-                                        </ons-col>
-                                        <ons-col class="info-col" ng-click="bd.getactivitylog(viewuserinfo.Username,'Activity Log')">
-                                            <div class="info-num"></div>
-                                            <div class="info-unit">Activities</div>
-                                        </ons-col>
-                                        <ons-col class="info-col" ng-click="bd.getactivityinprogress(viewuserinfo.Username,'Activity In Progress')">
-                                            <div class="info-num"></div>
-                                            <div class="info-unit">In progress</div>
-                                        </ons-col>
-                                    </ons-row>
-
-                                </ons-list-item>
-                            </ons-list>
 
                         </ons-col>
                     </ons-row>
@@ -1526,108 +1952,119 @@
                         </button>
                     </label>
                 </div>
-                <div class="demo-content contentwrapper">
-                    <div ng-show="NewActivity.type!=''">
-                        <div class="error" ng-if="newactivityvalidation.status==false">{{newactivityvalidation.reason}}</div>
-                        <div style="text-align: center; padding: 10px 0;">
-                            <input type="text" class="text-input" required style="width:95%"
-                                   placeholder="Title" ng-model="NewActivity.title" value="">
-                        </div>
-
-                        <div style="text-align: center; padding: 10px 0;">
-
-                            <textarea class="text-input" required style="width:95%;height:70px;"
-                                      placeholder="Description" ng-model="NewActivity.desc" value=""></textarea>
-                        </div>
-                        <div style="text-align: center; padding: 10px 0;">
-                            <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="popover.show($event)">
-                                <div style="float:left"> {{NewActivity.cat}}</div><div style="float:right"> <ons-icon icon="fa-arrow-down"></ons-icon></div>
-                            </ons-botton>
-                        </div>
-                        <div style="text-align: center; padding: 10px 0;">
-                            <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="popovervisibility.show($event)">
-                                <div style="float:left"> {{NewActivity.visibility}} </div>
-                                <div style="float:right"><ons-icon icon="fa-arrow-down"></ons-icon></div>
-                            </ons-botton>
-                        </div>
+                <div class="demo-content contentwrapper" ng-show="(NewActivity.type =='challenge' || NewActivity.type == 'exhibition') && isuploading && uploadcreateactivity">
+                    There is an activity upload in progress, please come back later
                     </div>
-                    <div ng-show="NewActivity.type=='challenge'">
-
-
-
-                    </div>
-                    <div ng-show="NewActivity.type=='battle'">
-                        <div style="text-align: center; padding: 10px 0;">
-                            <input type="hidden" id="drpselectusers" tabindex="1" class="select2">
-                            <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="bd.popselectuser($event,$parent.$index,$index)">
-                                <div ng-if="NewActivity.battleusers.length > 0" style="float:left;">
-                                    <div>
-
-                                        <ons-icon size="18" icon="fa-group"></ons-icon>{{NewActivity.battleusers.length + ' ' }} Contestants Selected
-                                    </div>
-                                </div>
-                                <div style="float:left;" ng-if="NewActivity.battleusers.length == 0"> Select Contestants</div>
-                                <div style="float:right;"> <ons-icon icon="fa-arrow-down"></ons-icon></div>
-                            </ons-botton>
-                        </div>
-
-
-                    </div>
-                    <div ng-show="NewActivity.type=='bracket'">
-
-                        <div style="text-align: center; padding: 10px 0;">
+                    <div class="demo-content contentwrapper" ng-hide="(NewActivity.type =='challenge'  || NewActivity.type == 'exhibition') && isuploading && uploadcreateactivity">
+                        <div ng-show="NewActivity.type!=''">
+                            <div class="error" ng-if="newactivityvalidation.status==false">{{newactivityvalidation.reason}}</div>
                             <div style="text-align: center; padding: 10px 0;">
-                                <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="popoverbranchlength.show($event)">
-                                    <div style="float:left;">Number of Contestants: {{NewActivity.branchlength}} </div>
-                                    <div style="float:right;"><ons-icon icon="fa-arrow-down"></ons-icon></div>
+                                <input type="text" class="text-input" required style="width:95%"
+                                       placeholder="Title" ng-model="NewActivity.title" value="">
+                            </div>
+
+                            <div style="text-align: center; padding: 10px 0;">
+
+                                <textarea class="text-input" required style="width:95%;height:70px;"
+                                          placeholder="Description" ng-model="NewActivity.description" value=""></textarea>
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="popover.show($event)">
+                                    <div style="float:left"> {{NewActivity.category}}</div><div style="float:right"> <ons-icon icon="fa-arrow-down"></ons-icon></div>
                                 </ons-botton>
                             </div>
-                            <div>
-                                <div ng-repeat="b in NewActivity.branches">
-                                    <div>Branch {{b.branchindex + 1}}</div>
-                                    <div ng-repeat="u in b.users">
-                                        <ons-botton class="button button--material btnsecond btnwide" modified="small"
-                                                    ng-click="bd.popselectuser($event,$parent.$index,$index)">
-                                            <div style="max-height:30px;float:left;width:70%" class="userlist">
-                                                <div ng-if="u.Username.length > 0" style="width:100%;float:left;">
-                                                    <div style="width:25%;float:left">
-                                                        <img src="{{u.Avatar_link}}" class="avatar">
-                                                    </div>
-                                                    <div style="width:60%;float:left">
-                                                        {{u.Fullname}}
+                            <div style="text-align: center; padding: 10px 0;">
+                                <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="popovervisibility.show($event)">
+                                    <div style="float:left"> {{NewActivity.visibility}} </div>
+                                    <div style="float:right"><ons-icon icon="fa-arrow-down"></ons-icon></div>
+                                </ons-botton>
+                            </div>
+                        </div>
+                        <div ng-show="NewActivity.type=='challenge' || NewActivity.type == 'exhibition' ">
+
+                            <div class="container" ng-show="!isuploading" style="text-align: center; padding: 10px 0;">
+                                <input ng-show="!file" type="file" id="file_input" onchange="angular.element(this).scope().setFiles(this, false,false)" />
+                                <button ng-show="file && uploadbutton" class="button btnsmall" ng-click="bd.initupload()">Upload {{file}}</button>
+                                <button ng-show="file && !uploadbutton" class="button btnsmall">{{file}}</button>
+                            </div>
+                            <div class="container" ng-show="isuploading">
+                                There is an upload in progress please come back later.
+                            </div>
+
+                        </div>
+                        <div ng-show="NewActivity.type=='battle'">
+                            <div style="text-align: center; padding: 10px 0;">
+                                <input type="hidden" id="drpselectusers" tabindex="1" class="select2">
+                                <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="bd.popselectuser($event,$parent.$index,$index)">
+                                    <div ng-if="NewActivity.contestants.length > 0" style="float:left;">
+                                        <div>
+
+                                            <ons-icon size="18" icon="fa-group"></ons-icon>{{NewActivity.contestants.length + ' ' }} Contestants Selected
+                                        </div>
+                                    </div>
+                                    <div style="float:left;" ng-if="NewActivity.contestants.length == 0"> Select Contestants</div>
+                                    <div style="float:right;"> <ons-icon icon="fa-arrow-down"></ons-icon></div>
+                                </ons-botton>
+                            </div>
+
+
+                        </div>
+                        <div ng-show="NewActivity.type=='bracket'">
+
+                            <div style="text-align: center; padding: 10px 0;">
+                                <div style="text-align: center; padding: 10px 0;">
+                                    <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="popoverbranchlength.show($event)">
+                                        <div style="float:left;">Number of Contestants: {{NewActivity.branchlength}} </div>
+                                        <div style="float:right;"><ons-icon icon="fa-arrow-down"></ons-icon></div>
+                                    </ons-botton>
+                                </div>
+                                <div>
+                                    <div ng-repeat="b in NewActivity.branches">
+                                        <div>Branch {{b.branch_no}}</div>
+                                        <div ng-repeat="u in b.contestants">
+                                            <ons-botton class="button button--material btnsecond btnwide" modified="small"
+                                                        ng-click="bd.popselectuser($event,$parent.$index,$index)">
+                                                <div style="max-height:30px;float:left;width:70%" class="userlist">
+                                                    <div ng-if="u.Username.length > 0" style="width:100%;float:left;">
+                                                        <div style="width:25%;float:left">
+                                                            <img src="{{u.Avatar_link}}" class="avatar">
+                                                        </div>
+                                                        <div style="width:60%;float:left">
+                                                            {{u.Fullname}}
+                                                        </div>
                                                     </div>
                                                 </div>
-                                            </div>
-                                            <div ng-if="u.Username.length == 0" style="float:left;">
-                                                Select User
-                                            </div>
-                                            <div style="float:right;"><ons-icon icon="fa-arrow-down"></ons-icon></div>
-                                        </ons-botton>
+                                                <div ng-if="u.Username.length == 0" style="float:left;">
+                                                    Select User
+                                                </div>
+                                                <div style="float:right;"><ons-icon icon="fa-arrow-down"></ons-icon></div>
+                                            </ons-botton>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
 
-                    </div>
-                    <div ng-show="NewActivity.type!=''">
-                        <div style="text-align: center; padding: 10px 0;">
-                            <ons-botton class="button button--material btnwide " ng-click="bd.addactivity()" modified="small">
-                                Create Activity
-                            </ons-botton>
                         </div>
-                        <div style="text-align: center; padding: 10px 0;">
-                            <ons-botton class="button button--material btnsecond btnwide" modified="small">
-                                Cancel
-                            </ons-botton>
+                        <div ng-show="NewActivity.type!=''">
+                            {{NewActivity.type}}
+                            <div style="text-align: center; padding: 10px 0;">
+                                <ons-botton class="button button--material btnwide " ng-click="bd.addactivity()" modified="small">
+                                    Create Activity
+                                </ons-botton>
+                            </div>
+                            <div style="text-align: center; padding: 10px 0;">
+                                <ons-botton class="button button--material btnsecond btnwide" modified="small">
+                                    Cancel
+                                </ons-botton>
+                            </div>
+                        </div>
+                        <div class="subtext" style="font-size:1.4em;text-align:center;" ng-show="NewActivity.type==''">
+                            Please select activity type.
+
                         </div>
                     </div>
-                    <div class="subtext" style="font-size:1.4em;text-align:center;" ng-show="NewActivity.type==''">
-                        Please select activity type.
 
-                    </div>
-                </div>
-
-            </ons-page>
+</ons-page>
         </ons-template>
 
         <ons-template id="ActivityLog.html">
@@ -1649,6 +2086,35 @@
                 </ons-row>
             </ons-page>
         </ons-template>
+    
+    <ons-bottom-toolbar id="resulttoolbar" class="bottomtoolbar centered"  ng-class="result.css" ng-if="result.id !=0">
+        <ons-row class="centered">
+            <ons-col>
+                <ons-icon icon="{{result.id == 1 ? 'fa-check' : 'fa-times'}}"></ons-icon>
+                <div style="display: inline-block;">
+                    {{result.msg}}
+                    <button class="button btnxsmall" ng-click="confirmresult()">Ok</button>
+                </div>
 
+            </ons-col>
+        </ons-row>
+    </ons-bottom-toolbar>
+
+
+    <ons-bottom-toolbar id="uploadtoolbar" class="bottomtoolbar centered" ng-if="isuploading !=0" ng-class="isuploading == 2? 'successtoolbar' : ''">
+        <ons-row>
+        <ons-col >
+            <ons-icon icon="fa-upload"></ons-icon> 
+                <div style="display: inline-block;"> 
+                    {{isuploading ==1 ? 'Uploads are in progress.' :''}}
+                    {{isuploading ==-1 ? 'Uploads failed.' :''}}
+                    {{isuploading ==2 ? 'Uploads Completed successfuly.' : ''}}
+                    <button class="button btnxsmall" ng-click="confirmupload()">{{isuploading ==1 ? 'Cancel' :  'Ok'}}</button>   
+                </div>
+                
+            </ons-col>
+        </ons-row>
+    </ons-bottom-toolbar>
+    
 </body>
 </html> 
