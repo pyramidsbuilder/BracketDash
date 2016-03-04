@@ -2,6 +2,7 @@
 angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
     .controller('BracketDashController', function ($scope, $rootScope, $filter, $sce) {
         $scope.feed = {};
+        $scope.feedlimit = 10;
         $scope.bio = {};
         $scope.NewActivity = {
             type: '', title: '', description: '', round: 1, category: 'Entertainment', visibility: 'public',
@@ -38,9 +39,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         $scope.isuploading = 0;
         $scope.result = { id: 0, msg: '', css:'' };
 
-        $scope.ProfileForm = { Fullname: $scope.viewuserinfo.Fullname, City: '', State: '', Country: '', Hobbies: '', About: '', Website: '' };
-        $scope.AccountSettingsForm = { Current_password: '', New_password: '', Confirm_password: '' };
-        $scope.PrivacyForm = { Public_audience: true };
         $scope.isloading = false;
         $scope.isplaying = '';
 
@@ -349,10 +347,37 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             }
             else {
                 self.feedexpand = id;
-                $scope.currentfeed = $filter('filter')($scope.feed, { activity_id: id })[0];
+                $scope.currentfeed = $filter('filter')($scope.feed.obj, { activity_id: id })[0];
 
                 $scope.commentdialog.show();
                 $scope.currentfeed.mode = 1;
+                $.ajax({
+                    url: "http://www.bracketdash.com/api/api.php",
+                    type: 'POST',
+                    data: {action:'output_comments', activity_id: id,limit: 10},
+                    crossDomain: true,
+                    success: function (data) {
+                        alert(data);
+
+                        console.log(data);
+                        var obj = JSON.parse(data);
+                        console.log(obj);
+                        if (obj.request_status == 'success') {
+                            $scope.currentfeed.comments = obj;
+                            angular.extend($scope.currentfeed.comments, obj);
+                            alert('');
+
+                        } else if (obj.request_status == 'invalid_password') {
+                            alert("Invalid password");
+                        } else if (obj.request_status == 'invalid_email') {
+                            alert("Invalid email address");
+                        }
+
+                    },
+                    error: function (jqXHR, textStatus, errorThrown) {
+                        alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
+                    }
+                });
             }
         }
 
@@ -398,8 +423,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 success: function (data) {
                     var json_obj = JSON.parse(data);
 
+                    self.getsettings();
                     self.userinfo = json_obj;
                     angular.extend(self.userinfo, json_obj);
+
                     //self.getbio(null);
 
                 }
@@ -540,26 +567,27 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             }
 
         }
-        self.getfeed = function (action, title) {
+        self.getfeed = function (action, title, limit) {
             try {
-
+                if (!limit)
+                    limit = 10;
                 $scope.isloading = true;
                 var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
                 var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
                 $.ajax({
                     type: 'GET',
                     url: "http://www.bracketdash.com/api/api.php",
-                    data: { action: action, limit: 10 },
+                    data: { action: action, limit: limit },
                     crossDomain: true,
                     success: function (data) {
-
+                        $scope.feedlimit = limit;
                         console.log(data);
                         var json_obj = JSON.parse(data);
                         console.log(json_obj);
                         var obj = json_obj.obj;
                         console.log(obj);
-                        $scope.feed = json_obj.obj;
-                        angular.extend($scope.feed, json_obj.obj);
+                        $scope.feed = json_obj;
+                        angular.extend($scope.feed, json_obj);
                         $scope.feed.hasmore = true;
                         self.setMainPage('page1.html', { closeMenu: true }, title);
                         $scope.isloading = false;
@@ -641,7 +669,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             $.ajax({
                 type: 'GET',
                 url: "http://www.bracketdash.com/api/api.php",
-
                 data: data,
                 crossDomain: true,
                 success: function (data) {
@@ -650,7 +677,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     $scope.viewuserinfo.feedinprogress = json_obj.obj;
                     angular.extend($scope.feedinprogress, json_obj.obj);
                     if (navigate)
-                        self.setMainPage('BioContent.html', { closeMenu: true }, title);
+                        self.setMainPage('page1.html', { closeMenu: true }, title);
                     $scope.isloading = false;
                 },
                 error: function (data) {
@@ -706,7 +733,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     var json_obj = JSON.parse(data);
                     $scope.showsingleactivity = json_obj;
                     angular.extend($scope.showsingleactivity, json_obj);
-                    if (title == 'invitation')
+                    alert(title);
+                    if (title == 'Invitation')
                     { $scope.showsingleactivity.isinvitation = true;}
                     self.setMainPage('SingleActivity.html', { closeMenu: true }, title);
                     $scope.isloading = false;
@@ -905,6 +933,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 },
                 success: function (data) {
                     var json_obj = JSON.parse(data);;
+                    console.log(json_obj);
                     var profilesettings = json_obj.profile_settings;
                     var accountsettings = json_obj.account_settings;
                     self.userinfo.profilesettings = profilesettings;
@@ -912,6 +941,11 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                    // alert(JSON.stringify(self.userinfo.profilesettings));
                     self.userinfo.accountsettings = accountsettings;
                     angular.extend(self.userinfo.accountsettings, accountsettings);
+
+
+                    $scope.AccountSettingsForm = { Current_password: '', New_password: '', Confirm_password: '' };
+                    $scope.PrivacyForm = { Public_audience: self.userinfo.accountsettings.privacy_settings };
+
                     $scope.$apply();
 
 
@@ -952,7 +986,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
 
             var data = {
-                action: 'save_profile_settings', profile_settings_updates: self.userinfo.profilesettings,
+                action: 'save_profile_settings', profile_settings_updates: JSON.stringify(self.userinfo.profilesettings),
                 authorization: "Bearer " + access_token
             };
             $.ajax({
@@ -961,11 +995,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-
-                    alert(data);
-                    //console.log(data);
-                    //var obj = JSON.parse(data);
-                    //console.log(obj);
+                    self.getmyprofile();
+                    
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
@@ -995,6 +1026,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             });
             return true;
         }
+
 
 
         self.savecomment = function () {
@@ -1255,8 +1287,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         }
 
         self.likevideo = function (activityid, videoid) {
-            alert(activityid);
-            alert(videoid);
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
 
@@ -1265,14 +1295,20 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 type: 'post',
                 data: {
                     action: 'like', activity_id:activityid ,
-                    video_id: videoid, access_token: access_token
+                    video_id: videoid, authorization: "Bearer " + access_token
                 },
                 crossDomain: true,
                 success: function (data) {
                     console.log(data);
                     var obj = JSON.parse(data);
                     console.log(obj);
-                    alert(data);
+                    
+                    $scope.$apply(function () {
+                        var act = $filter('filter')($scope.feed.obj, { activity_id: activityid })[0];
+                        var con = $filter('filter')(act.contestants_info, { video_id: videoid })[0];
+                        con.likes =  obj.count;
+
+                    });
                 }
             });
             return true;
@@ -1288,9 +1324,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
                     auth: { key: "622e18e0d81111e5b7ff9bc4624f6488" },
                     steps: {
-                        // The first Step resizes the uploaded image(s) to 125x125 pixels.
-                        // The /image/resize robots ignores any files that are not images
-                        // automatically.
                         resize_to_125: {
                             robot: "/image/resize",
                             use: ":original",
@@ -1337,6 +1370,43 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
             var file = $('#file_input').get(0).files[0];
             transloadit.uploadFile(file);
+
+
+            //$('#file_input').transloadit({
+            //    wait: true,
+            //    triggerUploadOnFileSelection: true,
+            //    autoSubmit: false,
+            //    params: {
+            //        auth: { key: "622e18e0d81111e5b7ff9bc4624f6488" },
+            //        steps: {
+            //            resize_to_125: {
+            //                robot: "/image/resize",
+            //                use: ":original",
+            //                width: 125,
+            //                height: 125
+            //            },
+            //            resize_to_75: {
+            //                robot: "/image/resize",
+            //                use: "resize_to_125",
+            //                width: 75,
+            //                height: 75,
+            //                sepia: 80
+            //            }
+            //        }
+            //    },
+            //    onSuccess(assembly) {
+            //        console.log(assembly);
+            //        var url = assembly.results.mp4[0].url;
+            //        var img = assembly.results.resized_thumbs[0].url;
+            //        console.log(url);
+            //        console.log(img);
+            //        var thumb_img = new Image();
+            //        thumb_img.src = img;
+            //        thumb_img.width = 120;
+            //        thumb_img.height = 70;
+            //        //$('.response-thumbnail').html(thumb_img);
+            //    }
+            //});
 
         }
 
