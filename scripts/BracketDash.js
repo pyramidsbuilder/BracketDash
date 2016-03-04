@@ -42,8 +42,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         $scope.isloading = false;
         $scope.isplaying = '';
 
-        $scope.newcomment = '';
-        $scope.newreport = '';
+        $scope.newcomment = {text:''};
+        $scope.newreport = { text: '' };
         $scope.history = [];
 
         var self = this;
@@ -348,39 +348,34 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             else {
                 self.feedexpand = id;
                 $scope.currentfeed = $filter('filter')($scope.feed.obj, { activity_id: id })[0];
+                self.getcomments(id);
 
                 $scope.commentdialog.show();
                 $scope.currentfeed.mode = 1;
-                $.ajax({
-                    url: "http://www.bracketdash.com/api/api.php",
-                    type: 'POST',
-                    data: {action:'output_comments', activity_id: id,limit: 10},
-                    crossDomain: true,
-                    success: function (data) {
-                        alert(data);
-
-                        console.log(data);
-                        var obj = JSON.parse(data);
-                        console.log(obj);
-                        if (obj.request_status == 'success') {
-                            $scope.currentfeed.comments = obj;
-                            angular.extend($scope.currentfeed.comments, obj);
-                            alert('');
-
-                        } else if (obj.request_status == 'invalid_password') {
-                            alert("Invalid password");
-                        } else if (obj.request_status == 'invalid_email') {
-                            alert("Invalid email address");
-                        }
-
-                    },
-                    error: function (jqXHR, textStatus, errorThrown) {
-                        alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
-                    }
-                });
+                
             }
         }
 
+        self.getcomments = function (id) {
+            $.ajax({
+                url: "http://www.bracketdash.com/api/api.php",
+                type: 'Get',
+                data: { action: 'output_comments', activity_id: id, limit: 10 },
+                crossDomain: true,
+                success: function (data) {
+                    console.log(data);
+                    var obj = JSON.parse(data);
+                    console.log(obj);
+                    $scope.currentfeed.comments = obj;
+                    angular.extend($scope.currentfeed.comments, obj);
+                    $scope.$apply();
+
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
+                }
+            });
+        }
         self.showbio = function () {
 
         }
@@ -399,7 +394,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         $scope.viewuserinfo = json_obj;
                         angular.extend($scope.viewuserinfo, json_obj);
                         $scope.isloading = false;
-                        $scope.viewuserinfo.mode = 1;
                         self.getbio(profile_username, navigate);
                         $scope.$apply();
                     },
@@ -426,7 +420,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     self.getsettings();
                     self.userinfo = json_obj;
                     angular.extend(self.userinfo, json_obj);
-
                     //self.getbio(null);
 
                 }
@@ -650,8 +643,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     console.log(json_obj);
                     var obj = json_obj.obj;
                     console.log(obj);
-                    $scope.feed = json_obj.obj;
-                    angular.extend($scope.feed, json_obj.obj);
+                    $scope.feed = json_obj;
+                    angular.extend($scope.feed, json_obj);
                     self.setMainPage('page1.html', { closeMenu: true }, title);
                     $scope.isloading = false;
                 },
@@ -663,6 +656,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
         self.getactivityinprogress = function (username, navigate, title) {
             $scope.isloading = true;
+            alert('');
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             //var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             var data = { action: 'activity_in_progress', profile_username: username, limit: 10, authorization: "Bearer " + access_token };
@@ -674,8 +668,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 success: function (data) {
                     var json_obj = JSON.parse(data);
                     var obj = json_obj.obj;
-                    $scope.viewuserinfo.feedinprogress = json_obj.obj;
-                    angular.extend($scope.feedinprogress, json_obj.obj);
+                    $scope.viewuserinfo.feedinprogress = json_obj;
+                    angular.extend($scope.viewuserinfo.feedinprogress, json_obj);
+                    alert(navigate);
                     if (navigate)
                         self.setMainPage('page1.html', { closeMenu: true }, title);
                     $scope.isloading = false;
@@ -705,7 +700,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     angular.extend($scope.viewuserinfo.feed, json_obj.obj);
                     if (navigate)
                         self.setMainPage('page1.html', { closeMenu: true }, 'Activities');
-                    if (self.userinfo.username == username) {
+                    if (self.userinfo.Username == username) {
                         self.getactivityinprogress(username, false, 'In Progress');
                     }
                     $scope.isloading = false;
@@ -1029,10 +1024,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
 
 
-        self.savecomment = function () {
-            if (self.loginemail.length == 0 || self.loginpassword.length == 0)
-            { return; }
-            var data = { "action": "savecomment", "text": $scope.newcomment, "id": $scope.currentfeed.activity_id };
+        $scope.savecomment = function () {
+            var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
+            var data = { "action": "input_comment", "comment": $scope.newcomment.text, "activity_id": $scope.currentfeed.activity_id, authorization: "Bearer " + access_token };
             $.ajax({
                 url: "http://www.bracketdash.com/api/api.php",
                 type: 'POST',
@@ -1042,15 +1036,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     console.log(data);
                     var obj = JSON.parse(data);
                     console.log(obj);
-                    if (obj.request_status == 'success') {
-                        var access_token = obj.response.access_token;
-                        console.log(access_token);
-                        var exp = obj.response.exp;
-                        console.log(exp);
-                        var username = obj.response.username;
-                        console.log(username);
-                        self.storetoken(access_token, username, exp, login_obj.remember_me);
-                        $('input').not('[type="button"]').val('');
+                    if (obj.status == 'success') {
+                        self.getcomments($scope.currentfeed.activity_id);
                         //doChange('#profile');
                     } else if (obj.request_status == 'invalid_password') {
                         alert("Invalid password");

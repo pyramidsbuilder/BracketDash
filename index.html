@@ -84,7 +84,8 @@
                             <div class="tab-bar__label">Respond</div>
                         </button>
                     </label>
-                        <input type="radio" name="tab-bar-c" ng-if="currentfeed.activity_host_info.username == bd.userinfo.username" ng-model="currentfeed.mode" value="4">
+                    <label ng-if="currentfeed.activity_host_info.username == bd.userinfo.Username">
+                        <input type="radio" name="tab-bar-c"  ng-model="currentfeed.mode" value="4">
                         <button class="tab-bar__button">
                             <div class="tab-bar__label">Delete</div>
                         </button>
@@ -92,16 +93,19 @@
                 </div>
      
                 <ons-scroller style="height: 70%; width: 100%">
+                    
+
                     <div ng-show="currentfeed.mode ==1" ng-attr-id="{{'comments' + currentfeed.activity_id}}">
                         <div class="options-content-wrapper">
                             <div class="comment-input-wrapper">
                                 <ons-row>
                                 <ons-col class="smallcolumn"  ><div class="comment-input-avatar comment-avatar">
-    <img class="avatar" src="{{bd.userinfo.Avatar_link}}">
+    <img class="avatar" src="{{bd.userinfo.Avatar_link
+}}">
 </div>
                                     </ons-col>
                                     <ons-col style="max-width:70%;">
-                                        <textarea data-id="5" ng-model="newcomment" class="comment-input" placeholder="comment..."></textarea>
+                                        <textarea data-id="5" ng-model="newcomment.text" class="comment-input" placeholder="comment..."></textarea>
                                     </ons-col>
                                 </ons-row>
                                 <div >
@@ -117,19 +121,24 @@
                                     <ons-row ng-repeat="comment in currentfeed.comments">
                                         <ons-col class="smallcolumn">
                                         <div class="comment-avatar">
-                                            <img class="avatar" src="https://bracketdash-users.s3.amazonaws.com/default/default-profile-picture.png">
+                                            <img class="avatar" src="{{comment.avatar}}">
+
                                         </div>
+                                            <div >{{comment.username}}</div>
                                     </ons-col> 
-                                    <ons-col>
-                                        <div class="comment-text-wrapper">
-                                            <div class="comment-id">
-                                                <div class="comment-id-username">Jrideout</div>
-                                                <div class="comment-date">5 months ago</div>
-                                                <div class="report-comment" data-comment-id="3">report</div>
+                                        <ons-col style="max-width:50%;">
+                                            <div class="comment-text-wrapper">
+                                                
+                                                <div class="comment-text">{{comment.comment}}</div>
                                             </div>
-                                            <div class="comment-text">Brilliant</div>
-                                        </div>
-                                    </ons-col>
+                                        </ons-col>
+
+                                        <ons-col  class="smallcolumn">
+
+                                            <div class="comment-date subtext">{{comment.date}}</div>
+                                            <div class="report-comment" data-comment-id="3">report</div>
+                                        </ons-col>
+                                        
                                     </ons-row>
                                     
                                 </div>
@@ -545,7 +554,7 @@
                             </div>
                         </div>
                     </div>
-                    <div style="text-align:center; margin-top:20px;" ng-if="feed.status != 'complete'"><ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed(feedlimit+10)">Load more</ons-button></div>
+                    <div style="text-align:center; margin-top:20px;" ng-if="feed.status  && feed.status != 'complete'"><ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed(feedlimit+10)">Load more</ons-button></div>
 
                 </div>
 
@@ -621,6 +630,7 @@
                             </ons-list-item>
 
                         </ons-list>
+
                     </ons-col>
                 </ons-row>
             </ons-page>
@@ -714,7 +724,7 @@
                         </ons-col>
                     </ons-row>
                 </div>
-<div class="demo-content contentwrapper" ng-show="viewuserinfo.mode == 1">
+            <div class="demo-content contentwrapper" ng-show="viewuserinfo.mode == 1">
                     <ons-list style="margin-top: 12px;">
                         <ons-list-item>
                             <div class="prop-desc">
@@ -921,7 +931,6 @@
 
                             <div class="activity-footer">
                                 <div class="activity-description">{{f.activity_description}}</div>
-                                {{f | json}}
                                 <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
                             </div>
                         </div>
@@ -954,7 +963,10 @@
                             </div>
                         </div>
                     </div>
-                    <div style="text-align:center; margin-top:20px;" ng-if="feed.hasmore"><ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed()">Load more</ons-button></div>
+                    <div style="text-align:center; margin-top:20px;" ng-if="viewuserinfo.feedinprogress.status  && viewuserinfo.feedinprogress.status != 'complete'">
+                        <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed(feedlimit+10)">Load more</ons-button>
+                    </div>
+
 
                 </div>
                 <div class="demo-content contentwrapper" ng-show="viewuserinfo.mode==4">
@@ -1149,7 +1161,9 @@
                             </div>
                         </div>
                     </div>
-                    <div style="text-align:center; margin-top:20px;" ng-if="feed.hasmore"><ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed()">Load more</ons-button></div>
+                    <div style="text-align:center; margin-top:20px;" ng-if="viewuserinfo.feed.status  && viewuserinfo.feed.status != 'complete'">
+                    <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed(feedlimit+10)">Load more</ons-button>
+                    </div>
 
                 </div>
             </ons-page>

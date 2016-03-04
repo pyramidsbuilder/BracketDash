@@ -724,7 +724,6 @@ color:#FFF !important;}
 	font-size:12px;
 	}
 .comment-text-input{
-	width:220px;
 	}
 .comment-input{
 	width:100%;
@@ -739,11 +738,9 @@ color:#FFF !important;}
 	font-size:14px;
 	}
 .comment-text-wrapper{
-	width:220px;
 	margin:5px 0px;
 	}
 .comment-text{
-	width:120px;
 	font-size:12px;
 	word-wrap:break-word;
 	}
