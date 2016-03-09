@@ -29,6 +29,7 @@
     <title>BracketDash</title>
 
     <script src="cordova.js"></script>
+    <script type="text/javascript" src="js/filechooser.js"></script>
     <script src="scripts/jquery.js"></script>
     <script src="scripts/BracketDash.js"></script>
     <script src="scripts/index.js"></script>
@@ -60,7 +61,7 @@
     </script>
 
     <script type="text/ons-template" id="dialogcomment.html" >
-        <ons-dialog cancelable>
+        <ons-dialog cancelable ons-prehide="bd.hidecomments(currentfeed.activity_id)">
 
             <div class="commentcontainer" ng-show="currentfeed.activity_id">
                 <div class="tab-bar tab-bar--top">
@@ -84,7 +85,7 @@
                             <div class="tab-bar__label">Respond</div>
                         </button>
                     </label>
-                    <label ng-if="currentfeed.activity_host_info.username == bd.userinfo.Username">
+                    <label  class="tab-bar__item" ng-if="currentfeed.activity_host_info.username == bd.userinfo.Username">
                         <input type="radio" name="tab-bar-c"  ng-model="currentfeed.mode" value="4">
                         <button class="tab-bar__button">
                             <div class="tab-bar__label">Delete</div>
@@ -99,53 +100,50 @@
                         <div class="options-content-wrapper">
                             <div class="comment-input-wrapper">
                                 <ons-row>
-                                <ons-col class="smallcolumn"  ><div class="comment-input-avatar comment-avatar">
+                                <!--<ons-col class="smallcolumn"  ><div class="comment-input-avatar comment-avatar">
     <img class="avatar" src="{{bd.userinfo.Avatar_link
 }}">
 </div>
-                                    </ons-col>
+                                    </ons-col>-->
                                     <ons-col style="max-width:70%;">
                                         <textarea data-id="5" ng-model="newcomment.text" class="comment-input" placeholder="comment..."></textarea>
                                     </ons-col>
+                                    <ons-col class="smallcolumn ">
+                                        <div><button class="btnsmall button button--material btnsecond pull-right" ng-click="savecomment()">Post</button></div>
+                                    </ons-col>
                                 </ons-row>
-                                <div >
-                                   
-                                </div>
-                                <div style="width:60%;" class="comment-text-input">
-                                   
-                                </div>
-                                <div style="margin-left:60px;"><button class="btnsmall button button--material btnsecond"  ng-click="savecomment()">Add comment</button></div>
                             </div>
                             <div class="comment-section-wrapper">
                                 <div class="comment-wrapper">
-                                    <ons-row ng-repeat="comment in currentfeed.comments">
-                                        <ons-col class="smallcolumn">
-                                        <div class="comment-avatar">
-                                            <img class="avatar" src="{{comment.avatar}}">
-
-                                        </div>
-                                            <div >{{comment.username}}</div>
-                                    </ons-col> 
-                                        <ons-col style="max-width:50%;">
-                                            <div class="comment-text-wrapper">
-                                                
-                                                <div class="comment-text">{{comment.comment}}</div>
+                                    <div ng-repeat="comment in currentfeed.comments.obj" style="width:100%">
+                                            <div class="comment-avatar" style="float:left" >
+                                                <img class="avatar" src="{{comment.avatar}}">
                                             </div>
-                                        </ons-col>
 
-                                        <ons-col  class="smallcolumn">
+                                            <div style="float:left">
+                                                <div class="commentoor">
+                                                    <span style="font-size: 10px;">{{comment.username}}</span>
+                                                    <span style="font-size: 10px;" class="comment-date subtext">{{comment.date}}</span>
+                                                </div>
+                                            </div>
+                                            <div style="position:relative;">
 
-                                            <div class="comment-date subtext">{{comment.date}}</div>
-                                            <div class="report-comment" data-comment-id="3">report</div>
-                                        </ons-col>
-                                        
-                                    </ons-row>
-                                    
+                                                <div class="comment-text-wrapper" style="padding-top:15px;">
+                                                    <div class="comment-text">{{comment.comment}}</div>
+                                                </div>
+                                                <div class="report-comment" ng-click="reportcomment(comment.comment_id)" data-comment-id="3"><ons-icon icon="fa-flag"></ons-icon></div>
+                                            </div>
+
+                                            
+                                       
+                                    </div>
+                                    <div style="text-align:center; margin-top:20px;" ng-if="currentfeed.comments.status  && currentfeed.comments.status != 'complete'">
+                                    <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getcomments(currentfeed.activity_id,feedlimit+10)">Load more</ons-button>
+                                    </div>
                                 </div>
-                            </div>
                         </div>
                     </div>
-
+                </div>
                     <div ng-show="currentfeed.mode ==2" ng-attr-id="{{'reports' + currentfeed.activity_id}}">
                         <div class="comment-input-wrapper">
                             <ons-row>
@@ -178,16 +176,9 @@
 
                     </div>
                     <div ng-show="currentfeed.mode ==4" ng-attr-id="{{'reports' + currentfeed.activity_id}}">
-                        <div class="comment-input-wrapper">
-                            <div class="container" ng-show="!isuploading">
-                                <input ng-show="!file" type="file" id="file_input" onchange="angular.element(this).scope().setFiles(this,false,true)" />
-                                <button ng-show="file && uploadbutton" class="button btnsmall" ng-click="bd.initupload()">Upload {{file}}</button>
-                                <button ng-show="file && !uploadbutton" class="button btnsmall">{{file}}</button>
-                            </div>
-                            <div class="container" ng-show="isuploading">
-                                There is an upload in progress please come back later.
-                            </div>
-
+                        <div class="centered">
+                                Are you sure you want to delete '{{currentfeed.title}}'
+                            <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.deleteactivity(currentfeed.activity_id)">Delete</ons-button>
                         </div>
 
                     </div>
@@ -315,7 +306,7 @@
                         Settings
                     </ons-list-item>
                     <ons-list ng-show="bd.settingsexpand" class="menu-list  submenu" style="margin-left:10px">
-                        <ons-list-item class="menu-item" ng-click="bd.getsettings()">
+                        <ons-list-item class="menu-item" ng-click="bd.getsettings(true)">
                             <ons-icon icon="fa-user" size="18px"></ons-icon>
                             Edit Profile
                         </ons-list-item>
@@ -359,7 +350,9 @@
                 <div class="headergap"></div>
                 {{bd.CurrentPage}}
                 <div data-role="content" class="demo-content">
-
+                    <button class="ng-hide" ng-click="popoverfileselect.show($event)" style="width:100px;height:100px">
+                        Tab Here
+                    </button>
          
                     <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="feed.length==0">
                         No Activities to show
@@ -468,7 +461,7 @@
                             </div>
                             <div class="activity-footer">
                                 <div class="activity-description">{{f.activity_description}}</div>
-                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
                             </div>
                         </div>
                         <div class="activity-wrapper" ng-if="f.activity_type == 'bracket'">
@@ -523,7 +516,7 @@
                             <div class="activity-footer">
                                 <div class="activity-description">{{f.activity_description}}</div>
                                 {{f | json}}
-                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
                             </div>
                         </div>
                         <div class="activity-wrapper" ng-if="f.activity_type == 'performance/exhibition'">
@@ -554,7 +547,8 @@
                             </div>
                         </div>
                     </div>
-                    <div style="text-align:center; margin-top:20px;" ng-if="feed.status  && feed.status != 'complete'"><ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed(feedlimit+10)">Load more</ons-button></div>
+                    
+                    <div style="text-align:center; margin-top:20px;" ng-if="feed.status  && feed.status != 'complete'"><ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getfeed('explore', 'Explore',feedlimit+10)">Load more</ons-button></div>
 
                 </div>
 
@@ -877,7 +871,7 @@
                             </div>
                             <div class="activity-footer">
                                 <div class="activity-description">{{f.activity_description}}</div>
-                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
                             </div>
                         </div>
                         <div class="activity-wrapper" ng-if="f.activity_type == 'bracket'" >
@@ -931,7 +925,7 @@
 
                             <div class="activity-footer">
                                 <div class="activity-description">{{f.activity_description}}</div>
-                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
                             </div>
                         </div>
                         <div class="activity-wrapper" ng-if="f.activity_type == 'performance/exhibition'">
@@ -964,7 +958,7 @@
                         </div>
                     </div>
                     <div style="text-align:center; margin-top:20px;" ng-if="viewuserinfo.feedinprogress.status  && viewuserinfo.feedinprogress.status != 'complete'">
-                        <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed(feedlimit+10)">Load more</ons-button>
+                        <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getfeed(feedlimit+10)">Load more</ons-button>
                     </div>
 
 
@@ -1077,7 +1071,7 @@
                             </div>
                             <div class="activity-footer">
                                 <div class="activity-description">{{f.activity_description}}</div>
-                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
                             </div>
                         </div>
                         <div class="activity-wrapper" ng-if="f.activity_type == 'bracket'">
@@ -1131,8 +1125,7 @@
 
                             <div class="activity-footer">
                                 <div class="activity-description">{{f.activity_description}}</div>
-                                {{f | json}}
-                                <div class="activity-options-button" ng-click="bd.expandfeed(f.id);"></div>
+                                <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
                             </div>
                         </div>
                         <div class="activity-wrapper" ng-if="f.activity_type == 'performance/exhibition'">
@@ -1162,7 +1155,7 @@
                         </div>
                     </div>
                     <div style="text-align:center; margin-top:20px;" ng-if="viewuserinfo.feed.status  && viewuserinfo.feed.status != 'complete'">
-                    <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.loadmorefeed(feedlimit+10)">Load more</ons-button>
+                    <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getfeed(feedlimit+10)">Load more</ons-button>
                     </div>
 
                 </div>
@@ -1372,10 +1365,11 @@
                 <ons-row>
                     <ons-col>
                         <div class="login-form">
-                            <input type="email" class="text-input--underbar" ng-model="bd.loginemail" placeholder="Email">
-                            <input type="password" class="text-input--underbar" ng-model="bd.loginpassword" placeholder="Password">
+                            <div class="error" ng-if="newactivityvalidation.status==false">{{newactivityvalidation.reason}}</div>
+                            <input type="email" class="text-input--underbar"  ng-model="loginobj.loginemail" placeholder="Email">
+                            <input type="password" class="text-input--underbar"  ng-model="loginobj.loginpassword" placeholder="Password">
                             <br><br>
-                            <ons-button modifier="large" class="login-button" ng-click="bd.login()">Log In</ons-button>
+                            <ons-button modifier="large"  ng-disabled ="loginvalidation.emailstatus < 1 || loginvalidation.passwordstatus < 1" class="login-button" ng-click="login()">Log In</ons-button>
                             <br><br>
                             <ons-button modifier="quiet" ng-click="bd.setMainPage('ForgotPassword.html', {closeMenu: true},'Forgot Password')" class="forgot-password">Forgot password?</ons-button>
                         </div>
@@ -1389,15 +1383,16 @@
                 <div class="headergap"></div>
                 <ons-row>
                     <ons-col>
-                        {{registerusername}}
-                        <div class="error" ng-if="registervalidation.status==false">{{registervalidation.reason}}</div>
                         <div class="login-form">
-                            <input type="text" class="text-input--underbar txtsignup" ng-model="newuser.registerusername" placeholder="Username">
-                            <input type="email" class="text-input--underbar" ng-model="newuser.registeremail" placeholder="Email">
-                            <input type="password" class="text-input--underbar" ng-model="newuser.registerpassword" placeholder="Select Password">
-                            <input type="password" class="text-input--underbar" ng-model="newuser.registerpasswordconfirm" placeholder="Confirm Password">
+                            <div class="error" ng-if="registervalidation.emailstatus<0 || registervalidation.usernamestatus <0 || registervalidation.passwordstatus <0 || registervalidation.passwordconfirmstatus <0 ">{{registervalidation.reason}}</div>
+                            <input type="text" class="text-input--underbar txtsignup"  ng-model="newuser.registerusername" placeholder="Username">
+                             <ons-icon icon="ion-load-c" class="checkmail"  ng-if="checkingusername"  spin="true"></ons-icon>
+                            <input type="email" class="text-input--underbar"  ng-model="newuser.registeremail" placeholder="Email">
+                            <ons-icon icon="ion-load-c" class="checkmail"  ng-if="checkingemail"  spin="true"></ons-icon>
+                            <input type="password" class="text-input--underbar" ng-blur="validatepassword()"  ng-model="newuser.registerpassword" placeholder="Select Password">
+                            <input type="password" class="text-input--underbar" ng-blur="validatepasswordconfirm()"  ng-model="newuser.registerpasswordconfirm" placeholder="Confirm Password">
                             <br><br>
-                            <ons-button modifier="large" class="login-button" ng-click="register()">Sign Up</ons-button>
+                            <ons-button modifier="large" class="login-button" ng-disabled ="registervalidation.emailstatus<1 || registervalidation.usernamestatus <1 || registervalidation.passwordstatus <1 || registervalidation.passwordconfirmstatus <1" ng-click="register()">Sign Up</ons-button>
                             <br><br>
                         </div>
                     </ons-col>
@@ -1414,17 +1409,20 @@
                         <ons-list modifier="inset"  class="useractivitylist">
                             <ons-list-header>Invitations</ons-list-header>
                             <ons-list-item ng-click="bd.getsingleactivity(28,'Invitation')" class="timeline-li" 
-                                           modifier="tappable" ng-repeat="n in notifications">
+                                           modifier="tappable" ng-repeat="n in notifications.obj">
                                 <div style="float:left; width:100%; max-width:95%;">
-                                    <div style="width:40%;float:left">  <img src="{{n.from.Avatar_link}}" class="avatar"></div>
+                                    <div style="width:40%;float:left">  <img src="{{n.origin_avatar}}" class="avatar"></div>
                                     <div style="max-width:60%;float:left">
-                                        {{n.from.Fullname}} would like you to take part in an activity: <b>Test</b><br />
-                                        <span class="subtext"> {{n.from.Username}}</span>
+                                        {{n.origin_fullname}} would like you to take part in an activity: <b>Test</b><br />
+                                        <span class="subtext"> {{n.origin_username}}</span>
                                     </div>
                                 </div>
                             </ons-list-item>
 
                         </ons-list>
+                        <div style="text-align:center; margin-top:20px;" ng-if="notifications.status  && notifications.status != 'complete'">
+                            <ons-button class="btnsmall button button--material btnsecond" ng-click="getnotifications(notificationlimit+10)">Load more</ons-button>
+                        </div>
 
                     </ons-col>
                 </ons-row>
@@ -1438,17 +1436,19 @@
                 <ons-col>
                     <ons-list modifier="inset" class="useractivitylist">
                         <ons-list-header>Messages</ons-list-header>
-                        <ons-list-item  class="timeline-li" ng-click="getconversation(m.conversation_id)"
-                                       modifier="tappable" ng-repeat="m in messages">
+                        <ons-list-item   class="timeline-li" ng-click="getconversation(m.conversation_id)"
+                                       modifier="tappable" ng-repeat="m in messages.obj">
                             <div style="float:left; width:100%; max-width:95%;">
-                                <div style="width:40%;float:left">  <img src="{{m.from.Avatar_link}}" class="avatar"></div>
+                                <div style="width:40%;float:left">  <img src="{{m.avatar}}" class="avatar"></div>
                                 <div style="max-width:60%;float:left">
-                                    {{m.from.Fullname}} {{m.from.text}}<br />
-                                    <span class="subtext"> {{m.from.Username}}</span>
+                                    {{m.fullname}} {{m.text}}<br />
+                                    <span class="subtext"> {{m.username}}</span>
                                 </div>
                             </div>
                         </ons-list-item>
-
+                        <div style="text-align:center; margin-top:20px;" ng-if="messages.status  && messages.status != 'complete'">
+                            <ons-button class="btnsmall button button--material btnsecond" ng-click="getmessages(messageslimit+10)">Load more</ons-button>
+                        </div>
                     </ons-list>
 
                 </ons-col>
@@ -1462,11 +1462,11 @@
             <ons-row>
                 <ons-col>
                     <ons-list modifier="inset" class="useractivitylist">
-                        <ons-list-header>Conversation with {{CurrentConversation.from.Fullname}}</ons-list-header>
+                        <ons-list-header>Conversation with {{CurrentConversation.with.fullname}} <ons-icon icon="fa-backward" class="pull-right" ng-click="getmessages()"></ons-icon></ons-list-header>
                         <ons-list-item class="timeline-li"
-                                       modifier="tappable" ng-repeat="m in CurrentConversation.messages">
+                                       modifier="tappable" ng-repeat="m in CurrentConversation">
                             <div style="float:left; width:100%; max-width:95%;">
-                                <div style="width:40%;float:left"> {{m.from.Fullname}}:</div>
+                                <div style="width:40%;float:left"> {{m.fullname}}:</div>
                                 <div style="max-width:60%;float:left">
                                      {{m.text}}
                                 </div>
@@ -1499,7 +1499,6 @@
                 </div>
                 <div style="margin-left:60px;"><button class="btnsmall button button--material btnsecond" ng-click="sendreply()">reply</button></div>
             </div>
-
         </ons-page>
     </ons-template>
 
@@ -1668,7 +1667,7 @@
 
                         <div class="activity-footer">
                             <div class="activity-description">{{showsingleactivity.activity_description}}</div>
-                            {{f | json}}
+                            
                             <div class="activity-options-button" ng-click="bd.expandfeed(showsingleactivity.id);"></div>
                         </div>
                     </div>
@@ -1698,9 +1697,11 @@
                             <div class="activity-options-button"></div>
                         </div>
                     </div>
+
+
 </div>
                     <div class="tab-bar">
-                        <label class="tab-bar__item btnaccept">
+                        <label class="tab-bar__item btnaccept" ng-click="invitationrespond(true,'accept',showsingleactivity.activity_id)">
                             <input type="radio" name="tab-bar-a">
                             <button class="tab-bar__button">
                                 <i class="tab-bar__icon fa fa-check"></i>
@@ -1708,7 +1709,7 @@
                             </button>
                         </label>
 
-                        <label class="tab-bar__item btndecline">
+                        <label class="tab-bar__item btndecline"  ng-click="invitationrespond(true,'decline',showsingleactivity.activity_id)">
                             <input type="radio" name="tab-bar-a">
                             <button class="tab-bar__button">
                                 <i class="tab-bar__icon fa fa-times"></i>
@@ -1887,6 +1888,38 @@
             </ons-popover>
         </ons-template>
 
+    
+    <ons-template id="popoverfileselect.html">
+        <ons-popover class="popfileselect" cancelable direction="down" ons-preshow="getroot()" ng-controller="FileController as fc">
+            <!--<button id="btnclosesearchuser" class="close" ng-click="bd.closepopselectuser()"><i class="fa-close"></i></button>-->
+
+            <ons-list>
+
+                <ons-list-header>
+                    <div style="width:80%;display:inline;float:left;">
+                        Select file
+                    </div>
+                </ons-list-header>
+                <ons-list class="userlist" modifier="inset" ng-repeat="file in files">
+                    <ons-list-item  modifier="tappable">
+                        <div >
+                            <a class="item item-icon-left" href="#" ng-click="fc.getContents(file.nativeURL)">
+                                <i ng-show="file.isDirectory" class="icon ion-folder"></i>
+                                <i ng-show="file.isFile" class="icon ion-document"></i>
+                                {{file.name}}
+                            </a>
+                        </div>
+
+                    </ons-list-item>
+                </ons-list>
+
+
+            </ons-list>
+
+        </ons-popover>
+    </ons-template>
+
+    
         <ons-template id="popoveruserlist.html">
             <ons-popover class="popsearchuser" cancelable direction="up">
                 <ons-list>

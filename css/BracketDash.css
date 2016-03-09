@@ -749,6 +749,10 @@ color:#FFF !important;}
 	float:right;
 	cursor:pointer;
 	font-size:12px;
+    opacity:0.4;
+    position:absolute;
+    right:0px;
+    bottom:0px;
 	}
 .reported{
 	color:#293c6b;
@@ -947,6 +951,18 @@ color:#FFF !important;}
     padding: 4px;
 }
 
-.filename {
-    
+.checkmail {
+
+ display: inline;
+    float: right;
+    margin-top: -34px;
+}
+.pull-right {
+float:right;
+}
+.pull-left {
+float:left;
+}
+
+.commentor {position: absolute;top:0px;left:0px;
 }
