@@ -1408,7 +1408,7 @@
 
                         <ons-list modifier="inset"  class="useractivitylist">
                             <ons-list-header>Invitations</ons-list-header>
-                            <ons-list-item ng-click="bd.getsingleactivity(28,'Invitation')" class="timeline-li" 
+                            <ons-list-item ng-click="bd.getsingleactivity(n.activity_id,'Invitation')" class="timeline-li" 
                                            modifier="tappable" ng-repeat="n in notifications.obj">
                                 <div style="float:left; width:100%; max-width:95%;">
                                     <div style="width:40%;float:left">  <img src="{{n.origin_avatar}}" class="avatar"></div>
@@ -1698,7 +1698,7 @@
                         </div>
                     </div>
 
-
+                    {{showsingleactivity | json}}
 </div>
                     <div class="tab-bar">
                         <label class="tab-bar__item btnaccept" ng-click="invitationrespond(true,'accept',showsingleactivity.activity_id)">
