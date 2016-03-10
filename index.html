@@ -12,7 +12,6 @@
     <script src="lib/angular/angular-animate.min.js"></script>
     <script src="lib/angular/angular-sanitize.js"></script>
     <script src="lib/onsen/js/onsenui.js"></script>
-    
     <!-- CSS dependencies -->
     <link rel="stylesheet" href="lib/onsen/css/onsenui.css" />
     <link rel="stylesheet" href="lib/onsen/css/onsen-css-components.css" />
@@ -29,12 +28,14 @@
     <title>BracketDash</title>
 
     <script src="cordova.js"></script>
-    <script type="text/javascript" src="js/filechooser.js"></script>
+    <script src="scripts/FileTransfer.js"></script>
+    <script src="scripts/FileTransferError.js"></script>
+    
     <script src="scripts/jquery.js"></script>
     <script src="scripts/BracketDash.js"></script>
     <script src="scripts/index.js"></script>
-    <script src="scripts/transloadit.js"></script>
-    <!--<script src="scripts/transloadit.jquery.js"></script>-->
+    <!--<script src="scripts/transloadit.js"></script>-->
+    <script src="scripts/transloadit.jquery.js"></script>
 </head>
 
 <body id="body" ng-controller="BracketDashController as bd">
@@ -56,9 +57,29 @@
             <iframe style="margin: 0px; padding: 0px; border: medium none; display: block;" allowfullscreen="" id="iframe" 
                     frameborder="0"></iframe>
 
+            <div class="tab-bar" style="z-index:1000" ng-if="isplaying == uploadedurl">
+                <label class="tab-bar__item btnaccept" ng-click="confirmupload('finish')">
+                    <input type="radio" name="tab-bar-a">
+                    <button class="tab-bar__button">
+                        <i class="tab-bar__icon fa fa-check"></i>
+                        <div class="tab-bar__label"><span>{{uploadcreateactivity? 'Add Activity' : 'Add Response' }}</span></div>
+                    </button>
+                </label>
+
+                <label class="tab-bar__item btndecline" ng-click="confirmvideo('delete')">
+                    <input type="radio" name="tab-bar-a">
+                    <button class="tab-bar__button">
+                        <i class="tab-bar__icon fa fa-times"></i>
+                        <div class="tab-bar__label">Delete</div>
+                    </button>
+                </label>
+
+            </div>
 
         </ons-dialog>
     </script>
+
+
 
     <script type="text/ons-template" id="dialogcomment.html" >
         <ons-dialog cancelable ons-prehide="bd.hidecomments(currentfeed.activity_id)">
@@ -164,8 +185,10 @@
                     <div ng-show="currentfeed.mode ==3" ng-attr-id="{{'reports' + currentfeed.activity_id}}">
                         <div class="comment-input-wrapper">
                             <div class="container" ng-show="!isuploading">
-                                <input ng-show="!file" type="file" id="file_input"  onchange="angular.element(this).scope().setFiles(this,false,true)" /> 
-                                <button ng-show="file && uploadbutton" class="button btnsmall" ng-click="bd.initupload()">Upload {{file}}</button>
+                                <form id="upload-form" action="/uploads" enctype="multipart/form-data" method="POST">
+                                    <input ng-show="!file" type="file" id="file_input" onchange="angular.element(this).scope().setFiles(this,false,true)" />
+                                </form>
+                                                                <button ng-show="file && uploadbutton" class="button btnsmall" ng-click="addresponse(currentfeed.activity_id)">Upload {{file}}</button>
                                 <button ng-show="file && !uploadbutton" class="button btnsmall">{{file}}</button>
                             </div>
                             <div class="container" ng-show="isuploading">
@@ -185,6 +208,9 @@
                 </ons-scroller>
             </div>
 
+            <script>
+          
+            </script>
 </ons-dialog>
 </script>
 
@@ -204,22 +230,31 @@
             </div>
             <div class="center" id="logo"><img ng-click="bd.setMainPage('page1.html', {closeMenu: true},'Home')" ng-show="bd.showlogo()" class="logo" src="data:image/png;base64,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WHRYTUw6Y29tLmFkb2JlLnhtcAAAAAAAPHg6eG1wbWV0YSB4bWxuczp4PSJhZG9iZTpuczptZXRhLyIgeDp4bXB0az0iWE1QIENvcmUgNS40LjAiPgogICA8cmRmOlJERiB4bWxuczpyZGY9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkvMDIvMjItcmRmLXN5bnRheC1ucyMiPgogICAgICA8cmRmOkRlc2NyaXB0aW9uIHJkZjphYm91dD0iIgogICAgICAgICAgICB4bWxuczp4bXA9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC8iCiAgICAgICAgICAgIHhtbG5zOnRpZmY9Imh0dHA6Ly9ucy5hZG9iZS5jb20vdGlmZi8xLjAvIgogICAgICAgICAgICB4bWxuczpleGlmPSJodHRwOi8vbnMuYWRvYmUuY29tL2V4aWYvMS4wLyI+CiAgICAgICAgIDx4bXA6TW9kaWZ5RGF0ZT4yMDE1LTAyLTE5VDE1OjM4OjA4PC94bXA6TW9kaWZ5RGF0ZT4KICAgICAgICAgPHhtcDpDcmVhdG9yVG9vbD5BZG9iZSBQaG90b3Nob3AgQ0MgKE1hY2ludG9zaCk8L3htcDpDcmVhdG9yVG9vbD4KICAgICAgICAgPHhtcDpDcmVhdGVEYXRlPjIwMTQtMTEtMjdUMTQ6Mjc6MzM8L3htcDpDcmVhdGVEYXRlPgogICAgICAgICA8dGlmZjpPcmllbnRhdGlvbj4xPC90aWZmOk9yaWVudGF0aW9uPgogICAgICAgICA8dGlmZjpZUmVzb2x1dGlvbj43MjwvdGlmZjpZUmVzb2x1dGlvbj4KICAgICAgICAgPHRpZmY6UmVzb2x1dGlvblVuaXQ+MjwvdGlmZjpSZXNvbHV0aW9uVW5pdD4KICAgICAgICAgPHRpZmY6WFJlc29sdXRpb24+NzI8L3RpZmY6WFJlc29sdXRpb24+CiAgICAgICAgIDxleGlmOkNvbG9yU3BhY2U+MTwvZXhpZjpDb2xvclNwYWNlPgogICAgICAgICA8ZXhpZjpQaXhlbFhEaW1lbnNpb24+Nzc8L2V4aWY6UGl4ZWxYRGltZW5zaW9uPgogICAgICAgICA8ZXhpZjpQaXhlbFlEaW1lbnNpb24+NzM8L2V4aWY6UGl4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"></div>
             <div class="right" style="position:relative;">
+               
+                    <div id="searchinput" style="width:160px;height:25px;" ng-show="bd.issearching" class="slide-right">
+                        <div style="position:relative; height:95%;">
+                            <input type="text" id="txtsearch" ng-model="searchquery.q" style="width:140px; height:100%;" class="searchinput text-input--underbar" />
+                           
+                                <ons-icon id="icncancelsearch" icon="fa-search" ng-click="bd.search" size="18px"
+                                          style="width:20px;position:absolute;right:-20px; vertical-align:baseline;top:4px" fixed-width="false">
+                                </ons-icon>
+                            
+                          </div>
 
-                <div id="searchinput" style="width:160px;height:25px;" ng-show="bd.issearching" class="slide-right">
-                    <div style="position:relative; height:95%;">
-                        <input type="text" id="txtsearch" ng-model="searchquery.q" style="width:140px; height:100%;" class="searchinput text-input--underbar" />
-                        <ons-icon id="icncancelsearch" icon="fa-search" ng-click="bd.search" size="18px"
-                                  style="width:20px;position:absolute;right:-20px; vertical-align:baseline;top:4px" fixed-width="false"></ons-icon>
                     </div>
+                    <ons-toolbar-button id="searchicon">
+                        <div style="display:inline-block;">
+                            <ons-gesture-detector style="display:block;">
+                                <div style="display:inline-block;">
+                                    <ons-icon id="mysearchicon" ng-attr-icon="{{!bd.issearching? 'fa-search' : 'ion-close'}}"
+                                              slide-toggle="#searchinput" size="24px" fixed-width="false" ng-click="bd.clicksearch()">
 
-                </div>
-                <ons-toolbar-button id="searchicon">
-
-                    <ons-icon ng-attr-icon="{{!bd.issearching? 'fa-search' : 'ion-close'}}" slide-toggle="#searchinput" size="24px" fixed-width="false" ng-click="bd.clicksearch()">
-
-                    </ons-icon>
-                </ons-toolbar-button>
-            </div>
+                                    </ons-icon>
+                                </div>
+                            </ons-gesture-detector>
+                        </div>
+</ons-toolbar-button>
+</div>
         </ons-toolbar>
 
         <ons-sliding-menu menu-page="menu.html" side="left"
@@ -350,7 +385,7 @@
                 <div class="headergap"></div>
                 {{bd.CurrentPage}}
                 <div data-role="content" class="demo-content">
-                    <button class="ng-hide" ng-click="popoverfileselect.show($event)" style="width:100px;height:100px">
+                    <button  ng-click="selectfile()" style="width:100px;height:100px">
                         Tab Here
                     </button>
          
@@ -1505,7 +1540,35 @@
         <ons-template id="SingleActivity.html">
             <ons-page>
                 <div class="headergap"></div>
-                <div class="demo-content contentwrapper">
+
+                <div role="main" data-role="content" class="invitation-content ui-content"  ng-if="showsingleactivity.isinvitation">
+                <div class="invitation-wrapper">
+                    <div class="invitation-header">
+                    <div class="invitation-host-avatar" ng-click="getprofile(showsingleactivity.activity_host_info.username,true)">
+                        <img src="{{showsingleactivity.activity_host_info.avatar_link}}" alt=""></div>
+                    <div class="invitation-header-txt"><div class="invitation-header-txt-top-section">
+                        <div class="invitation-host-username">{{showsingleactivity.activity_host_info.username}}</div>
+                        <div class="invitation-date">{{showsingleactivity.activity_date}}</div></div>
+                        <div class="invitation-title">{{showsingleactivity.activity_title}}</div><div class="invitation-type"> ({{showsingleactivity.activity_category}} / {{showsingleactivity.activity_type}})</div>
+                        </div></div>
+                    <div class="invitation-body">
+                    <div class="invitation-section" ng-repeat="con in showsingleactivity.contestants_info">
+                    <div class="invitation-section-badge">
+                        <div class="invitation-section-avatar">
+                        <img src="{{con.avatar_link}}" alt="">
+                        </div>
+                    </div>
+                        <div class="invitation-section-names">
+                        <div class="invitation-section-fullname">{{con.contestant_fullname}}</div>
+                    <div class="invitation-section-username">{{con.contestant_username}}</div></div></div>
+                    
+                    </div><div class="invitation-footer">
+                    <div class="invitation-description">{{showsingleactivity.description}}</div></div>
+                    </div></div>
+
+
+
+                <div class="demo-content contentwrapper" ng-if="!showsingleactivity.isinvitation">
 
                     <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'battle'">
                         <div class="activity-header">
@@ -1698,7 +1761,6 @@
                         </div>
                     </div>
 
-                    {{showsingleactivity | json}}
 </div>
                     <div class="tab-bar">
                         <label class="tab-bar__item btnaccept" ng-click="invitationrespond(true,'accept',showsingleactivity.activity_id)">
@@ -2121,7 +2183,6 @@
 
                         </div>
                         <div ng-show="NewActivity.type!=''">
-                            {{NewActivity.type}}
                             <div style="text-align: center; padding: 10px 0;">
                                 <ons-botton class="button button--material btnwide " ng-click="bd.addactivity()" modified="small">
                                     Create Activity
@@ -2181,15 +2242,18 @@
         <ons-col >
             <ons-icon icon="fa-upload"></ons-icon> 
                 <div style="display: inline-block;"> 
-                    {{isuploading ==1 ? 'Uploads are in progress.' :''}}
+                    {{isuploading ==1 ? 'Uploads are in progress. ' + uploadprogress :''}}
                     {{isuploading ==-1 ? 'Uploads failed.' :''}}
                     {{isuploading ==2 ? 'Uploads Completed successfuly.' : ''}}
-                    <button class="button btnxsmall" ng-click="confirmupload()">{{isuploading ==1 ? 'Cancel' :  'Ok'}}</button>   
+                    <button class="button btnxsmall" ng-if="isuploading ==2" ng-click="confirmupload('preview')">Preview</button>   
+                    <button class="button btnxsmall" ng-if="isuploading ==1" ng-click="confirmupload('cancel')">Cancel</button>
+                    <button class="button btnxsmall" ng-if="isuploading ==-1" ng-click="confirmupload('ok')">Ok</button>
                 </div>
                 
             </ons-col>
         </ons-row>
     </ons-bottom-toolbar>
+
     
 </body>
 </html> 

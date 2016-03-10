@@ -1,6 +1,6 @@
 
 angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
-    .controller('BracketDashController', function ($scope, $rootScope, $filter, $sce) {
+    .controller('BracketDashController', function ($scope, $rootScope, $filter, $sce, $filechooser, Transloadit) {
         $scope.feed = {};
         $scope.feedlimit = 10;
         $scope.notificationlimit = 10;
@@ -9,7 +9,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         $scope.bio = {};
         $scope.NewActivity = {
             type: '', title: '', description: '', round: 1, category: 'Entertainment', visibility: 'public',
-            branchlength: 4, branches: [], contestants: [], status: ''
+            branchlength: 4, branches: [], contestants: [], status: '', video_links: {"webm":null,"ogg": null,"mp4": null,"phone": null,"tablet": null}
+        };
+        $scope.NewResponse = {
+            activity_id: null, video_links: { "webm": null, "ogg": null, "mp4": null, "phone": null, "tablet": null }
         };
         $scope.newactivityvalidation = {};
         $scope.branchlength = [4, 8, 16];
@@ -219,13 +222,13 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
             }
         }
-        self.addactivity = function () {
+        self.addactivity = function (mode) {
             self.validateactivity();
             // self.formatnewactivity();
             
             if ($scope.newactivityvalidation.status) {
-                if (($scope.NewActivity.type == 'challenge' || $scope.NewActivity.type == 'exhibition') && $scope.isuploading == 0) {
-                        $scope.uploadcreateactivity = true;
+                if (mode != 'finish' && ($scope.NewActivity.type == 'challenge' || $scope.NewActivity.type == 'exhibition') && $scope.isuploading == 0) {
+                    $scope.uploadcreateactivity = true;
                     self.initupload();
                     return;
                 }
@@ -234,7 +237,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 //console.log(JSON.stringify(self.formatnewactivity()));
                 console.log(access_token);
                 data = { action: 'new_activity', activity_data_array: JSON.stringify(self.formatnewactivity()), authorization: "Bearer " + access_token };
-
+                alert('saving');
                 $.ajax({
                     url: "http://www.bracketdash.com/api/api.php",
                     type: 'post',
@@ -299,9 +302,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 $scope.registervalidation.reason = 'Please enter your password.' ;
             }
             else  if ($scope.newuser.registerpassword != $scope.newuser.registerpasswordconfirm) {
-                    $scope.registervalidation.passwordconfirmstatus = -1;
-                    $scope.registervalidation.reason = 'Passwords do not match.';
-                }
+                $scope.registervalidation.passwordconfirmstatus = -1;
+                $scope.registervalidation.reason = 'Passwords do not match.';
+            }
             else
             {$scope.registervalidation.passwordconfirmstatus = 1;}
         }
@@ -340,16 +343,16 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: { action: 'check_username', username: $scope.newuser.registerusername },
                 crossDomain: true,
                 success: function (data) {
-                        var obj = JSON.parse(data);
-                        $scope.checkingusername = false;
+                    var obj = JSON.parse(data);
+                    $scope.checkingusername = false;
                        
-                        if (obj.response.indexOf("already taken") > -1) {
-                            $scope.registervalidation.usernamestatus = -1;
-                            $scope.registervalidation.reason = obj.response;
-                        }
-                        else {
-                            $scope.registervalidation.usernamestatus = 1;
-                        }
+                    if (obj.response.indexOf("already taken") > -1) {
+                        $scope.registervalidation.usernamestatus = -1;
+                        $scope.registervalidation.reason = obj.response;
+                    }
+                    else {
+                        $scope.registervalidation.usernamestatus = 1;
+                    }
 
                     $scope.$apply();
                 },
@@ -442,7 +445,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 $scope.currentfeed = {};
                 $scope.commentdialog.hide();
                 self.feedexpand = -1;
-//                $scope.$apply();
+                //                $scope.$apply();
                
             }
             else {
@@ -453,11 +456,45 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
                 $scope.commentdialog.show();
                 $scope.currentfeed.mode = 1;
-//                $scope.$apply();
+                try {
+       
+                } catch (e) { alert(e); }
+
+                //                $scope.$apply();
                 
             }
         }
+        self.transload = function () {
+            $('#upload-form')
+            //    .transloadit({
+            //    wait: true,
+            //    triggerUploadOnFileSelection: true,
+            //    autoSubmit: false,
 
+            //    params: {
+            //        auth: { key: '622e18e0d81111e5b7ff9bc4624f6488' },
+            //        steps: {
+            //            resize_to_75: {
+            //                robot: '/image/resize',
+            //                use: ':original',
+            //                width: 75,
+            //                height: 75
+            //            }
+            //        }
+            //    },
+            //    onSuccess(assembly) {
+            //        alert('success' + assembly);
+            //        //var url = assembly.results.mp4[0].url;
+            //        //var img = assembly.results.resized_thumbs[0].url;
+            //        //console.log(url);
+            //        //console.log(img);
+            //        ////alert(url);
+            //        ////alert(img);
+
+            //        //$('.response-thumbnail').html('<div class="play-button" data-vlink="' + url + '"></div><img src="' + img + '">');
+            //    }
+            //});
+        }
         self.deleteactivity = function (id) {
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var data = { "action": "delete_activity", "activity_id": $scope.currentfeed.activity_id, authorization: "Bearer " + access_token };
@@ -1132,7 +1169,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     var accountsettings = json_obj.account_settings;
                     self.userinfo.profilesettings = profilesettings;
                     angular.extend(self.userinfo.profilesettings, profilesettings);
-                   // alert(JSON.stringify(self.userinfo.profilesettings));
+                    // alert(JSON.stringify(self.userinfo.profilesettings));
                     self.userinfo.accountsettings = accountsettings;
                     angular.extend(self.userinfo.accountsettings, accountsettings);
 
@@ -1175,7 +1212,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         self.saveprofile = function () {
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
-           // alert(JSON.stringify(self.userinfo.profilesettings.links.splice()));
+            // alert(JSON.stringify(self.userinfo.profilesettings.links.splice()));
             var data = {
                 action: 'save_profile_settings', profile_settings_updates: JSON.stringify(self.userinfo.profilesettings),
                 authorization: "Bearer " + access_token
@@ -1204,7 +1241,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                   // alert(data);
+                    // alert(data);
                     console.log(data);
                     var obj = JSON.parse(data);
                     console.log(obj);
@@ -1367,13 +1404,19 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 $scope.popoverfileselect = popoverfileselect;
             });
 
-           
+            $(document).on('swipeleft', '#mysearchicon', function () {
+                
+                self.clicksearch();
+            })
+            
+                
+        
         });
         $scope.cats = ['Entertainment', 'Sports', 'Humor', 'Music', 'Poetry', 'Arts', 'Other'];
         $scope.visibilityoptions = ['Public', 'Audience'];
         $scope.contestants = [];
         //
-
+        
         self.overlaylement = function (elem, target, top, right, bottom, left, elemwidth, elemheight, anim) {
             var element = $('#' + elem);
             if (elemwidth != null && elemwidth > 0)
@@ -1485,57 +1528,181 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             $scope.file = '';
 
             $scope.commentdialog.hide();
-            var transloadit = new TransloaditXhr({
+
+            //var tli = new Transloadit();
+            var file = $('#file_input').get(0).files[0];
+            //transloadit.uploadFile(file);
+            
+            Transloadit.upload(file, {
                 params: {
-
-                    auth: { key: "622e18e0d81111e5b7ff9bc4624f6488" },
-                    steps: {
-                        resize_to_125: {
-                            robot: "/image/resize",
-                            use: ":original",
-                            width: 125,
-                            height: 125
-                        },
-                        // The second Step resizes the results further to 75x75 pixels.
-                        // Notice how we "use" the output files of the "resize_to_125"
-                        // step as our input here. We could use all kinds of Steps with
-                        // various robots that "use" each other, making this perfect for
-                        // any workflow.
-                        resize_to_75: {
-                            robot: "/image/resize",
-                            use: "resize_to_125",
-                            width: 75,
-                            height: 75,
-                            // We also add a sepia effect here just for fun.
-                            // The /image/resize robot has a ton of available parameters.
-                            sepia: 80
-                        }
-                    }
+                    auth: { key: "7e36b0800fec11e5b74aa7b807288d6d" },
+                    template_id: "7a0d23c0119c11e59b7c67e0d9c6ade5",
+                            steps: {
+                                resize_to_75: {
+                                    robot: '/image/resize',
+                                    use: ':original',
+                                    width: 75,
+                                    height: 75
+                                }
+                            }
+                        
+                    // template_id: 'my-template-id'
                 },
 
-                successCb: function (results) {
-                    //alert(JSON.stringify(results));
-                    $scope.isuploading = 2;
+                signature: function (callback) {
+                    // ideally you would be generating this on the fly somewhere
+                    callback('d1e6d2ee0d1abedbf74481e642421d6d4fec5b64');
+                },
+
+                progress: function (loaded, total) {
+                    //alert(loaded + 'bytes loaded');
+                    $scope.uploadprogress = (loaded / total * 100).toFixed(0) + '%'; //();
+                    if (!$scope.$$phase) {
+                        $scope.$apply();
+                    }
+                    //console.log(total + ' bytes total');
+                },
+
+                processing: function () {
+                    console.log('done uploading, started processing');
+                },
+
+                uploaded: function (assemblyJson) {
+                    console.log (JSON.stringify(assemblyJson.results));
+                    //$scope.isuploading = 2;
                     $scope.fileuploadresult = 'File uploaded successfully';
-                    if ($scope.uploadcreateactivity) {
-                        $scope.uploadcreateactivity = false;
-                        self.addactivity();
+                    
+                    console.log (assemblyJson.results.mp4[0].url);
+                    $scope.uploadedurl = assemblyJson.results.mp4[0].url;
+                    if ($scope.uploadcreateactivity)
+                        $scope.NewActivity.video_links.mp4 = $scope.uploadedurl;
+                    if ($scope.uploadcreateresponse){
+                        $scope.NewResponse.video_links.mp4 = $scope.uploadedurl;
+                        alert($scope.NewResponse.video_links.mp4);
                     }
-                    $scope.$apply();
-
-                    //alert("Worked");
-                    //alert(JSON.stringify(results));
+                    $scope.uploadedthumb = assemblyJson.results.resized_thumbs[0].url;
+                    $scope.isuploading = 0;
+                    $scope.playvideo(assemblyJson.results.mp4[0].url);
+                    if (!$scope.$$phase) {
+                        $scope.$apply();
+                    }
+                    //if ($scope.uploadcreateactivity) {
+                    //    $scope.uploadcreateactivity = false;
+                    //    self.addactivity();
+                    //}
+                    console.log(assemblyJson);
                 },
 
-                errorCb: function (err) {
-
-                    $scope.isuploading = -1;
-                    alert(JSON.stringify(err));
+                error: function (error) {
+                    console.log(error);
                 }
             });
+            
+            //var options = {
+            //    params:{auth: { key: "622e18e0d81111e5b7ff9bc4624f6488" },
+            //        steps: {
+            //            resize_to_125: { robot: "/image/resize", use: ":original", width: 125, height: 125 },
+            //            resize_to_75: {
+            //                robot: "/image/resize",
+            //                use: "resize_to_125",
+            //                width: 75,
+            //                height: 75,
+            //                // We also add a sepia effect here just for fun.
+            //                // The /image/resize robot has a ton of available parameters.
+            //                sepia: 80
+            //            }
+            //        }},
+            //    uploaded: function(){alert('done');}
+                
 
-            var file = $('#file_input').get(0).files[0];
-            transloadit.uploadFile(file);
+            //}
+            //Transloadit.upload(file, options);
+
+            
+            
+            //var transloadit = new TransloaditXhr({
+            //    params: {
+
+            //        auth: { key: "622e18e0d81111e5b7ff9bc4624f6488" },
+            //        steps: {
+            //            resize_to_125: {
+            //                robot: "/image/resize",
+            //                use: ":original",
+            //                width: 125,
+            //                height: 125
+            //            },
+            //            // The second Step resizes the results further to 75x75 pixels.
+            //            // Notice how we "use" the output files of the "resize_to_125"
+            //            // step as our input here. We could use all kinds of Steps with
+            //            // various robots that "use" each other, making this perfect for
+            //            // any workflow.
+            //            resize_to_75: {
+            //                robot: "/image/resize",
+            //                use: "resize_to_125",
+            //                width: 75,
+            //                height: 75,
+            //                // We also add a sepia effect here just for fun.
+            //                // The /image/resize robot has a ton of available parameters.
+            //                sepia: 80
+            //            }
+            //        }
+            //    },
+
+            //    successCb: function (results) {
+            //        //alert(JSON.stringify(results));
+            //        $scope.isuploading = 2;
+            //        $scope.fileuploadresult = 'File uploaded successfully';
+            //        if ($scope.uploadcreateactivity) {
+            //            $scope.uploadcreateactivity = false;
+            //            self.addactivity();
+            //        }
+            //        $scope.$apply();
+
+            //        //alert("Worked");
+            //        //alert(JSON.stringify(results));
+            //    },
+
+            //    errorCb: function (err) {
+
+            //        $scope.isuploading = -1;
+            //        $scope.$apply();
+
+            //        alert('err');
+            //        alert(JSON.stringify(err));
+            //    }
+            //});
+            ////alert(JSON.stringify($('#file_input').val()));//.get(0).files[0]));
+
+            //var file = $('#file_input').get(0).files[0];
+            //transloadit.uploadFile(file);
+
+
+            //var win = function (r) {
+            //    console.log("Code = " + r.responseCode);
+            //    console.log("Response = " + r.response);
+            //    console.log("Sent = " + r.bytesSent);
+            //}
+
+            //var fail = function (error) {
+            //    alert("An error has occurred: Code = " + error.code);
+            //    console.log("upload error source " + error.source);
+            //    console.log("upload error target " + error.target);
+            //}
+
+            //var options = new FileUploadOptions();
+            //options.fileKey = "file";
+            //options.fileName = fileURL.substr(fileURL.lastIndexOf('/') + 1);
+            //options.mimeType = "image/jpg";
+
+            //var params = {};
+            //params.value1 = "test";
+            //params.value2 = "param";
+
+            //options.params = params;
+
+            //var ft = new FileTransfer();
+            //ft.upload(fileURL, encodeURI("http://some.server.com/upload.php"), win, fail, options);
+
 
 
             //$('#file_input').transloadit({
@@ -1578,8 +1745,67 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
         self.uploadcomplete = function () { alert(''); }
 
-        $scope.confirmupload = function () {
+        $scope.addresponse = function (activityid,mode) {
+            if (mode != 'finish' && $scope.isuploading == 0) {
+                $scope.uploadcreateresponse = true;
+                $scope.uploadactivityid = activityid;
+                self.initupload();
+                return;
+            }
+                var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
+                var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
+                //console.log(JSON.stringify(self.formatnewactivity()));
+                console.log(access_token);
+                data = { action: 'input_open_challenge_response', activity_id: activityid,video_links:JSON.stringify( $scope.NewResponse.video_links), authorization: "Bearer " + access_token };
+                $.ajax({
+                    url: "http://www.bracketdash.com/api/api.php",
+                    type: 'post',
+                    data: data,
+                    crossDomain: true,
+                    success: function (data) {
+                        console.log(data);
+                        var obj = JSON.parse(data);
+                        console.log(obj);
+                        if (obj.status == 'success') {
+
+                            $scope.NewResponse = {
+                                    activity_id: null, video_links: { "webm": null, "ogg": null, "mp4": null, "phone": null, "tablet": null }
+                            };
+                            $scope.result.id = 1;
+                            $scope.result.msg = 'Response Added Successfuly';
+                            $scope.result.css = 'successtoolbar';
+                        }
+                        else {
+                            $scope.result.id = -1;
+                            $scope.result.msg = 'Could not add Response';
+                            $scope.result.css = 'errortoolbar';
+                        }
+                        $scope.$apply();
+                    },
+                    error: function (data) { alert(JSON.stringify(data)); }
+                });
+        }
+
+        $scope.confirmupload = function (mode) {
             $scope.isuploading = 0;
+            $scope.file = null;
+            $scope.videodialog.hide();
+            if (mode == 'finish')
+            {
+                if ($scope.uploadcreateactivity) {
+                    $scope.uploadcreateactivity = false;
+                    self.addactivity('finish');
+                }
+                if ($scope.uploadcreateresponse) {
+                    $scope.uploadcreateresponse = false;
+                    $scope.addresponse($scope.uploadactivityid, 'finish');
+                    $scope.uploadactivityid = null;
+                }
+            }
+            if (mode == 'cancel')
+            { Transloadit.cancel(); alert('cancelled'); }
+
+            
         }
         $scope.confirmresult = function () {
             $scope.result.id= 0;
@@ -1587,7 +1813,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         $scope.file = '';
         $scope.uploadbutton = true;
         $scope.uploadcreateactivity = false;
-        $scope.setFiles = function (element, auto,uplaodbtn) {
+        $scope.uploadresponse = false;
+        $scope.setFiles = function (element, auto, uplaodbtn) {
+            
             $scope.file = $(element).val().substr($(element).val().lastIndexOf("\\") + 1);
             $scope.$apply();
             $scope.uploadbutton = uplaodbtn;
@@ -1599,10 +1827,42 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         
         $scope.selectfile = function () {
             //alert();
-            try{
-                fileChooser.open(function (uri) { alert(uri); }, failureCallback);
-            } catch (e) { alert(e);}
+            try {
+                var fc = new $filechooser();
+                fc.open(fc.success, fc.fail);
+            } catch (e) { alert('1781>>'+e);}
         }
+
+        $scope.fileopensuccess = function (data) { alert(JSON.stringify(data)); }
+        $scope.fileopenfail = function (data) { alert(JSON.stringify(data)); }
+        $scope.uploadandroid = function (filepath) {
+            try {
+                alert('>1786'+filepath);
+            $scope.isuploading = 1;
+            $scope.file = '';
+
+            $scope.commentdialog.hide();
+
+            var uri = encodeURI("https://api2-eu-west-1.transloadit.com/assemblies");
+            var options = new FileUploadOptions();
+            options.fileKey="file";
+            options.fileName=filepath.substr(filepath.lastIndexOf('/')+1);
+
+            var ft = new FileTransfer();
+            ft.onprogress = function(progressEvent) {
+                if (progressEvent.lengthComputable) {
+                    loadingStatus.setPercentage(progressEvent.loaded / progressEvent.total);
+                } 
+                else {
+                    loadingStatus.increment();
+                }
+            };
+
+            ft.upload(filepath, uri, win, fail, options);  
+            } catch (e) { alert(e); }
+        }
+           
+        
 
     })
 .controller("FileController", function ($scope, $rootScope, $filter, $fileFactory) {
@@ -1635,6 +1895,11 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
     
 
 })
+.controller('UploadController', ['$scope', 'Transloadit', (function($scope, Transloadit) {
+    $scope.upload = function(file) {
+      
+    }
+})])
 .factory("$fileFactory", function ($q) {
 
     var File = function () { };
@@ -1811,5 +2076,177 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
     return File;
     //getFS();
     
-});
+})
+.factory("$filechooser", function () {
+    var FileChooser = function () {};
+    FileChooser.prototype = {
+        open: function (params, success, fail) {
+            return cordova.exec(function (args) { success(args); }, function (args) { fail(args); },
+                'FileChooser', 'open', [params || {}]);
+        },
+        success: function (data) { alert(data); },
+        fail: function (data) { alert(data);}
+    }
+    return FileChooser;
 
+})
+.factory("$fileuploader", function () {
+    //var options;// = new FileUploadOptions();
+    //  options.fileKey = "file";
+    //options.fileName = fileURI.substr(fileURI.lastIndexOf('/') + 1);
+    //options.mimeType = "text/plain";
+
+    //var params = new Object();
+    //params.auth = { key: "622e18e0d81111e5b7ff9bc4624f6488" };
+    //params.steps = {resize_to_125: {robot: "/image/resize",use: ":original",width: 125,height: 125}, 
+    //    resize_to_75: {robot: "/image/resize",use: "resize_to_125",width: 75,height: 75,sepia: 80}};
+
+    //options.params = params;
+
+    
+    var FileUploader = function () {};
+    FileUploader.prototype = {
+         win : function (r) {
+            console.log("Code = " + r.responseCode);
+            console.log("Response = " + r.response);
+            console.log("Sent = " + r.bytesSent);
+        },
+
+        fail : function (error) {
+            alert("An error has occurred: Code = " + error.code);
+            console.log("upload error source " + error.source);
+            console.log("upload error target " + error.target);
+        },
+        upload: function () {
+            var ft = new FileTransfer();
+            ft.upload(fileURI, encodeURI("//api2.transloadit.com/assemblies"), this.win, this.fail, {});
+        }
+    }
+    return FileUploader;
+})
+.factory('Transloadit', ['$http', '$rootScope', '$timeout', function($http, $rootScope, $timeout) {
+    $scope = $rootScope.$new();
+    var TRANSLOADIT_API = 'https://api2-eu-west-1.transloadit.com/assemblies';
+
+    function getExpiryDate() {
+        var date = new Date();
+        date.setHours(date.getHours() + 12);
+
+        var year = date.getUTCFullYear();
+        var month = zeroFill(date.getUTCMonth() + 1, 2);
+        var day = zeroFill(date.getUTCDate(), 2);
+
+        var hours = zeroFill(date.getUTCHours(), 2);
+        var minutes = zeroFill(date.getUTCMinutes(), 2);
+        var seconds = zeroFill(date.getUTCSeconds(), 2);
+
+        return year + '/' + month + '/' + day + ' ' + hours + ':' + minutes + ':' + seconds + '+00:00';
+    }
+
+    function zeroFill(number, width) {
+        width -= number.toString().length;
+        if (width > 0) {
+            return new Array( width + (/\./.test( number ) ? 2 : 1) ).join( '0' ) + number;
+        }
+
+        return number + ""; // always return a string
+    }
+
+    return {
+        upload: function(file, options) {
+            var cancelled = false;
+            var xhr = new XMLHttpRequest();
+
+            this._validateBrowser();
+            this._validateOptions(options);
+            this._addExpiryDate(options);
+
+            function check(assemblyUrl) {
+                if (cancelled) {
+                    return false;
+                }
+
+                $timeout(function() {
+                    $http.get(assemblyUrl).success(function(results) {
+                        if (results.ok === 'ASSEMBLY_COMPLETED') {
+                            options.uploaded(results);
+                        } else {
+                            check(results.assembly_ssl_url);
+                        }
+                    }).error(options.error);
+                }, 2000);
+            }
+
+            options.signature(function(signatureValue) {
+                var paramsValue = angular.toJson(options.params);
+                //alert(paramsValue);
+                var formData = new FormData();
+                formData.append('params', paramsValue);
+                //formData.append('signature', signatureValue);
+                formData.append(file.name, file);
+
+                xhr.open('POST', TRANSLOADIT_API, true);
+                xhr.onload = function(response) {
+                    var results = angular.fromJson(this.response);
+                    options.processing();
+                    check(results.assembly_ssl_url);
+                };
+                xhr.upload.onprogress = function(e) {
+                    if (e.lengthComputable) {
+                        options.progress(e.loaded, e.total);
+                    }
+                };
+
+                xhr.send(formData);
+            });
+
+            
+            return {
+                cancel: function() {
+                    cancelled = true;
+                    xhr.abort();
+                }
+            };
+        },
+
+        _validateBrowser: function() {
+            var isXHR2 = typeof new XMLHttpRequest().upload !== 'undefined';
+
+            if (!isXHR2) {
+                throw new Error('Transloadit will only work with XMLHttpRequest 2');
+            }
+        },
+
+        _validateOptions: function(options) {
+            // mandatory fields
+            if (!options.signature) {
+              // throw new Error('must supply a signature function');
+            }
+
+            if (!options.uploaded) {
+                throw new Error('must supply an uploaded callback');
+            }
+
+            if (!options.params) {
+                throw new Error('must supply params');
+            }
+
+            if (!options.params.auth.key) {
+                throw new Error('must supply a key');
+            }
+
+            // optional fields
+            options.processing = options.processing || function() {};
+            options.progress = options.progress || function() {};
+            options.error = options.error || function() {};
+        },
+
+        _addExpiryDate: function(options) {
+            options.params.auth.expires = getExpiryDate();
+        },
+
+        _setApiUrl: function(url) {
+            TRANSLOADIT_API = url;
+        }
+    };
+}]);
