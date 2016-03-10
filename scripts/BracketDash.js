@@ -1901,11 +1901,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
     }
 })])
 .factory("$fileFactory", function ($q) {
-
     var File = function () { };
-
     File.prototype = {
-
         getParentDirectory: function (path) {
             var deferred = $q.defer();
             window.resolveLocalFileSystemURI(path, function (fileSystem) {
@@ -2072,7 +2069,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         }
     }
     };
-
     return File;
     //getFS();
     
