@@ -150,7 +150,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
 
         $scope.login = function () {
-            $scope.isloading = true;
+            $scope.isloading = true; $scope.confirmresult();
             if ($scope.loginobj.loginemail.toString().length == 0 || $scope.loginobj.loginpassword.toString().length == 0)
             { return; }
             var login_obj = { "action": "login", "email": $scope.loginobj.loginemail, "password": $scope.loginobj.loginpassword, "remember_me": "true" };
