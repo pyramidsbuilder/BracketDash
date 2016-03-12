@@ -134,7 +134,7 @@ height:44px;
 .description {
     margin:3px;
     border-radius:3px;
-    background-color: #F7E5E5;
+    background-color: #c13234;
     font-size: 0.7em;
     color:#697697;
     padding:4px;
@@ -534,10 +534,12 @@ color:#FFF !important;}
     }
 
 .tab-bar {
-    background-color:rgb(247, 229, 229);
+    background-color: #c13234;
+    color: white !important;
+    
 }
 .tab-bar__button div {
-    color:#293c6b !important;
+    color:white !important;
     opacity:0.5;
 }
 :checked + .tab-bar__button div {
@@ -818,7 +820,7 @@ color:#FFF !important;}
 .vs-divider  {width: 80%;}
 
 .list__header {
-    background-color:#F7E5E5 !important;
+    background-color:#c13234 !important;
     color:#293c6b !important;
     padding:3px !important;
 }
@@ -857,7 +859,7 @@ color:#FFF !important;}
 .header{
 	width:100%;
 	height:20px;
-	background:#F7E5E5;
+	background:#c13234;
 	text-align:center;
 	padding:10px 0 0 0;
 	font-weight:bold;
@@ -933,6 +935,7 @@ color:#FFF !important;}
 }
 .bottomtoolbar {
     padding-top: 10px;
+    display:block;
 }
 .uploadinprogress {
     background-color: orange;
@@ -1106,8 +1109,8 @@ float:left;
 	}
 	/*INVITATION FOOTER*/
 	/******************/
-	.invitation-footer{
-	    /*background-color:#F7E5E5;*/
+	.invitation-footer,.invitation-footer div {
+	    /*background-color:#c13234;*/
 	    background-color:#c13234;
 	    color:white !important;
 	    padding:10px;
@@ -1134,8 +1137,10 @@ float:left;
 		border:1px solid #3A4F79;
 		background:#667697;
 	}
+ .list__header {
+    height:38px;
+    color:white !important;
 }
-
 @media only screen and (min-width: 500px){
 	div{
 	    color:#293c6b;
@@ -1270,7 +1275,7 @@ float:left;
 	/******************/
 	/*INVITATION FOOTER*/
 	.invitation-footer{
-	    /*background-color:#F7E5E5;*/
+	    /*background-color:#c13234;*/
 	    background-color:#c13234;
 	    color:white !important;
 	    padding:10px;
@@ -1297,4 +1302,4 @@ float:left;
 		border:1px solid #3A4F79;
 		background:#667697;
 	}
-}
+

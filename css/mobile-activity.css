@@ -1,4 +1,4 @@
-@charset "UTF-8";
+﻿@charset "UTF-8";
 @media only screen and (max-width: 600px){
 /*activity css*/
 div{
@@ -228,8 +228,11 @@ div{
 	}
 /******************/
 .activity-footer{
-    background-color:#F7E5E5;
+    background-color:#c13234;
     padding:10px;
+}
+.activity-footer div {
+   color: white !important;
 }
 .activity-description{margin:auto;}
 .activity-options-button{
@@ -474,7 +477,7 @@ div{
 	}
 /******************/
 .activity-footer{
-    background-color:#F7E5E5;
+    background-color:#c13234;
     padding:10px;
 }
 .activity-description{margin:auto;}
