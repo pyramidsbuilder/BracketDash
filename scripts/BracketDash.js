@@ -180,14 +180,24 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         //localStorage.setItem("access_token",);
                         self.getmyprofile(false);
                     } else if (obj.request_status == 'invalid_password') {
-                        alert("Invalid password");
+                        $scope.isloading = false;
+                        $scope.result.id = -1;
+                        $scope.result.msg = 'Invalid Password';
+                        $scope.result.css = 'errortoolbar';
+                        $scope.$apply();
+                        //alert("Invalid password");
                     } else if (obj.request_status == 'invalid_email') {
-                        alert("Invalid email address");
+                        $scope.isloading = false;
+                        $scope.result.id = -1;
+                        $scope.result.msg = 'Invalid Email Address';
+                        $scope.result.css = 'errortoolbar';
+                        $scope.$apply();
                     }
                 },
                 error: function (data) {
                     $scope.isloading = false;
-                    alert(jSON.stringify(data));
+                    $scope.$apply();
+                   // alert(jSON.stringify(data));
                 }
             });
             return true;
@@ -1451,11 +1461,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 $scope.popoverfileselect = popoverfileselect;
             });
 
-            $(document).on('swipeleft', '#resulttoolbar', function () {
-                alert('swiped');
-                $scope.confirmresult();
-            })
-            
+            navigator.splashscreen.hide();
                 
         
         });

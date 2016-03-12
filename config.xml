@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.bracketdash.mobile" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.bracketdash.mobile" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>BracketDash</name>
     <description>
         BracketDash Mobile App
@@ -16,5 +16,8 @@
   <access origin="*.transloadit.com" />
   
   <icon src="Logo.png" width="57" height="57"/>
-
+<gap:plugin name="org.apache.cordova.splashscreen" />
+<preference name="SplashScreen" value="screen"/>
+<gap:splash gap:platform="android" gap:qualifier="port-ldpi" src="Logo.png" />
+<gap:splash src="splash.png" />
 </widget>
