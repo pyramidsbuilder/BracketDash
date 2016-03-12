@@ -18,6 +18,6 @@
   <icon src="Logo.png" width="57" height="57"/>
 <gap:plugin name="org.apache.cordova.splashscreen" />
 <preference name="SplashScreen" value="screen"/>
-<gap:splash gap:platform="android" gap:qualifier="port-ldpi" src="Logo.png" />
-<gap:splash src="splash.png" />
+<gap:splash gap:platform="android" gap:qualifier="port-ldpi" src="img/bracketdash-link-image.png" />
+<gap:splash src="img/bracketdash-link-image.png" />
 </widget>
