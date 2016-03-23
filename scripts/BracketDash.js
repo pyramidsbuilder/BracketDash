@@ -1942,6 +1942,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         if (data.error && data.error.length > 0)
                         {
                             $scope.isuploading = -1;
+                            try {
+                                $scope.$apply();
+                            } catch (e) { }
                             return;
                         }
                     if (data.ok != "ASSEMBLY_COMPLETED") {
@@ -2008,7 +2011,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             try{$scope.$apply();}catch(e){}
                             var obj = JSON.parse(assemblyJson.response);
                             $scope.checkfileprocessed(obj.assembly_id);
-                            alert("upload completed");
+                           // alert("upload completed");
                             return;
                         } catch (e) {
                             alert(e);
