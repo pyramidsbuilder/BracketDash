@@ -1939,12 +1939,17 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         //try { alert("15" + JSON.stringify(data)); } catch (e) { }
                         //try { alert("15" + JSON.stringify(data.ok)); } catch (e) { }
                         //alert(data.ok);
+                        if (data.error && data.error.length > 0)
+                        {
+                            $scope.isuploading = -1;
+                            return;
+                        }
                     if (data.ok != "ASSEMBLY_COMPLETED") {
-                        alert('not ready.. processing');
+                        //alert('not ready.. processing');
                         setTimeout(function () { $scope.checkfileprocessed(assemblyID) }, 7000);
                     }
                     else {
-                        alert('DONE' + assemblyID);
+                        //alert('DONE' + assemblyID);
                         $scope.fileuploadresult = 'File uploaded successfully';
                         //  alert(data.results.mp4[0].url);
                         //var control = $("#file_input");
@@ -1967,7 +1972,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             try { $scope.NewResponse.video_links_array.thumbnail = data.results.thumbnail[0].url; } catch (e) { }
                         }
                         try { $scope.uploadedthumb = data.results.thumbnail[0].url; } catch (e) { }
-                        alert('values are set');
+                        //alert('values are set');
 
                         $scope.isuploading = 0;
 
