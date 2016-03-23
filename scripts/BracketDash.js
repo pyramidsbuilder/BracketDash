@@ -1,6 +1,7 @@
 
 angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
     .controller('BracketDashController', function ($scope, $rootScope, $filter, $sce, $filechooser, Transloadit) {
+        $scope.version44 = false;
         $scope.feed = {};
         $scope.feedlimit = 10;
         $scope.notificationlimit = 10;
@@ -12,7 +13,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             branchlength: 4, branches: [], contestants: [], status: '', video_links: {"webm":null,"ogg": null,"mp4": null,"phone": null,"tablet": null}
         };
         $scope.NewResponse = {
-            activity_id: null, video_links: { "webm": null, "ogg": null, "mp4": null, "phone": null, "tablet": null }
+            activity_id: null, video_links_array: { "webm": null, "ogg": null, "mp4": null, "phone": null, "tablet": null }
         };
         $scope.newactivityvalidation = {};
         $scope.branchlength = [4, 8, 16];
@@ -1460,7 +1461,15 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             ons.createPopover('popoverfileselect.html').then(function (popoverfileselect) {
                 $scope.popoverfileselect = popoverfileselect;
             });
+            
+            if (device.platform.toLowerCase() === 'android' && device.version.indexOf('4.4') === 0
+                          ) {
+                $scope.version44 = true;
+            }
+            //alert($scope.version44);
 
+            //else
+              //  alert(device.version.indexOf('4.2'));
             navigator.splashscreen.hide();
                 
         
@@ -1590,14 +1599,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 params: {
                     auth: { key: "7e36b0800fec11e5b74aa7b807288d6d" },
                     template_id: "7a0d23c0119c11e59b7c67e0d9c6ade5",
-                            steps: {
-                                resize_to_75: {
-                                    robot: '/image/resize',
-                                    use: ':original',
-                                    width: 75,
-                                    height: 75
-                                }
-                            }
+                            steps: {}
                         
                     // template_id: 'my-template-id'
                 },
@@ -1609,46 +1611,67 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
                 progress: function (loaded, total) {
                     //alert(loaded + 'bytes loaded');
-                    $scope.uploadprogress = (loaded / total * 100).toFixed(0) + '%'; //();
-                    if (!$scope.$phase) {
+                    $scope.uploadprogress = parseInt(loaded / total * 100) +' %' ; //();
+                    try {
                         $scope.$apply();
-                    }
+                    } catch (e) { }
                     //console.log(total + ' bytes total');
                 },
 
                 processing: function () {
-                    console.log('done uploading, started processing');
+                   // console.log('done uploading, started processing');
                 },
 
                 uploaded: function (assemblyJson) {
-                    console.log (JSON.stringify(assemblyJson.results));
-                    //$scope.isuploading = 2;
-                    $scope.fileuploadresult = 'File uploaded successfully';
-                    
-                    console.log (assemblyJson.results.mp4[0].url);
-                    $scope.uploadedurl = assemblyJson.results.mp4[0].url;
-                    if ($scope.uploadcreateactivity)
-                        $scope.NewActivity.video_links.mp4 = $scope.uploadedurl;
-                    if ($scope.uploadcreateresponse){
-                        $scope.NewResponse.video_links.mp4 = $scope.uploadedurl;
-                        //alert($scope.NewResponse.video_links.mp4);
-                    }
-                    $scope.uploadedthumb = assemblyJson.results.resized_thumbs[0].url;
-                    $scope.isuploading = 0;
-                    
-                    $scope.playvideo(assemblyJson.results.mp4[0].url);
-                    if (!$scope.$$phase) {
-                        $scope.$apply();
-                    }
-                    //if ($scope.uploadcreateactivity) {
-                    //    $scope.uploadcreateactivity = false;
-                    //    self.addactivity();
-                    //}
-                    console.log(assemblyJson);
+                    try {
+                        var control = $("#file_input");
+                        control.replaceWith(control = control.clone(true));
+                        $scope.uploadprogress = '';
+                        //alert(JSON.stringify(assemblyJson));
+                        //$scope.isuploading = 2;
+                        $scope.fileuploadresult = 'File uploaded successfully';
+
+                        //console.log(assemblyJson.results.mp4[0].url);
+                        $scope.uploadedurl = assemblyJson.results.mp4[0].url;
+                        if ($scope.uploadcreateactivity) {
+                            $scope.NewActivity.video_links.webm = assemblyJson.results.webm[0].url;
+                            $scope.NewActivity.video_links.ogg = assemblyJson.results.ogg[0].url;
+                            $scope.NewActivity.video_links.mp4 = $scope.uploadedurl;
+                            $scope.NewActivity.video_links.phone = assemblyJson.results.phone[0].url;
+                            $scope.NewActivity.video_links.tablet = assemblyJson.results.tablet[0].url;
+                            $scope.NewActivity.video_links.thumbnail = assemblyJson.results.thumbnail[0].url;
+                            $scope.NewActivity.video_links.tablet = assemblyJson.results.tablet[0].url;
+                        }
+                        if ($scope.uploadcreateresponse) {
+                            $scope.NewResponse.video_links_array.webm = assemblyJson.results.webm[0].url;
+                            $scope.NewResponse.video_links_array.ogg = assemblyJson.results.ogg[0].url;
+                            $scope.NewResponse.video_links_array.mp4 = $scope.uploadedurl;
+                            $scope.NewResponse.video_links_array.phone = assemblyJson.results.phone[0].url;
+                            $scope.NewResponse.video_links_array.tablet = assemblyJson.results.tablet[0].url;
+                            $scope.NewResponse.video_links_array.thumbnail = assemblyJson.results.thumbnail[0].url;
+                            $scope.NewResponse.video_links_array.tablet = assemblyJson.results.tablet[0].url;
+                        }
+
+                        $scope.uploadedthumb = assemblyJson.results.thumbnail[0].url;
+                        $scope.isuploading = 0;
+
+                        $scope.playvideo(assemblyJson.results.mp4[0].url);
+                        if (!$scope.$$phase) {
+                            $scope.$apply();
+                        }
+                        //if ($scope.uploadcreateactivity) {
+                        //    $scope.uploadcreateactivity = false;
+                        //    self.addactivity();
+                        //}
+                        console.log(assemblyJson);
+                    } catch (e) { alert(e);}
                 },
 
                 error: function (error) {
                     console.log(error);
+                     $scope.fileuploadresult = 'File Failed to upload';
+                    $scope.isuploading = 0;
+
                 }
             });
             
@@ -1810,7 +1833,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
                 //console.log(JSON.stringify(self.formatnewactivity()));
                 console.log(access_token);
-                data = { action: 'input_open_challenge_response', activity_id: activityid,video_links:JSON.stringify( $scope.NewResponse.video_links), authorization: "Bearer " + access_token };
+                data = { action: 'input_open_challenge_response', activity_id: activityid, video_links_array: JSON.stringify($scope.NewResponse.video_links_array), authorization: "Bearer " + access_token };
                 $.ajax({
                     url: "http://www.bracketdash.com/api/api.php",
                     type: 'post',
@@ -1823,7 +1846,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         if (obj.status == 'success') {
 
                             $scope.NewResponse = {
-                                    activity_id: null, video_links: { "webm": null, "ogg": null, "mp4": null, "phone": null, "tablet": null }
+                                activity_id: null, video_links_array: { "webm": null, "ogg": null, "mp4": null, "phone": null, "tablet": null }
                             };
                             $scope.result.id = 1;
                             $scope.result.msg = 'Response Added Successfuly';
@@ -1857,13 +1880,24 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
             }
             if (mode == 'cancel')
-            { Transloadit.cancel(); alert('cancelled'); }
+            {
+                //Transloadit.cancel(); alert('cancelled');
+                $scope.videodialog.hide();
+            }
+            if (mode == 'delete')
+            {
+                $scope.videodialog.hide();
+                //alert('cancelled');
+            }
 
             
         }
         $scope.confirmresult = function () {
             $scope.result.id = 0;
-            $scope.$apply();
+            if (!$scope.$$phase) {
+
+                $scope.$apply();
+            }
         }
         $scope.file = '';
         $scope.uploadbutton = true;
@@ -1888,14 +1922,152 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         };
         
         $scope.selectfile = function () {
-            //alert();
             try {
                 var fc = new $filechooser();
-                fc.open(fc.success, fc.fail);
+                fc.open({},$scope.fileopensuccess, $scope.fileopenfail);
             } catch (e) { alert('1781>>'+e);}
         }
 
-        $scope.fileopensuccess = function (data) { alert(JSON.stringify(data)); }
+        $scope.checkfileprocessed = function (assemblyID) {
+            $.ajax({
+                url: "https://api2.transloadit.com/assemblies/" + assemblyID,
+                type: 'Get',
+                crossDomain: true,
+                success: function (data) {
+                    try {
+                      //  var obj = JSON.parse(data);
+                        //try { alert("15" + JSON.stringify(data)); } catch (e) { }
+                        //try { alert("15" + JSON.stringify(data.ok)); } catch (e) { }
+                        //alert(data.ok);
+                    if (data.ok != "ASSEMBLY_COMPLETED") {
+                        alert('not ready.. processing');
+                        setTimeout(function () { $scope.checkfileprocessed(assemblyID) }, 7000);
+                    }
+                    else {
+                        alert('DONE' + assemblyID);
+                        $scope.fileuploadresult = 'File uploaded successfully';
+                        //  alert(data.results.mp4[0].url);
+                        //var control = $("#file_input");
+                        //control.replaceWith(control = control.clone(true));
+                        $scope.uploadedurl = data.results.mp4[0].url;
+                        if ($scope.uploadcreateactivity) {
+                            $scope.NewActivity.video_links.webm = data.results.webm[0].url;
+                            $scope.NewActivity.video_links.ogg = data.results.ogg[0].url;
+                            $scope.NewActivity.video_links.mp4 = $scope.uploadedurl;
+                            $scope.NewActivity.video_links.phone = data.results.phone[0].url;
+                            $scope.NewActivity.video_links.tablet = data.results.tablet[0].url;
+                            try{ $scope.NewActivity.video_links.thumbnail = data.results.thumbnail[0].url;}catch(e){}
+                        }
+                        if ($scope.uploadcreateresponse) {
+                            $scope.NewResponse.video_links_array.webm = data.results.webm[0].url;
+                            $scope.NewResponse.video_links_array.ogg = data.results.ogg[0].url;
+                            $scope.NewResponse.video_links_array.mp4 = $scope.uploadedurl;
+                            $scope.NewResponse.video_links_array.phone = data.results.phone[0].url;
+                            $scope.NewResponse.video_links_array.tablet = data.results.tablet[0].url;
+                            try { $scope.NewResponse.video_links_array.thumbnail = data.results.thumbnail[0].url; } catch (e) { }
+                        }
+                        try { $scope.uploadedthumb = data.results.thumbnail[0].url; } catch (e) { }
+                        alert('values are set');
+
+                        $scope.isuploading = 0;
+
+                        $scope.playvideo(data.results.mp4[0].url);
+                        try {
+                            $scope.$apply();
+                        } catch (e) { }
+                    }
+                    } catch (e) { alert(e);
+                    }
+                    
+                },
+                error: function (data) {
+                    $scope.isloading = false;
+                    $scope.$apply();
+                     alert(jSON.stringify(data));
+                }
+            });
+
+           
+        }
+        $scope.fileopensuccess = function (data) {
+            try {
+                var filepath = data.filepath;
+                function win(assemblyJson) {
+                    try {
+                        //alert('win');
+                        //return;
+                        //if (!assemblyJson.results)
+                        //   return;
+                        try {
+                            $scope.uploadprogress = '';
+                            try{$scope.$apply();}catch(e){}
+                            var obj = JSON.parse(assemblyJson.response);
+                            $scope.checkfileprocessed(obj.assembly_id);
+                            alert("upload completed");
+                            return;
+                        } catch (e) {
+                            alert(e);
+                        }
+                       
+                        //alert(JSON.stringify(assemblyJson.response));
+                        //alert(JSON.stringify(assemblyJson.assembly_id));
+                        
+                    }catch(e){alert(e);}
+                   
+                }
+
+                function fail(error) {
+                                        $scope.fileuploadresult = 'File Failed to upload';
+                                        $scope.isuploading = 0;
+                                        alert('File Failed to upload' + error);
+                }
+
+                var uri = encodeURI("https://api2-eu-west-1.transloadit.com/assemblies");
+                var options = new FileUploadOptions();
+                options.fileKey = "file";
+                options.fileName = filepath.substr(filepath.lastIndexOf('/') + 1);
+
+
+                var params = {};
+                //params.params = '[signed assembly goes here]';
+
+                params.params = new Object();
+                params.params.auth = new Object();
+
+                params.params.auth.key = "7e36b0800fec11e5b74aa7b807288d6d";
+                params.params.template_id = "7a0d23c0119c11e59b7c67e0d9c6ade5";
+                params.params.steps = new Object();
+                params.params.steps = {};
+                options.params = params; 
+
+
+                //alert(JSON.stringify(options.params));
+                var ft = new FileTransfer();
+                ft.onprogress = function (progressEvent) {
+                    if (progressEvent.lengthComputable) {
+                        if ((progressEvent.loaded / progressEvent.total) > 0 && (progressEvent.loaded / progressEvent.total) < 3)
+                        {
+                        //alert('I am, uploading');
+                        }
+                    }
+
+                    if (progressEvent.lengthComputable) {
+                        $scope.uploadprogress = (parseInt(progressEvent.loaded * 100/ progressEvent.total) ).toString() + ' %';
+                        try{
+                            $scope.$apply();
+                        }catch(e){}
+                    }
+                    else {
+                        //loadingStatus.increment();
+                    }
+                };
+                //alert('uploading');
+                $scope.isuploading = 1;
+                $scope.file = '';
+                $scope.commentdialog.hide();
+                ft.upload(filepath, uri, win, fail, {params: params});
+            } catch (e) { alert(e);}
+        }
         $scope.fileopenfail = function (data) { alert(JSON.stringify(data)); }
         $scope.uploadandroid = function (filepath) {
             try {
@@ -2139,10 +2311,13 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
     var FileChooser = function () {};
     FileChooser.prototype = {
         open: function (params, success, fail) {
-            return cordova.exec(function (args) { success(args); }, function (args) { fail(args); },
-                'FileChooser', 'open', [params || {}]);
+            try {
+               // alert('f');
+                return cordova.exec(function (args) { success(args); }, function (args) { fail(args); },
+                    'FileChooser', 'open', [params || {}]);
+            } catch (e) { alert(e);}
         },
-        success: function (data) { alert(data); },
+        success: function (data) { alert('>>><<<<'+data.filepath); },
         fail: function (data) { alert(data);}
     }
     return FileChooser;
