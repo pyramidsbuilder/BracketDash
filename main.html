@@ -47,7 +47,7 @@
         <br>
     </ons-modal>
     <script type="text/ons-template" id="dialog.html" >
-        <ons-dialog cancelable ons-prehide="bd.closevideo($event)">
+        <ons-dialog  ons-prehide="bd.closevideo($event)">
             <!--<span style="color:#FFF">
                 <video width="320" height="240" controls>
                     <source src="{{isplaying}}" type="video/mp4">
@@ -78,6 +78,49 @@
 
         </ons-dialog>
     </script>
+
+    <script type="text/ons-template" id="dialogprofilepic.html">
+        <ons-dialog cancelable >
+            <script src="scripts/cropit.js"></script>
+            <link rel="stylesheet" href="css/cropit.css" />
+
+            <div class="upload-picture-wrapper">
+            <div class="upload-profile-photo-header">Upload Profile Photo</div>
+            <div class="image-editor">
+                <div style="position: relative; width: 250px; height: 250px;" class="cropit-preview cropit-image-loaded">
+                <div style="position: absolute; z-index: 0; top: -10px; right: -10px; bottom: -10px; left: -10px; overflow: hidden;" class="cropit-preview-background-container">
+                    <img src="" style="transform-origin: left top 0px; will-change: transform; transform: translate(0px, 0px) scale(0.801282) rotate(0deg);" alt="" class="cropit-preview-image"></div>
+                </div>
+                <div class="resize-image-wrapper">
+                <div class="image-size-label">Resize image</div>
+                <input step="0.01" max="1" min="0" class="cropit-image-zoom-input" type="range"></div>
+                <div class="rotate-image-buttons"><div class="rotate-ccw"></div>
+                <div class="rotate-cw"></div></div>
+                <button class="upload">Upload Image</button>
+                <input accept="image/*" class="cropit-image-input" type="file"><button class="export">Export</button></div></div>
+            
+             <div class="tab-bar" style="z-index:1000" ng-if="isplaying == uploadedurl">
+                <label class="tab-bar__item btnaccept" ng-click="confirmupload('finish')">
+                    <input type="radio" name="tab-bar-a">
+                    <button class="tab-bar__button">
+                        <i class="tab-bar__icon fa fa-check"></i>
+                        <div class="tab-bar__label"><span>{{uploadcreateactivity? 'Add Activity' : 'Add Response' }}</span></div>
+                    </button>
+                </label>
+
+                <label class="tab-bar__item btndecline" ng-click="confirmupload('delete')">
+                    <input type="radio" name="tab-bar-a">
+                    <button class="tab-bar__button">
+                        <i class="tab-bar__icon fa fa-times"></i>
+                        <div class="tab-bar__label">Delete</div>
+                    </button>
+                </label>
+
+            </div>
+
+        </ons-dialog>
+    </script>
+
 
     <script type="text/ons-template" id="dialoguserselect.html">
         <ons-dialog cancelable >
@@ -370,14 +413,14 @@
                 <ons-toolbar modifier="transparent"></ons-toolbar>
 
                 <ons-list class="menu-list">
-                    <ons-list-item ng-if="bd.isloggedin" modifier="chevron" class="menu-item" ng-click="bd.expandaccount()">
+                    <ons-list-item ng-if="bd.isloggedin" modifier="chevron" class="menu-item">
                         <!--<ons-icon icon="minus-square-o" ng-show="bd.accountexpand"></ons-icon>
                         <ons-icon icon="plus-square-o" ng-show="!bd.accountexpand"></ons-icon>-->
                         <ons-row>
-                            <ons-col width="25%">
-                                <img src="{{bd.userinfo.Avatar_link}}" class="avatar">
+                            <ons-col width="25%" >
+                                <img src="{{bd.userinfo.Avatar_link}}" ng-click="showdialogprofilepic()" class="avatar">
                             </ons-col>
-                            <ons-col>
+                            <ons-col  ng-click="bd.expandaccount()">
                                 {{bd.userinfo.Fullname}}
                             </ons-col>
 

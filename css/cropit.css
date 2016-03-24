@@ -1,0 +1,105 @@
+﻿.upload-picture-wrapper{
+       width:500px;
+       }
+.upload-profile-photo-header{
+       background:#c13234;
+       padding:8px 0px;
+       text-align:center;
+       font-weight:bold;
+       color: white;
+       }
+.image-editor{
+      width:300px;
+      margin: 15px auto;
+      background: white;
+      }
+.cropit-preview {
+  background-size: cover;
+  border-radius: 3px;
+  margin: 7px auto auto auto;
+  width: 250px;
+  height: 250px;
+  background: white;
+}
+.cropit-preview-image-container{
+  border-radius: 100%;
+  border: 3px solid #bec4d2;
+  background: white;
+}
+.cropit-preview-background{
+  opacity: 0.5;
+}
+.cropit-preview-background-container, .cropit-preview-image-container{
+  background: white;
+}
+.resize-image-wrapper{
+  width: 150px;
+  margin: auto;
+}
+.rotate-image-buttons{
+  width: 300px;
+  text-align: center;
+}
+.rotate-image-buttons div{
+  display: inline-block;
+  vertical-align: top;
+}
+.rotate-ccw{
+  width: 50px;
+  height: 50px;
+  background-image: url('../images/icons/rotate-left.png');
+  cursor: pointer;
+}
+.rotate-cw{
+  width: 50px;
+  height: 50px;
+  background-image: url('../images/icons/rotate-right.png');
+  cursor: pointer;
+}
+.cropit-preview-image-container{
+  cursor: move;
+}
+.image-size-label {
+  margin-top: 10px;
+}
+input, .export {
+  display: block;
+}
+button {
+  margin-top: 10px;
+}
+.cropit-image-input{
+     display:none;  
+    }
+.upload{
+      cursor:pointer;
+      border:3px solid #428bca; 
+      -webkit-border-radius: 4px; 
+      -moz-border-radius: 4px;
+      border-radius: 4px;
+      font-size:12px;
+      font-family:arial, helvetica, sans-serif;
+      padding: 10px 10px 10px 10px; 
+      text-decoration:none; 
+      display:inline-block;
+      font-weight:bold; 
+      color: #428bca;
+      background-color: white;
+      margin:5px 5px;
+      }
+.export{
+      cursor:pointer;
+      border:3px solid #293c6b; 
+     -webkit-border-radius: 4px; 
+     -moz-border-radius: 4px;
+     border-radius: 4px;
+     font-size:12px;
+     font-family:arial, helvetica, sans-serif; 
+     padding: 10px 10px 10px 10px; 
+     text-decoration:none; 
+     display:inline-block;
+     font-weight:bold; 
+     color: #293c6b;
+     background-color: white;
+     margin:5px 5px;
+        }

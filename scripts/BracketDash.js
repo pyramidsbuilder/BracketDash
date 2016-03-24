@@ -1038,6 +1038,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
         }
  
+        $scope.showdialogprofilepic = function () {
+            alert('');
+            $scope.dialogprofilepic.show();
+        }
         $scope.getnotifications = function (limit) {
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
@@ -1062,8 +1066,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
             });
         }
-
-
         $scope.getmessages = function (limit) {
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
@@ -1460,6 +1462,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
             ons.createPopover('popoverfileselect.html').then(function (popoverfileselect) {
                 $scope.popoverfileselect = popoverfileselect;
+            });
+            ons.createDialog('dialogprofilepic.html').then(function (dialogprofilepic) {
+                $scope.dialogprofilepic = dialogprofilepic;
             });
             
             if (device.platform.toLowerCase() === 'android' && device.version.indexOf('4.4') === 0
