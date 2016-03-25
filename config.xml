@@ -11,7 +11,7 @@
     <plugin name="org.apache.cordova.file-transfer"/>
   <plugin spec="https://github.com/cdibened/filechooser.git" source="git" />
   <plugin name="org.apache.cordova.device" />
-  <plugin name="com-badrit-base64" />
+  <plugin name="https://github.com/hazemhagrass/phonegap-base64.git"  source="git" />
   <gap:plugin name="org.apache.cordova.splashscreen" />
 
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
