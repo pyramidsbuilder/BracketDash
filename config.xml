@@ -8,9 +8,10 @@
         BracketDash team
     </author>
     <content src="index.html" />
-    <gap:plugin name="org.apache.cordova.file-transfer"/>
+    <plugin name="org.apache.cordova.file-transfer"/>
   <plugin spec="https://github.com/cdibened/filechooser.git" source="git" />
-  <!--<gap:plugin name="com.cesidiodibenedetto.filechooser" spec="1.0.0" source="pgb" />-->
+  <plugin name="org.apache.cordova.device" />
+  <plugin name="com-badrit-base64" />
   <gap:plugin name="org.apache.cordova.splashscreen" />
 
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />

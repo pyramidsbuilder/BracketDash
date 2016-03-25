@@ -22,6 +22,7 @@
     <link rel="stylesheet" href="css/BracketDash.css" />
     <link rel="stylesheet" href="css/mobile-activity.css" />
     <link rel="stylesheet" href="lib/angular/ng-animation.css" />
+    <link rel="stylesheet" href="css/cropit.css" />
     
     <!-- -- ------------- App init --------------- -->
 
@@ -36,6 +37,8 @@
     <script src="scripts/index.js"></script>
     <!--<script src="scripts/transloadit.js"></script>-->
     <script src="scripts/transloadit.jquery.js"></script>
+    <script src="scripts/cropit.js"></script>
+
 </head>
 
 <body id="body" ng-controller="BracketDashController as bd">
@@ -80,24 +83,30 @@
     </script>
 
     <script type="text/ons-template" id="dialogprofilepic.html">
-        <ons-dialog cancelable >
-            <script src="scripts/cropit.js"></script>
-            <link rel="stylesheet" href="css/cropit.css" />
+        <ons-dialog cancelable  ons-postshow="showcropit($event)" >
+            
+            <!--<div>
+                <img id="image" src="{{bd.userinfo.Avatar_link}}" style="max-width:100%">
+                <button ng-click="getCroppedCanvas()" type="button" class="btn btn-primary">
+                    <span  class="docs-tooltip" data-toggle="tooltip" title="">
+                        Get Cropped Canvas
+                    </span>
+                </button>
+                {{croppeddata}}
+            </div>-->
 
-            <div class="upload-picture-wrapper">
-            <div class="upload-profile-photo-header">Upload Profile Photo</div>
-            <div class="image-editor">
-                <div style="position: relative; width: 250px; height: 250px;" class="cropit-preview cropit-image-loaded">
-                <div style="position: absolute; z-index: 0; top: -10px; right: -10px; bottom: -10px; left: -10px; overflow: hidden;" class="cropit-preview-background-container">
-                    <img src="" style="transform-origin: left top 0px; will-change: transform; transform: translate(0px, 0px) scale(0.801282) rotate(0deg);" alt="" class="cropit-preview-image"></div>
-                </div>
-                <div class="resize-image-wrapper">
-                <div class="image-size-label">Resize image</div>
-                <input step="0.01" max="1" min="0" class="cropit-image-zoom-input" type="range"></div>
-                <div class="rotate-image-buttons"><div class="rotate-ccw"></div>
-                <div class="rotate-cw"></div></div>
-                <button class="upload">Upload Image</button>
-                <input accept="image/*" class="cropit-image-input" type="file"><button class="export">Export</button></div></div>
+            <div class="upload-picture-wrapper"><div class="upload-profile-photo-header">Upload Profile Photo</div>
+            <div class="image-editor"><div class="cropit-preview cropit-image-loading" style="position: relative; width: 250px; height: 250px;">
+                <div class="cropit-preview-background-container" style="position: absolute; z-index: 0; top: -10px; right: -10px; bottom: -10px; left: -10px; overflow: hidden;">
+                <img class="cropit-preview-background" alt="" style="position: relative; left: 10px; top: 10px; transform-origin: left top 0px; will-change: transform;"></div>
+                <div class="cropit-preview-image-container" style="position: absolute; overflow: hidden; left: 0px; top: 0px; width: 100%; height: 100%;">
+                <img class="cropit-preview-image" alt="" style="transform-origin: left top 0px; will-change: transform;"></div></div>
+                <div class="resize-image-wrapper"><div class="image-size-label">Resize image</div>
+                <input type="range" class="cropit-image-zoom-input" min="0" max="1" step="0.01"></div><div class="rotate-image-buttons">
+                <div class="rotate-ccw"><i class="fa fa-undo"></i></div><div class="rotate-cw"><i class="fa fa-repeat"></i></div></div><button class="upload">Select Image</button>
+                <input type="file" class="cropit-image-input" accept="image/*"><button class="export">Save</button></div></div>
+           {{profilepicbase64}}
+            <button ng-if="version44 && !file" ng-click="selectprofilepic()" style="height:30px;">Choose File.</button>
             
              <div class="tab-bar" style="z-index:1000" ng-if="isplaying == uploadedurl">
                 <label class="tab-bar__item btnaccept" ng-click="confirmupload('finish')">
@@ -418,7 +427,9 @@
                         <ons-icon icon="plus-square-o" ng-show="!bd.accountexpand"></ons-icon>-->
                         <ons-row>
                             <ons-col width="25%" >
-                                <img src="{{bd.userinfo.Avatar_link}}" ng-click="showdialogprofilepic()" class="avatar">
+                                <img  src="https://bracketdash-users.s3.amazonaws.com/33/profile-picture.jpg" id="myprofilepic" ng-click="showdialogprofilepic()" class="avatar">
+                                <canvas id="myCanvas" />
+                                <input type="file" id="base645" />
                             </ons-col>
                             <ons-col  ng-click="bd.expandaccount()">
                                 {{bd.userinfo.Fullname}}
