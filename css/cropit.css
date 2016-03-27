@@ -69,7 +69,7 @@ button {
   margin-top: 10px;
 }
 .cropit-image-input{
-     display:none;  
+    position:absolute ; top:-100px;
     }
 .upload{
       cursor:pointer;
@@ -103,3 +103,22 @@ button {
      background-color: white;
      margin:5px 5px;
         }
+.cancel{
+      cursor:pointer;
+      border:3px solid #293c6b; 
+     -webkit-border-radius: 4px; 
+     -moz-border-radius: 4px;
+     border-radius: 4px;
+     font-size:12px;
+     font-family:arial, helvetica, sans-serif; 
+     padding: 10px 10px 10px 10px; 
+     text-decoration:none; 
+     display:inline-block;
+     font-weight:bold; 
+     color: #293c6b;
+     background-color: white;
+     margin:5px 5px;
+        }
+
+.cropit-preview-background-container {
+opacity:0.1}

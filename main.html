@@ -96,17 +96,23 @@
             </div>-->
 
             <div class="upload-picture-wrapper"><div class="upload-profile-photo-header">Upload Profile Photo</div>
-            <div class="image-editor"><div class="cropit-preview cropit-image-loading" style="position: relative; width: 250px; height: 250px;">
+            <div class="image-editor" id="image-editor"><div class="cropit-preview cropit-image-loading" style="position: relative; width: 150px; height: 150px;">
                 <div class="cropit-preview-background-container" style="position: absolute; z-index: 0; top: -10px; right: -10px; bottom: -10px; left: -10px; overflow: hidden;">
                 <img class="cropit-preview-background" alt="" style="position: relative; left: 10px; top: 10px; transform-origin: left top 0px; will-change: transform;"></div>
                 <div class="cropit-preview-image-container" style="position: absolute; overflow: hidden; left: 0px; top: 0px; width: 100%; height: 100%;">
                 <img class="cropit-preview-image" alt="" style="transform-origin: left top 0px; will-change: transform;"></div></div>
                 <div class="resize-image-wrapper"><div class="image-size-label">Resize image</div>
                 <input type="range" class="cropit-image-zoom-input" min="0" max="1" step="0.01"></div><div class="rotate-image-buttons">
-                <div class="rotate-ccw"><i class="fa fa-undo"></i></div><div class="rotate-cw"><i class="fa fa-repeat"></i></div></div><button class="upload">Select Image</button>
-                <input type="file" class="cropit-image-input" accept="image/*"><button class="export">Save</button></div></div>
-           {{profilepicbase64}}
-            <button ng-if="version44 && !file" ng-click="selectprofilepic()" style="height:30px;">Choose File.</button>
+                <div class="rotate-ccw"><i class="fa fa-undo"></i></div><div class="rotate-cw"><i class="fa fa-repeat"></i></div></div>
+               <button  ng-if="version44" ng-click="selectprofilepic()" style="height:30px;">Choose File.</button>
+                <button ng-if="!version44" class="upload">Select Image</button>
+                <input type="file" class="cropit-image-input" accept="image/*"><button class="export">Save</button><button class="cancel pull-right" ng-click="dialogprofilepic.hide()">Cancel</button></div>
+            
+                <!--<div>
+                    <img id="image" src="picture.jpg">
+                </div><button ng-click="getCroppedCanvas()"> Save </button>-->
+
+            </div>
             
              <div class="tab-bar" style="z-index:1000" ng-if="isplaying == uploadedurl">
                 <label class="tab-bar__item btnaccept" ng-click="confirmupload('finish')">
@@ -427,7 +433,7 @@
                         <ons-icon icon="plus-square-o" ng-show="!bd.accountexpand"></ons-icon>-->
                         <ons-row>
                             <ons-col width="25%" >
-                                <img  src="https://bracketdash-users.s3.amazonaws.com/33/profile-picture.jpg" id="myprofilepic" ng-click="showdialogprofilepic()" class="avatar">
+                                <img  src="{{bd.userinfo.Avatar_link}}" id="myprofilepic" ng-click="showdialogprofilepic()" class="avatar">
                                 <canvas id="myCanvas" />
                                 <input type="file" id="base645" />
                             </ons-col>
@@ -1935,10 +1941,10 @@
                 <ons-row>
                     <ons-col>
                         <div class="login-form">
-                            <input type="email" class="text-input--underbar" ng-model="forgotemail" placeholder="Email">
-
+                            <input type="email" class="text-input--underbar" ng-model="forgotemail.email" placeholder="Email">
+                            
                             <br><br>
-                            <ons-button modifier="large" class="login-button" ng-click="bd.login()">Send Reset Link</ons-button>
+                            <ons-button modifier="large" class="login-button" ng-click="forgotpassword()">Send Reset Link</ons-button>
                             <br><br>
                         </div>
                     </ons-col>
