@@ -9,7 +9,7 @@
     </author>
     <content src="index.html" />
     <plugin name="org.apache.cordova.file-transfer"/>
-    <plugin name="com.cesidiodibenedetto.filechooser" spec="1.0.0"  />
+    <plugin name="com.cesidiodibenedetto.filechooser" spec="1.0.0" source="git" />
 
   <gap:plugin name="org.apache.cordova.splashscreen" />
 
