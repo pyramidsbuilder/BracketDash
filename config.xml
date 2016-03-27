@@ -9,8 +9,8 @@
     </author>
     <content src="index.html" />
     <plugin name="org.apache.cordova.file-transfer"/>
-    <plugin name="com.cesidiodibenedetto.filechooser" spec="1.0.0" source="git" />
 
+  <plugin spec="https://github.com/cdibened/filechooser.git" source="git" />
   <gap:plugin name="org.apache.cordova.splashscreen" />
 
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
