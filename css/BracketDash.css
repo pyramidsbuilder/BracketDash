@@ -1141,165 +1141,215 @@ float:left;
     height:38px;
     color:white !important;
 }
-@media only screen and (min-width: 500px){
-	div{
-	    color:#293c6b;
-	    font-family:arial;
-	    font-size:14px;
-	}
-	.invitation-wrapper{
-	    width:500px;
-	    border:1px solid #bec4d2;
-	    border-radius:4px;
-		background:white;
-		text-align:left;
-	}
-	/*INVITATION HEADER CSS*/
-	.invitation-header{
-	    width:500px;
-	}
-	.invitation-header>div{
-	   display:inline-block;
-	   vertical-align:top;
-	}
-	.invitation-host-avatar{
-		width:50px;
-	    margin:5px;
-	    height:50px;
-	    border-radius:100%;
-	    overflow:hidden;
-		}
-	.invitation-section-avatar, .invitation-bracket-section-avatar{
-	    width:50px;
-	    margin:auto;
-	    height:50px;
-	    border-radius:100%;
-	    overflow:hidden;
-	}
-	.invitation-host-avatar>img, .invitation-section-avatar>img, .invitation-bracket-section-avatar>img{
-	    width:50px;
-	}
-	.invitation-header-txt{
-	    margin:5px;
-		max-width:415px;
-	}
-	.invitation-header-txt-top-section>div{
-	    display:inline-block;
-	    vertical-align:top;
-	    margin-right:5px;
-	}
-	.invitation-host-username, .invitation-date{
-	    font-weight:bold;
-	}
-	.invitation-date{color:#949db5 !important;}
-	.invitation-title{font-size:24px; font-weight:bold;width:100%;}
-	.invitation-type{color:#949db5 !important;width:100%;}
-	/*INVITATION BODY*/
-	/*BATTLE*/	
-	
-	.invitation-section{
-		margin:10px auto;
-	}
-	.invitation-section>div{
-		display: inline-block;
-		vertical-align:top;
-	}
-	.invitation-section-badge{
-		width:60px;
-		margin-left:150px;
-	}
-	.invitation-section-names{
-		text-align:left;
-		margin-left:10px;
-	}
-	.invitation-section-fullname{
-		font-weight:bold;
-	}
-	.invitation-section-username{
-		font-weight:bold;
-		color:#949db5 !important;
-	}
+@media only screen and (min-width: 500px) {
+    div {
+        color: #293c6b;
+        font-family: arial;
+        font-size: 14px;
+    }
 
-	/*BRACKET*/
-	.invitation-bracket-section{		
-		text-align:center;
-	}
-	.invitation-bracket-section>div{
-		display:inline-block;
-		vertical-align:top;
-	}
-	.invitation-bracket-section-content{
-		height:80px;
-		text-align:right;
-	}
-	.invitation-bracket-section-content>div{
-		display:inline-block;
-		vertical-align:top;
-	}
-	.invitation-bracket-section-fullname{
-		font-weight:bold;
-	}
-	.invitation-bracket-section-username{
-		font-weight:bold;
-		color:#949db5 !important;
-	}
-	.invitation-bracket-section-avatar-wrapper{
-		width:60px;
-		text-align:center;
-	}	
-	.invitation-bracket-section-frame{
-	    background:url("http://www.bracketdash.com/images/icons/bracketFrame.png");
-	    background-size:30px 85px;
-	    width:30px;
-	    height:85px;
-	    margin:25px 0px;
-	}
-	
-	/*INVITATION BODY SHARED CODE*/
-	.vs-divider>div{
-	    width:58px;
-	    height:48px;
-	    display:block;
-	    margin:4px auto;
-	    font-weight:bold;
-	    color:#949db5 !important;
-	    font-size:45px;
-	}
-	.invitation-divider{
-		background:#949db5;
-		font-weight:bold;
-		padding:5px 0px;
-		text-align:center;
-		margin:5px 0px;
-	}
-	/******************/
-	/*INVITATION FOOTER*/
-	.invitation-footer{
-	    /*background-color:#c13234;*/
-	    background-color:#c13234;
-	    color:white !important;
-	    padding:10px;
-	}
-	.invitation-description{
-	    margin: auto;
-	    color: white !important;
-	}
-	.invitation-response-button{
-		background:#929db5;
-		text-align:center;
-	}
-	.invitation-response-button>div{
-		display:inline-block;
-		vertical-align:top;
-		border:1px solid #667697;
-		border-radius:3px;
-		padding:5px;
-		margin:5px;
-		cursor:pointer;
-		font-weight:bold;
-	}
-	.invitation-response-button>div:hover{
-		border:1px solid #3A4F79;
-		background:#667697;
-	}
+    .invitation-wrapper {
+        width: 500px;
+        border: 1px solid #bec4d2;
+        border-radius: 4px;
+        background: white;
+        text-align: left;
+    }
+    /*INVITATION HEADER CSS*/
+    .invitation-header {
+        width: 500px;
+    }
 
+        .invitation-header > div {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+    .invitation-host-avatar {
+        width: 50px;
+        margin: 5px;
+        height: 50px;
+        border-radius: 100%;
+        overflow: hidden;
+    }
+
+    .invitation-section-avatar, .invitation-bracket-section-avatar {
+        width: 50px;
+        margin: auto;
+        height: 50px;
+        border-radius: 100%;
+        overflow: hidden;
+    }
+
+        .invitation-host-avatar > img, .invitation-section-avatar > img, .invitation-bracket-section-avatar > img {
+            width: 50px;
+        }
+
+    .invitation-header-txt {
+        margin: 5px;
+        max-width: 415px;
+    }
+
+    .invitation-header-txt-top-section > div {
+        display: inline-block;
+        vertical-align: top;
+        margin-right: 5px;
+    }
+
+    .invitation-host-username, .invitation-date {
+        font-weight: bold;
+    }
+
+    .invitation-date {
+        color: #949db5 !important;
+    }
+
+    .invitation-title {
+        font-size: 24px;
+        font-weight: bold;
+        width: 100%;
+    }
+
+    .invitation-type {
+        color: #949db5 !important;
+        width: 100%;
+    }
+    /*INVITATION BODY*/
+    /*BATTLE*/
+
+    .invitation-section {
+        margin: 10px auto;
+    }
+
+        .invitation-section > div {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+    .invitation-section-badge {
+        width: 60px;
+        margin-left: 150px;
+    }
+
+    .invitation-section-names {
+        text-align: left;
+        margin-left: 10px;
+    }
+
+    .invitation-section-fullname {
+        font-weight: bold;
+    }
+
+    .invitation-section-username {
+        font-weight: bold;
+        color: #949db5 !important;
+    }
+
+    /*BRACKET*/
+    .invitation-bracket-section {
+        text-align: center;
+    }
+
+        .invitation-bracket-section > div {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+    .invitation-bracket-section-content {
+        height: 80px;
+        text-align: right;
+    }
+
+        .invitation-bracket-section-content > div {
+            display: inline-block;
+            vertical-align: top;
+        }
+
+    .invitation-bracket-section-fullname {
+        font-weight: bold;
+    }
+
+    .invitation-bracket-section-username {
+        font-weight: bold;
+        color: #949db5 !important;
+    }
+
+    .invitation-bracket-section-avatar-wrapper {
+        width: 60px;
+        text-align: center;
+    }
+
+    .invitation-bracket-section-frame {
+        background: url("http://www.bracketdash.com/images/icons/bracketFrame.png");
+        background-size: 30px 85px;
+        width: 30px;
+        height: 85px;
+        margin: 25px 0px;
+    }
+
+    /*INVITATION BODY SHARED CODE*/
+    .vs-divider > div {
+        width: 58px;
+        height: 48px;
+        display: block;
+        margin: 4px auto;
+        font-weight: bold;
+        color: #949db5 !important;
+        font-size: 45px;
+    }
+
+    .invitation-divider {
+        background: #949db5;
+        font-weight: bold;
+        padding: 5px 0px;
+        text-align: center;
+        margin: 5px 0px;
+    }
+    /******************/
+    /*INVITATION FOOTER*/
+    .invitation-footer {
+        /*background-color:#c13234;*/
+        background-color: #c13234;
+        color: white !important;
+        padding: 10px;
+    }
+
+    .invitation-description {
+        margin: auto;
+        color: white !important;
+    }
+
+    .invitation-response-button {
+        background: #929db5;
+        text-align: center;
+    }
+
+        .invitation-response-button > div {
+            display: inline-block;
+            vertical-align: top;
+            border: 1px solid #667697;
+            border-radius: 3px;
+            padding: 5px;
+            margin: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+            .invitation-response-button > div:hover {
+                border: 1px solid #3A4F79;
+                background: #667697;
+            }
+}
+
+.account-settings-wrapper {
+    text-align:center;
+    width: 100%;
+    border-radius: 4px;
+    border: 1px solid #BEC4D2;
+    overflow: hidden;
+    background: white;
+    margin-bottom: 13px;
+}
+.account-settings-wrapper .header {
+    color:white !important;
+}

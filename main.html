@@ -236,6 +236,27 @@
         </ons-dialog>
     </script>
     
+
+    <script type="text/ons-template" id="dialogpassword.html">
+        <ons-dialog cancelable>
+
+            <div class="account-settings-wrapper">
+                <div class="header">
+                    Please enter your password to confirm.
+                </div>
+                <form novalidate="novalidate" class="edit-email-form">
+                    <br><br><input type="password" class="text-input--underbar txtsignup" name="password" placeholder="" ng-model="changesettings.confirmpassword" >
+                    <br><br>
+                    <ons-button modifier="large"  class="login-button btnsecond" style="width:80%;"
+                                ng-click="changesetting()">Confirm</ons-button>
+
+                </form>
+            </div>
+            
+        </ons-dialog>
+    </script>
+
+
     <script type="text/ons-template" id="dialogcomment.html" >
         <ons-dialog cancelable ons-prehide="bd.hidecomments(currentfeed.activity_id)">
 
@@ -1465,45 +1486,73 @@
         <ons-template id="AccountSettings.html">
 
             <ons-page>
+
                 <div class="headergap"></div>
-                <div class="contentwrapper">
-                    <ons-row>
-                        <ons-col>
-                            <div style="text-align: center; padding: 10px 0;">
-                                <span required style="width:95%" ng-model="bd.userinfo.accountsettings.username" value="">
-                                </span>
-                            </div>
-                            <div class="ng-hide" style="text-align: center; padding: 10px 0;">
-                                <span required style="width:95%" ng-model="bd.userinfo.profilesettings.email" value=""></span>
-                            </div>
+                <div class="contentwrapper demo-content">
+                    <div class="account-settings-wrapper">
+                        <div class="header">
+                            Edit Email
+                        </div>
+                        <form novalidate="novalidate" class="edit-email-form">
+                            <input type="email" class="text-input--underbar" ng-model="changesettings.registeremail" placeholder="Email">
+                            <ons-icon icon="ion-load-c" class="checkmail " ng-if="checkingemail" spin="true"></ons-icon>
+                            <br><br>
+                            {{changesettings.registeremailvalid}}
+                            <ons-button modifier="large" ng-disabled="changesettings.registeremail == bd.userinfo.Email || changesettings.registeremailvalid.length > 0" class="login-button btnsecond"
+                                        ng-click="changeemail()">Change Email</ons-button>
+                           
+                        </form>
+                    </div>
 
-                        </ons-col>
-                    </ons-row>
+                    <div class="account-settings-wrapper">
+                        <div class="header">
+                            Edit Username
+                        </div>
+                        <form novalidate="novalidate" class="edit-email-form">
+                            <input type="text" class="text-input--underbar" ng-model="changesettings.registerusername" placeholder="Email">
+                            <ons-icon icon="ion-load-c" class="checkmail" ng-if="checkingusername" spin="true"></ons-icon>
+                            <br><br>{{changesettings.registerusernamevalid}}
+                            <ons-button modifier="large" class="login-button btnsecond" ng-disabled="changesettings.registerusername == bd.userinfo.Username || changesettings.registerusernamevalid.length > 0" ng-click="changeusername()">Change Username</ons-button>
+                            
+                        </form>
+                    </div>
+
+                    <div class="account-settings-wrapper">
+                        <div class="header">
+                            Edit Password
+                        </div>
+                        <form novalidate="novalidate" class="edit-email-form">
+                            <ons-row>
+                                <ons-col>
+                                    <div style="text-align: center; padding: 10px 0;">
+                                        <input type="text" class="text-input--underbar" required style="width:95%"
+                                               placeholder="Current Password" ng-model="changesettings.registeroldpassword" value="">
+                                    </div>
+                                    <div style="text-align: center; padding: 10px 0;">
+                                        <input type="text" class="text-input--underbar" required style="width:95%"
+                                               placeholder="New Password" ng-model="changesettings.registerpassword" value="">
+                                    </div>
+                                    <div style="text-align: center; padding: 10px 0;">
+                                        <input type="text" class="text-input--underbar" required style="width:95%"
+                                               placeholder="Confirm Password" ng-model="changesettings.registerpasswordconfirm" value="">
+                                    </div>
+                                    {{changesettings.registerpasswordvalid}}
+                                    <div style="text-align: center; padding: 10px 0;">
+                                        <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="changepassword()">
+                                            Change Password
+                                        </ons-botton>
+                                    </div>
+
+                                </ons-col>
+                            </ons-row>
+                        </form>
+                    </div>
+                    
+
                 </div>
-
+                <br /><Br />
                 <div class="contentwrapper">
-                    <ons-row>
-                        <ons-col>
-                            <div style="text-align: center; padding: 10px 0;">
-                                <input type="text" class="text-input--underbar" required style="width:95%"
-                                       placeholder="Current Password" ng-model="AccountSettingsForm.Current_password" value="">
-                            </div>
-                            <div style="text-align: center; padding: 10px 0;">
-                                <input type="text" class="text-input--underbar" required style="width:95%"
-                                       placeholder="New Password" ng-model="AccountSettingsForm.New_password" value="">
-                            </div>
-                            <div style="text-align: center; padding: 10px 0;">
-                                <input type="text" class="text-input--underbar" required style="width:95%"
-                                       placeholder="Confirm Password" ng-model="AccountSettingsForm.Confirm_password" value="">
-                            </div>
-                            <div style="text-align: center; padding: 10px 0;">
-                                <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="bd.savesettings()">
-                                    Save Settings
-                                </ons-botton>
-                            </div>
-
-                        </ons-col>
-                    </ons-row>
+              
                 </div>
             </ons-page>
         </ons-template>
@@ -1512,40 +1561,106 @@
             <ons-page>
                 <div class="headergap"></div>
                 <div class="contentwrapper">
-                    <ons-row>
-                        <ons-col>
-                            <div style="text-align: center; padding: 10px 0;">
-                                <span required style="width:95%">
-                                    Who can join my audience?
-                                </span>
-                            </div>
-                            <div style="text-align: center; padding: 10px 0;">
+                    <div class="account-settings-wrapper">
+                        <div class="header">
+                            Who can view my profile information?
+                        </div>
+                        <form novalidate="novalidate" class="edit-email-form">
+                            <ons-row>
+                                <ons-col>
+                                    <ons-list>
+                                        <ons-list-item modifier="tappable">
+                                            <label class="radio-button radio-button--list-item">
+                                                <input type="radio" name="v" checked="{{privacysettings.profile_visibility == 'public'}}" value="public" ng-model="privacysettings.profile_visibility">
+                                                <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
+                                                Public
+                                            </label>
+                                        </ons-list-item>
+
+                                        <ons-list-item modifier="tappable">
+                                            <label class="radio-button radio-button--list-item">
+                                                <input type="radio" name="v" checked="{{privacysettings.profile_visibility == 'private'}}" value="private" ng-model="privacysettings.profile_visibility">
+                                                <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
+                                                Audience members
+                                            </label>
+                                        </ons-list-item>
+                                    </ons-list>
+
+                                </ons-col>
+                            </ons-row>
+                        </form>
+                    </div>
+
+
+                    <div class="account-settings-wrapper">
+                        <div class="header">
+                            Who can message me on bracketdash?
+                        </div>
+                        <form novalidate="novalidate" class="edit-email-form">
+                            <ons-row>
+                                <ons-col>
+                                    <ons-list>
+                                        <ons-list-item modifier="tappable">
+                                            <label class="radio-button radio-button--list-item">
+                                                <input type="radio" name="m" checked="{{privacysettings.messages_settings == 'public'}}" value="public" ng-model="privacysettings.messages_settings">
+                                                <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
+                                                Anyone
+                                            </label>
+                                        </ons-list-item>
+
+                                        <ons-list-item modifier="tappable">
+                                            <label class="radio-button radio-button--list-item">
+                                                <input type="radio" name="m" checked="{{privacysettings.messages_settings == 'private'}}" value="private" ng-model="privacysettings.messages_settings">
+                                                <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
+                                                Audience members
+                                            </label>
+                                        </ons-list-item>
+                                    </ons-list>
+
+                                </ons-col>
+                            </ons-row>
+                        </form>
+                    </div>
+
+                    <div class="account-settings-wrapper">
+                        <div class="header">
+                            Who can join my audience?
+                      </div>
+                        <form novalidate="novalidate" class="edit-email-form">
+                            <ons-row>
+                                <ons-col>
                                 <ons-list>
+                                            <ons-list-item modifier="tappable">
+                                                <label class="radio-button radio-button--list-item">
+                                                    <input type="radio" name="a" checked="{{privacysettings.join_audience_settings == 'anyone' }}" value="anyone" ng-model="privacysettings.join_audience_settings">
+                                                    <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
+                                                    Anyone
+                                                </label>
+                                            </ons-list-item>
 
+                                            <ons-list-item modifier="tappable">
+                                                <label class="radio-button radio-button--list-item">
+                                                    <input type="radio" name="a" checked="{{privacysettings.join_audience_settings == 'approved' }}" value="approved" ng-model="privacysettings.join_audience_settings">
+                                                    <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
+                                                    Only if approved
+                                                </label>
+                                            </ons-list-item>
+                                        </ons-list>
+                           </form>
+                          </div>
 
-                                    <ons-list-item modifier="tappable">
-                                        <label class="radio-button radio-button--list-item">
-                                            <input type="radio" name="a" checked="checked" value="anyone" ng-model="bd.userinfo.accountsettings.join_audience_settings">
-                                            <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
-                                            Anyone
-                                        </label>
-                                    </ons-list-item>
+                            <ons-row>
+                                <ons-col>
+                                    <div style="text-align: center; padding: 10px 0;">
+                                        <ons-botton class="button button--material btnsecond btnwide" modified="small" ng-click="changeprivacy()">
+                                            Save Settings
+                                        </ons-botton>
+                                    </div>
+                                </ons-col>
+                            </ons-row>
+                    </div>
 
-                                    <ons-list-item modifier="tappable">
-                                        <label class="radio-button radio-button--list-item">
-                                            <input type="radio" name="a" value="approved" ng-model="bd.userinfo.accountsettings.join_audience_settings">
-                                            <div class="radio-button__checkmark radio-button--list-item__checkmark"></div>
-                                            Only if approved
-                                        </label>
-                                    </ons-list-item>
-                                </ons-list>
-                            </div>
-
-                        </ons-col>
-                    </ons-row>
-                </div>
-
-            </ons-page>
+</ons-page>
         </ons-template>
 
         <ons-template id="Login.html">
