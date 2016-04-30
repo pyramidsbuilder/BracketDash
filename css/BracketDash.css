@@ -47,6 +47,7 @@ height:44px;
             line-height: 16px;
             min-width: 16px;
             font-weight: 600;
+                color: white !important;
         }
 
         .bottom-menu-list,
@@ -124,7 +125,9 @@ height:44px;
     line-height:14px;
 }
 .userlist .checkbox--noborder {
-    margin: 4px
+    margin: 4px;
+    width:100%;
+
 }
 .avatar {
     width:40px;height:40px;
@@ -828,7 +831,7 @@ color:#FFF !important;}
     min-height: 44px;
 }
 .bottom-bar {
-    background-color:orange;
+    background-color:#5bc0de;
 }
 .smallcolumn {
     max-width: 30%;
@@ -863,6 +866,7 @@ color:#FFF !important;}
 	text-align:center;
 	padding:10px 0 0 0;
 	font-weight:bold;
+    color:#fff !important;
 	}
 .notification-avatar{
 	width:50px;
@@ -938,7 +942,7 @@ color:#FFF !important;}
     display:block;
 }
 .uploadinprogress {
-    background-color: orange;
+    background-color: #5bc0de;
     color: black;
     padding: 4px;
 
@@ -1352,4 +1356,307 @@ float:left;
 }
 .account-settings-wrapper .header {
     color:white !important;
+}
+
+.bottomgap {
+    height:40px;
+}
+
+.longdialog {
+    height:200px;
+}
+
+
+
+.aip-wrapper{
+    width:100%;
+    border:1px solid #bec4d2;
+    border-radius:4px;
+	background:white;
+	text-align:left;
+}
+/*ACTIVITY HEADER CSS*/
+.aip-header{
+    width:100%;
+}
+.aip-header>div{
+   display:inline-block;
+   vertical-align:top;
+}
+.aip-host-avatar{
+	width:50px;
+    margin:5px;
+    height:50px;
+    border-radius:100%;
+    overflow:hidden;
+	}
+.aip-section-avatar, .aip-bracket-section-avatar{
+    width:50px;
+    margin:auto;
+    height:50px;
+    border-radius:100%;
+    overflow:hidden;
+}
+.aip-host-avatar img, .aip-section-avatar img, .aip-bracket-section-avatar img{
+    width:50px;
+}
+.aip-header-txt{
+    margin:5px;
+	max-width:415px;
+}
+.aip-header-txt-top-section div{
+    display:inline-block;
+    vertical-align:top;
+    margin-right:5px;
+}
+.aip-host-username, .aip-date{
+    font-weight:bold;
+}
+.aip-date{color:#949db5 !important;}
+.aip-title{font-size:24px; font-weight:bold;width:100%;}
+.aip-type{color:#949db5 !important;width:100%;}
+/*ACTIVITY IN PROGRESS BODY*/
+/*BATTLE*/
+.aip-section{
+	text-align:center;
+	margin:10px auto;
+}
+.aip-section>div{
+	display: inline-block;
+	vertical-align:top;
+}
+.aip-thumbnail-wrapper{
+	max-width:310px;
+	width:100%;
+	text-align:left;
+}
+.aip-section-badge{
+	width:100px;
+	text-align:center;
+}
+.aip-section-username{
+	font-weight:bold;
+}
+.aip-thumnmail-wrapper div{
+	display:inline-block;
+	vertical-align:top;
+	text-align:left;
+	margin:0px;
+}
+.aip-thumbnail-wrapper .aip-thumbnail{
+	width:120px;
+	height:70px;
+	background:#e9ebf0;
+	text-align:left;
+}
+.aip-section-options-button-wrapper{
+	float:right;
+	margin-right:10px;
+}
+/*BRACKET*/
+.aip-bracket-section{		
+	/*css code*/
+}
+.aip-bracket-section div{
+	display:inline-block;
+	vertical-align:top;
+}
+.aip-bracket-section-content-wrapper{
+	width: 90%;
+}
+.aip-bracket-section-content{
+	height:80px;
+	min-width:90%;
+}
+.aip-bracket-section-content div{
+	display:inline-block;
+	vertical-align:top;
+}
+.aip-bracket-section-avatar-wrapper{
+	width:100px;
+	text-align:center;
+	float:right;
+}
+.aip-bracket-section-username{
+	font-weight:bold;
+	display:block;
+	width:100px;
+}
+.aip-bracket-section-content .aip-thumbnail{
+	width:120px;
+	height:70px;
+	background:#e9ebf0;
+	float:right;
+}
+.aip-bracket-section-options-button-wrapper{
+	margin-left:10px;
+	float:left;
+}
+
+.aip-bracket-section-frame{
+    background:url("https://www.bracketdash.com/images/icons/bracketFrame.png");
+    background-size:30px 85px;
+    width:30px;
+    height:85px;
+    margin:25px 0px;
+    float:right;
+
+
+}
+
+/*AIP BODY SHARED CODE*/
+.upload-video-button{
+	vertical-align:middle;
+	display:inline-block;
+	width:70px;
+	font-weight:bold;
+	text-align:center;
+	margin:20px;
+	}
+.invitation-status{
+	vertical-align:middle;
+	display:inline-block;
+	width:70px;
+	font-weight:bold;
+	text-align:center;
+	margin:20px;
+}
+.aip-thumbnail{
+	width:120px;
+	height:70px;
+	cursor:pointer;
+	background:#e9ebf0;
+	text-align:center;
+	}
+.aip-thumbnail img{
+	width:120px;
+	height:70px;
+}
+.aip-thumbnail .play-button{
+	margin:20px 45px;
+}
+.play-button{
+    width:30px;
+    height:30px;
+    background:url("https://www.bracketdash.com/images/icons/play-video-button.png");
+    background-size:cover;
+    position:absolute;
+    opacity:.8;
+    cursor:pointer;
+}
+.video-input{
+	display:none;
+	}
+.aip-contestant-options-button{
+	background:url("https://www.bracketdash.com/images/icons/vertical-options-button.png");
+    background-size:cover;
+    width:6px;
+    height:20px;
+    opacity:.7;
+    cursor:pointer;
+    margin: 3px;
+    margin-top: 20px;
+    margin-left: 7px;
+}
+.vs-divider div{
+    width:58px;
+    height:48px;
+    display:block;
+    margin:4px auto;
+    font-weight:bold;
+    color:#949db5 !important;
+    font-size:45px;
+}
+.aip-divider{
+	background:#949db5;
+	font-weight:bold;
+	padding:5px 0px;
+	text-align:center;
+	margin:5px 0px;
+}
+/******************/
+/*ACTIVITY IN PROGRESS FOOTER*/
+.aip-footer{
+    /*background-color:#F7E5E5;*/
+    background-color:#c13234;
+    color:white !important;
+    padding:10px;
+}
+.aip-description{
+    margin: auto;
+    color: white !important;
+}
+.aip-options-button{
+    background:url("https://www.bracketdash.com/images/icons/options-button.png");
+    background-size:cover;
+    width:30px;
+    height:8px;
+    margin:5px auto 0px auto;
+	cursor:pointer;
+	opacity:0.7;
+}
+
+
+
+.aip-options-wrapper{
+	font-size:14px;
+	font-family:arial;
+	color:#293c6b;
+	width:100%;
+	overflow:hidden;
+	background:white;
+	} 
+.aip-options-tab-wrapper{
+	width:100%;
+	text-align:center;
+	border-bottom:1px solid #949db5;
+	}
+.aip-options-tab-wrapper div{
+	display:inline-block;
+	vertical-align:top;
+	margin:5px;
+	font-weight:bold;
+	font-size:12px;
+	padding:5px;
+	cursor:pointer;
+	border-radius:4px;
+	}
+.aip-options-tab-wrapper div:hover{
+	background:#e9ebf0;
+	}
+
+.aip-option-text{
+	text-align: center;
+	margin:10px;
+	font-weight: bold;
+}
+.aip-option-buttons{
+	width:100%;
+	min-width:300px;
+	background:#bec4d2;
+	text-align:center;
+	}
+.aip-option-buttons div{
+	display:inline-block;
+	vertical-align:top;
+	padding:3px;
+	margin:3px;
+	border-radius:2px;
+	font-family:arial;
+	font-size:11px;
+	font-weight:bold;
+	cursor:pointer;
+	border:1px solid #949db5;
+	}
+.aip-option-buttons div:hover{
+	background:#949db5;
+	}
+
+.profileStats {
+    font-size: 15px;
+    margin: auto;
+    width: 200px;
+    text-align: center;
+    opacity: .5;
+    color: white;
 }

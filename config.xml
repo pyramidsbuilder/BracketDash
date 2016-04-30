@@ -15,6 +15,7 @@
   <gap:plugin name="org.apache.cordova.splashscreen" />
 
     <preference name="AndroidPersistentFileLocation" value="Compatibility" />
+  <preference name="android-minSdkVersion" value="5" />
     <access origin="*" />
   <access origin="transloadit.com" />
   <access origin="*.transloadit.com" />
