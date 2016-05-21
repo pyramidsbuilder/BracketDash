@@ -106,6 +106,9 @@ height:44px;
     width:100%;
     white-space:nowrap;
 }
+.userlist {
+    min-width:100%;
+}
 .userlist .avatar {
     width:30px;height:30px;
     border-radius:20px;
@@ -208,10 +211,12 @@ input[type=email], input[type=password], .txtsignup {
   font-size: 14px;
 }
 
-.commentcontainer {
+.commentcontainer,.text-input {
     background-color:#e9ebef;
     opacity:1;
 }
+.text-input {
+    margin:4px;}
 
 
 .timeline {
@@ -552,8 +557,11 @@ color:#FFF !important;}
 }
 .btnsecond {
     background-color:silver;
+    color:#293c6b !important;
 }
 .btnwide{    width:95%;
+}
+.btnprimary {color:white !important;
 }
 .popsearchuser .popover__content  {
     min-height:100px;
@@ -732,8 +740,8 @@ color:#FFF !important;}
 	}
 .comment-input{
 	width:100%;
-	height:50px;
-	resize:none;
+    height: 100px;
+    	resize:none;
 	outline:none;
 	min-height:30px;
 	border:1px solid #bec4d2;
@@ -948,13 +956,13 @@ color:#FFF !important;}
 
 }
 .successtoolbar, .successtoolbar div {
-    background-color:green !important;
-    color: white !important;
+    background-color:#dff0d8 !important;
+    color: green !important;
     padding: 4px;
 }
 .errortoolbar, .errortoolbar div {
-    background-color:red  !important;
-    color: white !important;
+    background-color:#f2dede  !important;
+    color: red !important;
     padding: 4px;
 }
 
@@ -1462,7 +1470,7 @@ float:left;
 	vertical-align:top;
 }
 .aip-bracket-section-content-wrapper{
-	width: 90%;
+	width: 85%;
 }
 .aip-bracket-section-content{
 	height:80px;
@@ -1659,4 +1667,44 @@ float:left;
     text-align: center;
     opacity: .5;
     color: white;
+}
+.active-status {
+    color: green !important;
+    font-weight: bold;
+}
+
+.bracket-section {
+    text-align:center !important;
+}
+.bracket-section-content-wrapper, .bracket-section-content {
+    width: auto !important;
+}
+.expired {
+color:red !important;}
+
+@media only screen and (max-width: 300px) {
+    .aip-thumbnail, .aip-thumbnail img, .section-thumbnail img, .section-avatar > img, bracket-section-thumbnail> img {
+        max-width: 6em !important;
+        margin-left: 2px !important;
+    }
+    .contestant-section {
+        padding: 0px;
+    }
+    .contestant-section > div {
+        margin:0px !important;
+        padding:0px !important;
+    }
+    .aip-bracket-section-content div {
+           max-width: 6em !important;
+                   margin-left: 2px !important;
+    }
+    .avatar {
+        width: 50% !important;
+height: 50%;
+    }
+    .bracket-section-frame {
+        float:right;
+        position:absolute;
+    }
+
 }
