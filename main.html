@@ -996,7 +996,7 @@
 
         <ons-template id="page1.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <div data-role="content" class="demo-content">
                     <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="feed.length==0">
                         No Activities to show
@@ -1209,7 +1209,7 @@
 
     <ons-template id="activity_log.html">
         <ons-page>
-            <div class="headergap"></div>
+            <div class="headergap" ng-show="!ios"></div>
             <div class="profilewrapper">
                 <ons-row>
                     <ons-col>
@@ -1476,7 +1476,7 @@
 
         <ons-template id="Audience.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
 
                 <ons-row>
                     <ons-col>
@@ -1584,7 +1584,7 @@
 
         <ons-template id="Bio.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
 
                 <ons-tabbar class="biobar">
                     <ons-tab page="BioContent.html" label="Bio" icon="fa-user" active="true"></ons-tab>
@@ -1601,7 +1601,7 @@
 
         <ons-template id="BioContent.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <div class="profilewrapper">
                     <ons-row>
                         <ons-col>
@@ -2110,7 +2110,7 @@
 
         <ons-template id="Profile.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <ons-row>
                     <ons-col>
 
@@ -2176,7 +2176,7 @@
 
         <ons-template id="ProfileSettings.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <div class="contentwrapper">
                     <ons-row><ons-col>
                                  <div style="text-align: center; padding: 10px 0;">
@@ -2244,7 +2244,7 @@
 
             <ons-page>
 
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <div class="contentwrapper demo-content">
                     <div class="account-settings-wrapper">
                         <div class="header">
@@ -2317,7 +2317,7 @@
 
         <ons-template id="PrivacySettings.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <div class="contentwrapper">
                     <div class="account-settings-wrapper">
                         <div class="header">
@@ -2423,7 +2423,7 @@
 
         <ons-template id="Login.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <ons-row>
                     <ons-col>
                         <div class="login-form">
@@ -2443,7 +2443,7 @@
 
         <ons-template id="SignUp.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <ons-row>
                     <ons-col>
                         <div class="login-form">
@@ -2467,7 +2467,7 @@
 
         <ons-template id="Notifications.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
             <br />
                     <ons-list modifier="inset" class="useractivitylist">
                         <ons-list-header>Notifications</ons-list-header>
@@ -2552,7 +2552,7 @@
 
         <ons-template id="Messages.html">
         <ons-page>
-            <div class="headergap"></div>
+            <div class="headergap" ng-show="!ios"></div>
             <br />
             <ons-row>
                 <ons-col>
@@ -2583,10 +2583,10 @@
 
         <ons-template id="Conversation.html">
         <ons-page>
-            <div class="headergap"></div>
+            <div class="headergap" ng-show="!ios"></div>
           <br />
                     <ons-list modifier="inset" class="useractivitylist">
-                        <ons-list-header style="text-overflow: ellipsis;">{{CurrentConversation.chat_group.length > 1 ? 'Conversation between ' + CurrentConversation.chat_group[0] +' & '+ CurrentConversation.chat_group[1] : 'Conversation with ' + CurrentConversation.chat_group[0] }} <ons-icon icon="fa-arrow-left" class="pull-left" ng-click="getmessages()"></ons-icon></ons-list-header>
+                        <ons-list-header style="text-overflow: ellipsis; height:auto;"><ons-icon icon="fa-arrow-left" class="pull-left" ng-click="getmessages()"></ons-icon>{{CurrentConversation.chat_group.length > 1 ? 'Conversation between ' + CurrentConversation.chat_group[0] +' & '+ CurrentConversation.chat_group[1] : 'Conversation with ' + CurrentConversation.chat_group[0] }} </ons-list-header>
                         <ons-list-item class="timeline-li"
                                        modifier="tappable" ng-repeat="m in CurrentConversation.obj">
                            
@@ -2611,8 +2611,6 @@
 
                             
                         </ons-list-item>
-
-
                     </ons-list>
 
             <div class="comment-input-wrapper">
@@ -2632,7 +2630,7 @@
 
         <ons-template id="SingleActivity.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <ons-scroller style="height: 80%; width: 100%">
 
                                 <div class="demo-content contentwrapper">
@@ -2857,7 +2855,7 @@
 
         <ons-template id="ForgotPassword.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <ons-row>
                     <ons-col>
                         <div class="login-form">
@@ -2886,7 +2884,7 @@
 
         <ons-template id="Search.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
                 <ons-row>
                     <ons-col>
                         <div ng-show="(searchresult.people.length==0 && searchresult.activity.length == 0) || searchquery.q.toString().length ==0" style="text-align:center;">
@@ -3168,7 +3166,7 @@
 
         <ons-template id="NewActivity.html">
             <ons-page>
-                <div class="headergap"></div>
+                <div class="headergap" ng-show="!ios"></div>
 
                 <div class="profilewrapper">
                     <ons-row>
@@ -3412,7 +3410,7 @@
 
         <ons-template id="myfeed.html">
         <ons-page>
-            <div class="headergap"></div>
+            <div class="headergap" ng-show="!ios"></div>
             <div class="profilewrapper">
                 <ons-row>
                     <ons-col>
@@ -3532,7 +3530,7 @@
                     
                     <div class="aip-footer" ng-click="bd.expandfeed(f.activity_id,true);">
                         <div class="aip-description">{{f.activity_description}}</div>
-                        <div class="aip-options-button" data-activity-type="bracket" data-activity-host="mosta2" ng-click="bd.expandfeed(f.activity_id,true);"></div>
+                        <div class="aip-options-button" data-activity-type="bracket" data-activity-host="mosta2" ></div>
                         </div>
                     </div>
 
@@ -3612,7 +3610,7 @@
 
        <ons-template id="Compose.html">
         <ons-page>
-            <div class="headergap"></div>
+            <div class="headergap" ng-show="!ios"></div>
             <div class="demo-content contentwrapper">
                 <div class="header">Compose Message <ons-icon icon="fa-arrow-left"  class="pull-left ng-hide" ng-click="getmessages()"></ons-icon></div>
                 <br />

@@ -326,12 +326,15 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         }
         self.validateactivity = function (skipvideo) {
             $scope.newactivityvalidation = { status: true, reason: 'valid' };
-
+            
             if (!$scope.NewActivity.title || $scope.NewActivity.title.toString().length == 0) {
                 $scope.newactivityvalidation = { status: false, reason: 'Please enter activity title' };
             }
             if (!$scope.NewActivity.description || $scope.NewActivity.description.toString().length == 0) {
                 $scope.newactivityvalidation = { status: false, reason: 'Please enter activity decription' };
+            }
+            if (!$scope.NewActivity.duration || $scope.NewActivity.duration.toString().length == 0) {
+                $scope.newactivityvalidation = { status: false, reason: 'Please select activity duration' };
             }
             if (!$scope.NewActivity.category || $scope.NewActivity.category == '') {
                 $scope.newactivityvalidation = { status: false, reason: 'Please select activity category' };
@@ -664,18 +667,20 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
                 else {
 
-                    self.feedexpand = id;
-                    $scope.currentfeed = $filter('filter')($scope.feed.obj, { activity_id: id },true)[0];
-                    self.getcomments(id);
+                    if (self.CurrentPage == 'Explore') {
+                        $scope.currentfeed = $filter('filter')($scope.feed.obj, { activity_id: id }, true)[0];
+                    }else
+                    {
+                        $scope.currentfeed = $filter('filter')($scope.viewuserinfo.feedinprogress.obj, { activity_id: id }, true)[0];
+                    }
+                        self.feedexpand = id;
+                        
+                        self.getcomments(id);
 
-                    $scope.commentdialog.show();
-                    $scope.currentfeed.mode = 1;
-                    try {
-
-                    } catch (e) { alert(e); }
-
-                    //                $scope.$apply();
-
+                        $scope.commentdialog.show();
+                        $scope.currentfeed.mode = 1;
+                    
+                    
                 }
             }
             else {
@@ -689,6 +694,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     
                 //}
                 //else {
+                //alert('jj');
 
                     self.feedexpand = id;
                     $scope.currentprogressfeed = $filter('filter')($scope.viewuserinfo.feedinprogress.obj, { activity_id: id },true)[0];
@@ -1107,8 +1113,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 success: function (data) {
                     $scope.isloading = false;
                     var obj = JSON.parse(data);
-                    $scope.currentfeed.comments = obj;
-                    angular.extend($scope.currentfeed.comments, obj);
+                        $scope.currentfeed.comments = obj;
+                        angular.extend($scope.currentfeed.comments, obj);
+
                     $scope.$apply();
                     $scope.commentlimit = limit;
                 },
@@ -1775,7 +1782,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             //var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             var data = { action: 'activity_log', profile_username: username.toString(), limit: 10,offset: limit, authorization: "Bearer " + access_token };
-            $scope.isloading = true;
+            //$scope.isloading = true;
             $.ajax({
                 type: 'GET',
                 url: "http://www.bracketdash.com/api/api.php",
@@ -2764,10 +2771,12 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                           ) {
                 $scope.version44 = true;
             }
-            $scope.version44 = true;
+            //$scope.version44 = true;
+            //alert(device.platform.toLowerCase());
             if (device.platform.toLowerCase() === 'ios') {
                 $('.headergap').addClass('ng-hide');
                 $scope.ios = true;
+                //alert($scope.ios);
             }
             //document.addEventListener("backbutton", onBackKeyDown, false);
             ////alert($scope.version44);
@@ -2905,7 +2914,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             {
                 $scope.result.id = -1;
                 $scope.result.css = 'errortoolbar';
-                $scope.result.msg = 'Cannot add rating to this video because the activity has expired!'
+                $scope.result.msg = 'Sorry, the activity has already expired!'
                 return;
             }
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
@@ -3216,8 +3225,20 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         //console.log(data);
                         var obj = JSON.parse(data);
                         //console.log(obj);
-                        if (obj.status == 'success') {
 
+                        if (obj.status == 'success') {
+                            if (self.CurrentPage == 'Explore') {
+                                var responsefeed = $filter('filter')($scope.feed.obj, { activity_id: activityid }, true)[0];
+                                if (!responsefeed.contestants_info.response)
+                                    responsefeed.contestants_info.response = [];
+                                responsefeed.contestants_info.response.push(obj.obj);
+                            }
+                            else {
+                                var responsefeed = $filter('filter')($scope.viewuserinfo.feedinprogress.obj, { activity_id: activityid }, true)[0];
+                                if (!responsefeed.contestants_info.response)
+                                    responsefeed.contestants_info.response = [];
+                                responsefeed.contestants_info.response.push(obj.obj);
+                            }
                             $scope.NewResponse = {
                                 activity_id: null, video_links_array: { "webm": null, "ogg": null, "mp4": null, "phone": null, "tablet": null }
                             };
