@@ -2774,7 +2774,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             //$scope.version44 = true;
             //alert(device.platform.toLowerCase());
             if (device.platform.toLowerCase() === 'ios') {
-                $('.headergap').addClass('ng-hide');
+                //$('.headergap').addClass('ng-hide');
                 $scope.ios = true;
                 //alert($scope.ios);
             }
