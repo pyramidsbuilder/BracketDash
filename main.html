@@ -41,7 +41,7 @@
 
 </head>
 
-<body id="body" ng-controller="BracketDashController as bd">
+<body id="body" style="visibility:hidden;" ng-controller="BracketDashController as bd">
     <div id="divOverlay" class="ng-hide slide-right"></div>
     <video id="vid" src="" controls oncanplay="angular.element(this).scope().checkduration()"></video>
 
@@ -141,7 +141,7 @@
                 <input type="range" class="cropit-image-zoom-input" min="0" max="1" step="0.01"></div><div class="rotate-image-buttons">
                 <div class="rotate-ccw"><i class="fa fa-undo"></i></div><div class="rotate-cw"><i class="fa fa-repeat"></i></div></div>
                <button  ng-if="version44" ng-click="selectprofilepic()" style="height:30px;">Choose File</button>
-                <button ng-if="!version44" class="upload">Select Image</button>
+                <a ng-if="!version44"  style="cursor: pointer !important;" class="upload">Select Image</a>
                 <input type="file" class="cropit-image-input" id="inputprofileimg" accept="image/*"><button class="export">Save</button><button class="cancel pull-right" ng-click="dialogprofilepic.hide()">Cancel</button></div>
             
                 <!--<div>
@@ -191,9 +191,9 @@
                                 <input type="checkbox" ng-model="user.selected" ng-change="checkuser($event,user)">
                                 <div style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark"></div>
                                 <div style="float:left; width:80%; max-width:80%;" ng-click=>
-                                    <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
-                                    <div style="max-width:60%;float:left">
-                                        {{user.Fullname}}
+                                    <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+                                    <div style="max-width:60%;float:left;padding-top:5px;">
+                                        {{user.Fullname}}<br />
                                         <span class="subtext"> {{user.Username}}</span>
                                     </div>
                                 </div>
@@ -212,12 +212,13 @@
                                 <input type="checkbox" ng-model="NewActivity.branches[currentbranchuser.branch_no].contestants[currentbranchuser.userindex].selected" ng-change="checkuser($event,user)">
                                 <div style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark"></div>
                                 <div style="float:left; width:80%; max-width:80%;" ng-click=>
-                                    <div style="width:40%;float:left">  <img src="{{NewActivity.branches[currentbranchuser.branch_no].contestants[currentbranchuser.userindex].Avatar_link}}" class="avatar"></div>
-                                    <div style="max-width:60%;float:left">
+                                    <div style="float:left;max-width:40px">  <img src="{{NewActivity.branches[currentbranchuser.branch_no].contestants[currentbranchuser.userindex].Avatar_link}}" class="avatar"></div>
+                                    <div style="max-width:60%;float:left;padding-top:5px;">
                                         {{NewActivity.branches[currentbranchuser.branch_no].contestants[currentbranchuser.userindex].Fullname}}
-                                        <span class="subtext"> {{NewActivity.branches[currentbranchuser.branch_no].contestants[currentbranchuser.userindex].Username}}</span>
+                                      <br />  <span class="subtext"> {{NewActivity.branches[currentbranchuser.branch_no].contestants[currentbranchuser.userindex].Username}}</span>
                                     </div>
                                 </div>
+
 
                             </label>
 
@@ -233,12 +234,14 @@
                             <input type="checkbox" ng-model="user.selected" ng-change="checkuser($event,user)">
                             <div style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark"></div>
                             <div style="float:left; width:80%; max-width:80%;" ng-click=>
-                                <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
-                                <div style="max-width:60%;float:left">
-                                    {{user.Fullname}}
+                                <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+                                <div style="max-width:60%;float:left;padding-top:5px;">
+                                    {{user.Fullname}}<br />
                                     <span class="subtext"> {{user.Username}}</span>
                                 </div>
                             </div>
+
+
 
                         </label>
 
@@ -316,9 +319,9 @@
                                 <input type="checkbox" ng-model="user.selected" ng-change="addusertomessage($event,user)">
                                 <div style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark"></div>
                                 <div style="float:left; width:80%; max-width:80%;" ng-click=>
-                                    <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
-                                    <div style="max-width:60%;float:left">
-                                        {{user.Fullname}}
+                                    <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+                                    <div style="max-width:60%;float:left;padding-top:5px;">
+                                        {{user.Fullname}}<br />
                                         <span class="subtext"> {{user.Username}}</span>
                                     </div>
                                 </div>
@@ -333,9 +336,9 @@
                             <input type="checkbox" ng-model="user.selected" ng-change="addusertomessage($event,user)">
                             <div style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark"></div>
                             <div style="float:left; width:80%; max-width:80%;" ng-click=>
-                                <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
-                                <div style="max-width:60%;float:left">
-                                    {{user.Fullname}}
+                                <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+                                <div style="max-width:60%;float:left;padding-top:5px">
+                                    {{user.Fullname}}<br />
                                     <span class="subtext"> {{user.Username}}</span>
                                 </div>
                             </div>
@@ -465,6 +468,7 @@
 }}">
 </div>
                                     </ons-col>-->
+                                    <div class="error" ng-if="commentempty">Please enter a comment.</div>
                                     <div style="text-align: center;" >
                                         <textarea data-id="5" ng-model="newcomment.text" class="text-input" 
                                                   required style="width:95%;height:70px;" placeholder="comment..."></textarea>
@@ -478,7 +482,7 @@
 
                                 </div>
                             </div>
-                            <div class="comment-section-wrapper">
+                            <div class="comment-section-wrapper" style="max-height: 200px;">
                                 <div class="comment-wrapper">
                                     <div ng-repeat="comment in currentfeed.comments.obj" style="width:100%">
                                             <div class="comment-avatar" style="float:left" >
@@ -503,8 +507,8 @@
                                             
                                        
                                     </div>
-                                    <div style="text-align:center; margin-top:20px;" ng-if="currentfeed.comments.status  && currentfeed.comments.status != 'complete'">
-                                    <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getcomments(currentfeed.activity_id,feedlimit+10)">Load more</ons-button>
+                                    <div style="text-align:center; margin-top:20px;" ng-if="currentfeed.comments.hasmore">
+                                    <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getcomments(currentfeed.activity_id,commentslimit+10)">Load more</ons-button>
                                     </div>
                                 </div>
                         </div>
@@ -543,9 +547,9 @@
                                 
                                     <div ng-if="!version44" style="width: 100%;" id="upload-form" >
                                     <input  type="file" accept="video/*" class="cropit-image-input" id="inputuploadresponse" onchange="angular.element(this).scope().setFiles(this,false,true,'response')" />
-                                    <button  id="btnuploadresponse" class="button button--material btnsecond btnwide" 
-                                                ng-click="triggerresponseupload()">
-                                        Select Video<span style="font-size:x-small"> (Max 5 minutes.)</span></button><br /><br />
+                                    <a  id="btnuploadresponse" class="button button--material btnsecond btnwide" 
+                                         style="cursor: pointer !important;"   ng-click="triggerresponseupload()">
+                                        Select Video<span style="font-size:x-small"> (Max 5 minutes.)</span></a><br /><br />
 
 </div>
                                <button ng-if="version44 && !file"  ng-click="selectfile('response',currentfeed.activity_id)" class="button button--material btnsecond btnwide">Choose File<span style="font-size:x-small"> (Max 5 minutes.)</span></button>
@@ -908,7 +912,7 @@
                             New Activity
                         </ons-list-item>
 
-                        <ons-list-item class="menu-item" ng-click="bd.getactivitylog(bd.userinfo.Username, false,'Activity Log')">
+                        <ons-list-item class="menu-item" ng-click="bd.getactivitylog(bd.userinfo.Username, true,'Activity Log')">
                             <ons-icon size="18px" icon="ion-android-film"></ons-icon>
                             Activities
                         </ons-list-item>
@@ -996,7 +1000,7 @@
 
         <ons-template id="page1.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <div data-role="content" class="demo-content">
                     <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="feed.length==0">
                         No Activities to show
@@ -1028,14 +1032,19 @@
                                         <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                             <img src="{{con.thumbnail_link}}" alt="">
-                                        </div><div class="section-ratings">
-                                            <div class="likes-ratings"><div class="like-button"  ng-click="bd.likevideo(f.activity_id,con.video_id)"></div><div class="like-count">{{con.likes}}</div></div>
-                                            <div class="rank">Rank #{{con.rank}}</div>
                                         </div>
-                                    </div><div class="section-options-button-wrapper">
-
-                                        <div  class="section-options-button" ng-click="bd.expandvideo(con,f.activity_id)"></div>
+                                
                                     </div>
+
+                                    <div class="section-ratings"  ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                        <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                        <div class="rank">Rank #{{con.rank}}</div>
+                                    </div>
+                                    <a class="section-options-button-wrapper" style="cursor: pointer !important; padding:9px;" ng-click="bd.expandvideo(con,f.activity_id)">
+
+                                        <div  style="cursor: pointer !important;"  class="section-options-button" ></div>
+                                    </a>
+
                                     <div class="vs-divider" ng-show="f.contestants_info.length ==2 && $index ==0"><div>VS</div></div>
                                 </div>
 
@@ -1073,13 +1082,19 @@
                                             <div ng-click="playvideo(f.contestants_info.challenge.video_id)" class="section-thumbnail" data-video-link="{{f.contestants_info.challenge.video_link}}">
                                                 <div class="play-button" data-vlink="{{f.contestants_info.challenge.video_link}}"></div><img src="{{f.contestants_info.challenge.thumbnail_link}}" alt="">
                                             </div>
-                                            <div class="section-ratings">
-                                                <div class="likes-ratings"><div class="like-button"  ng-click="bd.likevideo(f.activity_id,f.contestants_info.challenge.video_id,'challenge')"></div><div class="like-count">{{f.contestants_info.challenge.likes}}</div></div>
-                                                <div class="rank">Rank #{{f.contestants_info.challenge.rank}}</div>
-                                            </div>
-                                        </div><div class="section-options-button-wrapper">
-                                            <div class="section-options-button"  ng-click="bd.expandvideo(f.contestants_info.challenge,f.activity_id)"></div>
+                                       
                                         </div>
+                                        <div class="section-ratings" style="padding: 10px;margin-top: 7px;" ng-click="bd.likevideo(f.activity_id,f.contestants_info.challenge.video_id,'challenge')">
+    <div class="likes-ratings"><div class="like-button" ></div><div class="like-count">{{f.contestants_info.challenge.likes}}</div></div>
+    <div class="rank">Rank #{{f.contestants_info.challenge.rank}}</div>
+</div>
+                                        <a style="cursor: pointer !important; padding:9px;" class="section-options-button-wrapper" ng-click="bd.expandvideo(f.contestants_info.challenge,f.activity_id)">
+                                            <div class="section-options-button"  
+                                                 ></div>
+                                        </a>
+
+                                   
+
                                     </div>
 
                                 </div>
@@ -1139,14 +1154,16 @@
                                                         <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
                                                         <img src="{{con.thumbnail_link}}" alt="">
                                                     </div>
-                                                    <div class="bracket-section-ratings" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                                    <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                                         <div class="likes-ratings">
                                                             <div class="like-button"  ></div>
                                                             <div class="like-count">{{con.likes}}</div>
                                                         </div>
-                                                    </div><div class="bracket-section-options-button-wrapper">
-                                                        <div class="bracket-section-options-button" ng-click="bd.expandvideo(con,f.activity_id)"></div>
                                                     </div>
+                                                    
+                                                    <a style="cursor: pointer !important; padding:9px;" class="bracket-section-options-button-wrapper" ng-click="bd.expandvideo(con,f.activity_id)">
+                                                        <div class="bracket-section-options-button" ></div>
+                                                    </a>
 
 
                                                 </div>
@@ -1182,11 +1199,25 @@
                                 </div>
                             </div>
                             <div class="activity-body" ng-repeat="con in f.contestants_info">
-                                <div ng-click="playvideo(con.video_id)"  class="exhibition-thumbnail">
+                                <div ng-click="playvideo(con.video_id)" class="exhibition-thumbnail" style="width:80%;">
                                     <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                     <img src="{{con.thumbnail_link}}">
                                 </div>
-                                <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id)"></div><div class="like-count">{{con.likes}}</div></div>
+
+                                <div style="height:35px">
+                                    <a style="cursor: pointer !important; padding:9px;" class="bracket-section-options-button-wrapper" ng-click="bd.expandvideo(con,f.activity_id)">
+                                        <div class="bracket-section-options-button"></div>
+                                    </a>
+ <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px; display:inline;float:left" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                        <div class="likes-ratings">
+                                            <div class="like-button"></div>
+                                            <div class="like-count">{{con.likes}}</div>
+                                        </div>
+                                    </div>
+
+                                    
+
+                                </div>
                             </div>
                             <div class="activity-footer" >
                                 <div class="activity-description">{{con.thumbnail_link}}</div>
@@ -1209,7 +1240,7 @@
 
     <ons-template id="activity_log.html">
         <ons-page>
-            <div class="headergap" ng-show="!ios"></div>
+            <div ng-class="ios? 'iosheader' : 'headergap'"></div>
             <div class="profilewrapper">
                 <ons-row>
                     <ons-col>
@@ -1296,14 +1327,17 @@
                                     <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
                                         <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                         <img src="{{con.thumbnail_link}}" alt="">
-                                    </div><div class="section-ratings">
-                                        <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id)"></div><div class="like-count">{{con.likes}}</div></div>
-                                        <div class="rank">Rank #{{con.rank}}</div>
                                     </div>
-                                </div><div class="section-options-button-wrapper">
-
-                                    <div class="section-options-button" ng-click="bd.expandvideo(con,f.activity_id)"></div>
                                 </div>
+                                          <div class="section-ratings" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                              <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                              <div class="rank">Rank #{{con.rank}}</div>
+                                          </div>
+                                          <a class="section-options-button-wrapper" style="cursor: pointer !important; padding:9px;" ng-click="bd.expandvideo(con,f.activity_id)">
+
+                                              <div style="cursor: pointer !important;" class="section-options-button"></div>
+                                          </a>
+
                                 <div class="vs-divider" ng-show="f.contestants_info.length ==2 && $index ==0"><div>VS</div></div>
                             </div>
 
@@ -1364,13 +1398,21 @@
                                         <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                             <img src="{{con.thumbnail_link}}" alt="">
-                                        </div><div class="section-ratings">
-                                            <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id)"></div><div class="like-count">{{con.likes}}</div></div>
-                                            <div class="rank">Rank #{{con.rank}}</div>
                                         </div>
-                                    </div><div class="section-options-button-wrapper">
-                                        <div class="section-options-button" ng-click="bd.expandvideo(con,f.activity_id)"></div>
+                                 
                                     </div>
+                                    
+
+                                    
+                                    <div class="section-ratings" style="padding: 10px;margin-top: 7px;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+    <div class="likes-ratings"><div class="like-button" ></div><div class="like-count">{{con.likes}}</div></div>
+    <div class="rank">Rank #{{con.rank}}</div>
+</div>
+                                    <a style="cursor: pointer !important; padding:9px;"  ng-click="bd.expandvideo(con,f.activity_id)" 
+                                       class="section-options-button-wrapper">
+                                        <div class="section-options-button"></div>
+                                    </a>
+
                                 </div>
                             </div>
                         </div>
@@ -1407,15 +1449,14 @@
                                                     <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
                                                     <img src="{{con.thumbnail_link}}" alt="">
                                                 </div>
-                                                <div class="bracket-section-ratings" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                                <div class="bracket-section-ratings"  style="padding-bottom: 15px;margin-top: 7px;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                                     <div class="likes-ratings">
                                                         <div class="like-button"></div>
                                                         <div class="like-count">{{con.likes}}</div>
                                                     </div>
-                                                </div><div class="bracket-section-options-button-wrapper">
+                                                </div><a class="bracket-section-options-button-wrapper" style="cursor: pointer !important; padding:9px;" ng-click="bd.expandvideo(con,f.activity_id)">
                                                     <div class="bracket-section-options-button"></div>
-                                                </div>
-
+                                                </a>
 
                                             </div>
 
@@ -1454,7 +1495,20 @@
                                 <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                 <img src="{{con.thumbnail_link}}">
                             </div>
-                            <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id)"></div><div class="like-count">{{con.likes}}</div></div>
+                            <div style="height:35px">
+                                <a style="cursor: pointer !important; padding:9px;" class="bracket-section-options-button-wrapper" ng-click="bd.expandvideo(con,f.activity_id)">
+                                    <div class="bracket-section-options-button"></div>
+                                </a>
+                                <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px; display:inline;float:left" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                    <div class="likes-ratings">
+                                        <div class="like-button"></div>
+                                        <div class="like-count">{{con.likes}}</div>
+                                    </div>
+                                </div>
+
+
+
+                            </div>
                         </div>
                         <div class="activity-footer">
                             <div class="activity-description">{{con.thumbnail_link}}</div>
@@ -1476,7 +1530,7 @@
 
         <ons-template id="Audience.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
 
                 <ons-row>
                     <ons-col>
@@ -1538,16 +1592,17 @@
                         <ons-list modifier="inset" class="useractivitylist" ng-if="myaudience.length > 0">
                             <ons-list-header>Audience</ons-list-header>
                             <ons-list-item ng-click="getprofile(user.Username,true)" class="timeline-li" modifier="tappable" ng-repeat="user in myaudience">
+                           
                                 <div style="float:left; width:100%; max-width:95%;">
-                                    <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar" ></div>
-                                    <div style="max-width:60%;float:left">
-                                        {{user.Fullname}}<br />
-                                        <span class="subtext"> {{user.Username}}</span>
-                                    </div>
+                                <div style="width:20%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+                                <div style="float:left;max-width:80%; overflow:hidden;">
+                                    <b>{{user.Fullname}}</b> <span class="subtext">({{user.Username}})</span>  
                                 </div>
+                            </div>
                             </ons-list-item>
 
                         </ons-list>
+                        B
 
                     </ons-col>
                 </ons-row>
@@ -1584,7 +1639,7 @@
 
         <ons-template id="Bio.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
 
                 <ons-tabbar class="biobar">
                     <ons-tab page="BioContent.html" label="Bio" icon="fa-user" active="true"></ons-tab>
@@ -1601,7 +1656,7 @@
 
         <ons-template id="BioContent.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <div class="profilewrapper">
                     <ons-row>
                         <ons-col>
@@ -1686,11 +1741,12 @@
                     <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.audience.length==0">
                         No Audience to show
                     </div>
-                    <ons-list modifier="inset" >
+                    <ons-list modifier="inset" class="userlist" style="margin-left: 0px;" >
                         <ons-list-item ng-click="getprofile(user.Username,true)" class="timeline-li" modifier="tappable" ng-repeat="user in viewuserinfo.audience">
                             <div style="float:left; width:100%; max-width:95%;">
-                                <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar" style="width: 35px;height: 35px;border-radius: 20px;margin-top: -6px;"></div>
-                                <div style="max-width:60%;float:left">
+                                <div style="width:30%;float:left;max-width:60px;">
+                                  <img src="{{user.Avatar_link}}" class="avatar" style="width: 35px;height: 35px;border-radius: 20px;margin-top: -6px;"></div>
+                                <div style="max-width:70%;float:left">
                                     {{user.Fullname}}<br />
                                     <span class="subtext"> {{user.Username}}</span>
                                 </div>
@@ -1698,6 +1754,10 @@
                         </ons-list-item>
 
                     </ons-list>
+                    <div style="text-align:center; margin-top:20px;" ng-if="viewuserinfo.audience.hasmore">
+
+                        <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getaudience(viewuserinfo.Username, false,audiencelimit+10)">Load more</ons-button>
+                    </div>
                 </div>
                 <div class="demo-content contentwrapper" ng-show="viewuserinfo.mode==3">
                     <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feed.length==0">
@@ -2110,7 +2170,7 @@
 
         <ons-template id="Profile.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <ons-row>
                     <ons-col>
 
@@ -2176,7 +2236,7 @@
 
         <ons-template id="ProfileSettings.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <div class="contentwrapper">
                     <ons-row><ons-col>
                                  <div style="text-align: center; padding: 10px 0;">
@@ -2244,7 +2304,7 @@
 
             <ons-page>
 
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <div class="contentwrapper demo-content">
                     <div class="account-settings-wrapper">
                         <div class="header">
@@ -2317,7 +2377,7 @@
 
         <ons-template id="PrivacySettings.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <div class="contentwrapper">
                     <div class="account-settings-wrapper">
                         <div class="header">
@@ -2423,7 +2483,7 @@
 
         <ons-template id="Login.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <ons-row>
                     <ons-col>
                         <div class="login-form">
@@ -2443,7 +2503,7 @@
 
         <ons-template id="SignUp.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <ons-row>
                     <ons-col>
                         <div class="login-form">
@@ -2467,7 +2527,7 @@
 
         <ons-template id="Notifications.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
             <br />
                     <ons-list modifier="inset" class="useractivitylist">
                         <ons-list-header>Notifications</ons-list-header>
@@ -2552,7 +2612,7 @@
 
         <ons-template id="Messages.html">
         <ons-page>
-            <div class="headergap" ng-show="!ios"></div>
+            <div ng-class="ios? 'iosheader' : 'headergap'"></div>
             <br />
             <ons-row>
                 <ons-col>
@@ -2570,11 +2630,11 @@
                                 </div>
                             </div>
                         </ons-list-item>
-                        <div style="text-align:center; margin-top:20px;" ng-if="messages.status  && messages.status != 'complete'">
-                            <ons-button class="btnsmall button button--material btnsecond" ng-click="getmessages(messageslimit+10)">Load more</ons-button>
-                        </div>
+                        
                     </ons-list>
-
+                    <div style="text-align:center; margin-top:20px;" ng-if="messages.hasmore">
+                        <ons-button class="btnsmall button button--material btnsecond" ng-click="getmessages(messageslimit+10)">Load more</ons-button>
+                    </div>
                 </ons-col>
             </ons-row>
             <div class="bottomgap"></div>
@@ -2583,10 +2643,22 @@
 
         <ons-template id="Conversation.html">
         <ons-page>
-            <div class="headergap" ng-show="!ios"></div>
+            <div ng-class="ios? 'iosheader' : 'headergap'"></div>
           <br />
-                    <ons-list modifier="inset" class="useractivitylist">
-                        <ons-list-header style="text-overflow: ellipsis; height:auto;"><ons-icon icon="fa-arrow-left" class="pull-left" ng-click="getmessages()"></ons-icon>{{CurrentConversation.chat_group.length > 1 ? 'Conversation between ' + CurrentConversation.chat_group[0] +' & '+ CurrentConversation.chat_group[1] : 'Conversation with ' + CurrentConversation.chat_group[0] }} </ons-list-header>
+            <ons-list
+                       modifier="inset" class="useractivitylist">
+                <ons-list-header style="text-overflow: ellipsis; height:auto;">
+                    <ons-icon icon="fa-arrow-left" class="pull-left" ng-click="getmessages()"></ons-icon>
+                    Conversation between {{CurrentConversation.with}}
+                </ons-list-header>
+                <ons-list-item  >
+                    <div style="text-align:center; margin-top:2px; margin-bottom:2px;" ng-if="CurrentConversation.hasmore">
+                        <ons-button class="btnsmall button button--material btnsecond" 
+                                    ng-click="getconversation(currentconversationid,conversationlimit+10)">Load older messages</ons-button>
+                    </div>
+                </ons-list-item>
+            </ons-list>
+                    <ons-list modifier="inset" class="useractivitylist" id="lstmessages" style="max-height:250px;">
                         <ons-list-item class="timeline-li"
                                        modifier="tappable" ng-repeat="m in CurrentConversation.obj">
                            
@@ -2612,9 +2684,10 @@
                             
                         </ons-list-item>
                     </ons-list>
-
+            
             <div class="comment-input-wrapper">
                 <div style="width:100%;     text-align: center;">
+                    <div class="error" ng-if="replyempty">Please enter a message.</div>
                     <textarea data-id="5" ng-model="newmessage.text" class="comment-input" placeholder="reply..."></textarea>
 
                 </div>
@@ -2630,7 +2703,7 @@
 
         <ons-template id="SingleActivity.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <ons-scroller style="height: 80%; width: 100%">
 
                                 <div class="demo-content contentwrapper">
@@ -2646,7 +2719,8 @@
                                     </div>
                                     <div class="activity-title">{{showsingleactivity.activity_title}}</div>
                                     <div class="activity-type"> ({{showsingleactivity.activity_category}} / {{showsingleactivity.activity_type}})</div>
-                                    <div class="active-status" ng-class="{'expired': showsingleactivity.activity_status=='expired'}">{{showsingleactivity.activity_status=='expired'? 'Expired': 'Countdown: ' + showsingleactivity.countdown}}</div>
+                                    <div class="active-status  ng-hide" ng-class="{'expired': showsingleactivity.activity_status=='expired'}">
+                                   {{showsingleactivity.activity_status=='expired'? 'Expired': 'Countdown: ' + showsingleactivity.countdown}}</div>
                                 </div>
                             </div>
                             <div class="activity-body">
@@ -2691,7 +2765,8 @@
                                     </div>
                                     <div class="activity-title">{{showsingleactivity.activity_title}}</div>
                                     <div class="activity-type"> ({{showsingleactivity.activity_category}} / {{showsingleactivity.activity_type}})</div>
-                                    <div class="active-status" ng-class="{'expired': showsingleactivity.activity_status=='expired'}">{{showsingleactivity.activity_status=='expired'? 'Expired': 'Countdown: ' + showsingleactivity.countdown}}</div>
+                                    <div class="active-status ng-hide" ng-class="{'expired': showsingleactivity.activity_status=='expired'}">
+                                    {{showsingleactivity.activity_status=='expired'? 'Expired': 'Countdown: ' + showsingleactivity.countdown}}</div>
                                 </div>
                             </div>
                             <div class="activity-body">
@@ -2755,7 +2830,8 @@
                                         <div class="host-username">{{showsingleactivity.activity_host_info.username}}</div><div class="activity-date">{{showsingleactivity.activity_date}}</div>
                                     </div>
                                     <div class="activity-title">{{showsingleactivity.activity_title}}</div><div class="activity-type"> ({{showsingleactivity.activity_category}} / {{showsingleactivity.activity_type}})</div>
-                                    <div class="active-status" ng-class="{'expired': showsingleactivity.activity_status=='expired'}">{{showsingleactivity.activity_status=='expired'? 'Expired': 'Countdown: ' + showsingleactivity.countdown}}</div>
+                                    <div class="active-status ng-hide" ng-class="{'expired': showsingleactivity.activity_status=='expired'}">
+                                    {{showsingleactivity.activity_status=='expired'? 'Expired': 'Countdown: ' + showsingleactivity.countdown}}</div>
                                 </div>
                             </div>
                             <div class="activity-divider">Round {{showsingleactivity.activity_round}}</div><div class="activity-body">
@@ -2813,7 +2889,7 @@
                                         <div class="activity-date">{{showsingleactivity.activity_date}}</div>
                                     </div><div class="activity-title">{{showsingleactivity.activity_title}}</div>
                                     <div class="activity-type"> ({{showsingleactivity.activity_category}} / {{showsingleactivity.activity_type}})</div>
-                                    <div class="active-status" ng-class="{'expired': showsingleactivity.activity_status=='expired'}">{{showsingleactivity.activity_status=='expired'? 'Expired': 'Countdown: ' + showsingleactivity.countdown}}</div>
+                                    <div class="active-status ng-hide" ng-class="{'expired': showsingleactivity.activity_status=='expired'}">{{showsingleactivity.activity_status=='expired'? 'Expired': 'Countdown: ' + showsingleactivity.countdown}}</div>
                                 </div>
                             </div>
                             <div class="activity-body" ng-repeat="con in f.contestants_info">
@@ -2855,7 +2931,7 @@
 
         <ons-template id="ForgotPassword.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <ons-row>
                     <ons-col>
                         <div class="login-form">
@@ -2884,7 +2960,7 @@
 
         <ons-template id="Search.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
                 <ons-row>
                     <ons-col>
                         <div ng-show="(searchresult.people.length==0 && searchresult.activity.length == 0) || searchquery.q.toString().length ==0" style="text-align:center;">
@@ -3166,7 +3242,7 @@
 
         <ons-template id="NewActivity.html">
             <ons-page>
-                <div class="headergap" ng-show="!ios"></div>
+                <div ng-class="ios? 'iosheader' : 'headergap'"></div>
 
                 <div class="profilewrapper">
                     <ons-row>
@@ -3266,9 +3342,9 @@
                              <div class="container" ng-show="isuploading !=1" style="text-align: center; padding: 10px 0;">
                                 <input  class="cropit-image-input" type="file" accept="video/*" id="inputupload" 
                                        onchange="angular.element(this).scope().setFiles(this, false,true,'activity')" />
-                                <ons-botton ng-if="!version44 && !file" class="button button--material btnsecond btnwide"  
-                                        ng-click="triggervideoupload()">Select Video<span style="font-size:x-small"> (Max 5 minutes.)</span></ons-botton>
-                                <button ng-if="version44 && !file" class="button button--material btnsecond btnwide"  
+                                <a ng-if="!version44 && !file" class="button button--material btnsecond btnwide"  
+                                        ng-click="triggervideoupload()" style="cursor: pointer !important;" data-tap-disabled="true">Select Video<span style="font-size:x-small"> (Max 5 minutes.)</span></a>
+                                <button ng-if="(version44) && !file" class="button button--material btnsecond btnwide"  
                                         ng-click="selectfile('activity')" >Choose File <span style="font-size:x-small"> (Max 5 minutes.)</span></button>
                                 <button ng-show="file && uploadbutton" class="button button--material btnsecond btnwide" 
                                         ng-click="triggervideoupload()">Selected {{file}}</button>
@@ -3410,7 +3486,7 @@
 
         <ons-template id="myfeed.html">
         <ons-page>
-            <div class="headergap" ng-show="!ios"></div>
+            <div ng-class="ios? 'iosheader' : 'headergap'"></div>
             <div class="profilewrapper">
                 <ons-row>
                     <ons-col>
@@ -3610,14 +3686,14 @@
 
        <ons-template id="Compose.html">
         <ons-page>
-            <div class="headergap" ng-show="!ios"></div>
+            <div ng-class="ios? 'iosheader' : 'headergap'"></div>
             <div class="demo-content contentwrapper">
                 <div class="header">Compose Message <ons-icon icon="fa-arrow-left"  class="pull-left ng-hide" ng-click="getmessages()"></ons-icon></div>
                 <br />
                 <div class="centered">
                     <ons-botton class="button button--material btnsecond btnwide" modified="small"
                             style="margin-left: 6px;"    ng-click="dialogusertomessage.show($event)">
-                        <div style="max-height:30px;float:left;" class="userlist">
+                        <div style="max-height:30px;float:left;min-width:80% !important" class="userlist">
                             <div ng-if="compose.to.length == 0" style="width:100%;float:left;">
                                 Select Recipient(s)
                             </div>

@@ -1,6 +1,9 @@
 .headergap {
 height:44px;
 }
+.iosheader {
+height:22px !important;
+}
 .subtext {
     opacity:0.4;
     font-size:0.7em;
@@ -110,7 +113,7 @@ height:44px;
     min-width:100%;
 }
 .userlist .avatar {
-    width:30px;height:30px;
+    width:30px !important;height:30px !important;
     border-radius:20px;
 }
 .userlist ons-list-item {

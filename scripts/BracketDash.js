@@ -5,8 +5,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         $scope.feed = [];
         $scope.feedlimit = 0;
         $scope.notificationlimit = 10;
-        $scope.commentlimit = 10;
+        $scope.commentslimit = 10;
         $scope.conversationlimit = 10;
+        $scope.audiencelimit = 10;
         $scope.bio = {};
         $scope.NewActivity = {
             type: '', title: '', description: '', round: 1, category: 'entertainment', visibility: 'public',duration:'',validvideo:true,
@@ -339,6 +340,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             if (!$scope.NewActivity.category || $scope.NewActivity.category == '') {
                 $scope.newactivityvalidation = { status: false, reason: 'Please select activity category' };
             }
+            if ($scope.NewActivity.type == 'battle' && ($scope.NewActivity.contestants.length < 2 || $scope.NewActivity.contestants.length > 5)) {
+                $scope.newactivityvalidation = { status: false, reason: 'Number of contestants can be from 2 to 5' };
+            }
+            
             if ($scope.NewActivity.type=='bracket' && $scope.NewActivity.branchlength <4) {
                 $scope.newactivityvalidation = { status: false, reason: 'Number of contestants can be 4, 8, 16' };
             }
@@ -630,7 +635,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         type: 'POST',
                         crossDomain: true,
                         url: 'http://www.bracketdash.com/api/api.php',
-                        data: { action: 'search_username', searchquery: q, limit: 10 },
+                        data: { action: 'search_username', searchquery: q, limit: 10,offset:0 },
                         success: function (userdata) {
                             console.log(userdata);
                             var objuser = JSON.parse(userdata);
@@ -809,7 +814,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             break;
                         case 1:
                             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
-                            var data = { "action": "delete_activity", "activity_id": $scope.currentfeed.activity_id, authorization: "Bearer " + access_token };
+                            var data = { "action": "delete_activity", "activity_id": id, authorization: "Bearer " + access_token };
 
                             $.ajax({
                                 url: "http://www.bracketdash.com/api/api.php",
@@ -896,7 +901,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             break;
                         case 1:
                             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
-                            var data = { "action": "launch_activity", "activity_id": $scope.currentfeed.activity_id, authorization: "Bearer " + access_token };
+                            var data = { "action": "launch_activity", "activity_id": id, authorization: "Bearer " + access_token };
 
                             $.ajax({
                                 url: "http://www.bracketdash.com/api/api.php",
@@ -1104,20 +1109,38 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         self.getcomments = function (id, limit) {
             $scope.isloading = true;
             if (!limit)
-                limit = 10;
+                limit = 0;
             $.ajax({
                 url: "http://www.bracketdash.com/api/api.php",
                 type: 'Get',
-                data: { action: 'output_comments', activity_id: id, limit: limit },
+                data: { action: 'output_comments', activity_id: id, limit: 10, offset:limit },
                 crossDomain: true,
                 success: function (data) {
+
                     $scope.isloading = false;
-                    var obj = JSON.parse(data);
-                        $scope.currentfeed.comments = obj;
-                        angular.extend($scope.currentfeed.comments, obj);
+                    $scope.commentslimit = limit;
+
+                    var json_obj = JSON.parse(data);
+                    if (json_obj.offset == 0) {
+                        $scope.currentfeed.comments = json_obj;
+                        angular.extend($scope.currentfeed.comments, json_obj);
+                    }
+                    else {
+                        for (var i = 0; i < json_obj.obj.length; i++)
+                        {
+                            $scope.currentfeed.comments.obj.push(json_obj.obj[i]);
+                        }
+
+                    }
+                    if (json_obj.obj.length > 9)
+                    {
+                        $scope.currentfeed.comments.hasmore = true;
+                    }
+                    else
+                        $scope.currentfeed.comments.hasmore = false;
 
                     $scope.$apply();
-                    $scope.commentlimit = limit;
+                    
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     $scope.isloading = false;
@@ -1324,7 +1347,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             $.ajax({
                 type: 'POST',
                 url: "http://www.bracketdash.com/api/api.php",
-                data: { action: 'search_username', searchquery: q, limit: 5 },
+                data: { action: 'search_username', searchquery: q, limit: 5,offset:0 },
                 crossDomain: true,
                 success: function (data) {
                     var json_obj = JSON.parse(data);
@@ -1612,6 +1635,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 $scope.feed.hasmore = true;
                             
                             $scope.isloading = false;
+                            $("#body").css("visibility", "visible");
                             $scope.$apply();
                         } catch (e) { alert(e);}
                     },
@@ -1853,7 +1877,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
             });
         }
-
         self.getinvitation = function (activity_id, title) {
             $scope.isloading = true;
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
@@ -1902,20 +1925,45 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
             });
         }
-        self.getaudience = function ajax_audience(username, navigate) {
+        self.getaudience = function ajax_audience(username, navigate, limit) {
+            if (!limit)
+                limit = 0;
+
             $scope.isloading = true;
             $.ajax({
                 type: 'GET',
                 url: "http://www.bracketdash.com/api/api.php",
                 crossDomain: true,
-                data: { action: 'audience', profile_username: username, limit: 10 },
+                data: { action: 'audience', profile_username: username, limit: 10,offset:limit },
                 success: function (data) {
                     var json_obj = JSON.parse(data);
                     var obj = json_obj.obj;
-                    $scope.viewuserinfo.audience = json_obj.obj;
-                    angular.extend($scope.viewuserinfo.audience, json_obj.obj);
-                    if (navigate)
-                        self.setMainPage('BioContent.html', { closeMenu: true }, 'Audience');
+                    
+
+                    $scope.audiencelimit = parseInt(json_obj.offset);
+
+                    if (json_obj.offset == 0) {
+                        $scope.viewuserinfo.audience = json_obj.obj;
+                        angular.extend($scope.viewuserinfo.audience, json_obj.obj);
+
+                        if (navigate)
+                            self.setMainPage('BioContent.html', { closeMenu: true }, 'Audience');
+
+                        self.getactivitylog(username, false);
+
+                        } else {
+
+                            for (var i = 0; i < json_obj.obj.length; i++) {
+                                $scope.viewuserinfo.audience.push(json_obj.obj[i]);
+                            }
+
+                        }
+                        if (obj.length >9) {
+                            $scope.viewuserinfo.audience.hasmore = true;
+                        } else
+                            $scope.viewuserinfo.audience.hasmore = false;
+
+
                     //alert(JSON.stringify(json_obj.obj));
                     if ($filter('filter')($scope.viewuserinfo.audience, { Username: self.userinfo.Username },true).length > 0) {
                       //  alert(self.userinfo.Username);
@@ -1926,7 +1974,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     $scope.isusernameinarray = false;
                 }
                    
-                    self.getactivitylog(username, false);
                     $scope.isloading = false;
                     $scope.$apply();
 
@@ -1947,8 +1994,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
 
         }
-        $scope.triggervideoupload = function () { $('#inputupload').click(); }
-        $scope.triggerresponseupload = function () { $('#inputuploadresponse').click(); }
+        $scope.triggervideoupload = function () { $('#inputupload').trigger('click');; }
+        $scope.triggerresponseupload = function () { $('#inputuploadresponse').trigger('click');; }
         $scope.triggerprogressupload = function (id) {
             $scope.uploadactivityid = id;
             $('#inputuploadprogress').click();
@@ -2092,31 +2139,58 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             //self.setMainPage('Messages.html', { closeMenu: true }, 'Messages')
             //return;
+            
+            
             if (!limit)
-                limit = 10;
+                limit = 0;
             $.ajax({
                 type: 'GET',
                 url: "http://www.bracketdash.com/api/api.php",
                 crossDomain: true,
                 data: {
                     action: 'output_inbox',
-                    limit: limit,
+                    limit: 10,
+                    offset: limit,
                     authorization: "Bearer " + access_token
                 },
                 success: function (data) {
                     //alert(data);
-
+                   
                     $scope.isloading = false;
                     var json_obj = JSON.parse(data);
                     console.log(json_obj);
-                    $scope.messages = json_obj;
-                    angular.extend($scope.messages, json_obj);
-                    self.setMainPage('Messages.html', { closeMenu: true }, 'Messages');
+                    $scope.messageslimit = parseInt(json_obj.offset);
+
+                    if (json_obj.offset == 0) {
+                        $scope.messages = json_obj;
+                        angular.extend($scope.messages, json_obj);
+                        
+                            self.setMainPage('Messages.html', { closeMenu: true }, 'Messages');
+                    } else {
+
+                            for (var i = 0; i < json_obj.obj.length; i++) {
+                                $scope.messages.obj.push(json_obj.obj[i]);
+                            }
+
+                    }
+                    if (json_obj.obj.length >9) {
+                        $scope.messages.hasmore = true;
+                    } else
+                        $scope.messages.hasmore = false;
+
+
+                    $scope.isloading = false;
+                    $scope.$apply();
+                    
                 },
                 error: function (data) { $scope.isloading = false; }
             });
         }
-        $scope.getconversation = function (id,limit) {
+        $scope.getconversation = function (id, limit) {
+            if (!limit)
+                limit = 0;
+            //alert(id);
+            //alert(limit);
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             //$scope.CurrentConversation = { from: {Username: 'eliezer', Fullname:'Eliezer Kombe',Avatar_link:''},
@@ -2124,6 +2198,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             //        { from: { Username: 'eliezer', Fullname: 'Eliezer Kombe', Avatar_link: 'https://bracketdash-users.s3.amazonaws.com/1/profile-picture.jpg' }, text: 'Another message', date: '10/10/2013' }]
             //}
             //return;
+            $scope.CurrentConversation.with = "";
+            $scope.currentconversationid = id;
             $.ajax({
                 type: 'GET',
                 url: "http://www.bracketdash.com/api/api.php",
@@ -2131,20 +2207,59 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: {
                     action: 'output_conversation',
                     limit: 10,
+                    offset: limit,
                     conversation_id: id,
                     authorization: "Bearer " + access_token
                 },
                 success: function (data) {
                     //alert(data);
                     var json_obj = JSON.parse(data);
-                    $scope.CurrentConversation = json_obj;
-                    angular.extend($scope.CurrentConversation, json_obj);
-                    //alert(JSON.stringify($scope.CurrentConversation));
-                    //alert(self.userinfo.Username);
-                    $scope.CurrentConversation.with = $filter('filter')($scope.CurrentConversation.obj, { username: '!'+self.userinfo.Username },true)[0];
-                    //alert(JSON.stringify($scope.CurrentConversation.with));
-                    self.setMainPage('Conversation.html', { closeMenu: true }, 'Conversation')
-                   
+                    $scope.conversationlimit = json_obj.offset;
+                    if (json_obj.offset == 0) {
+                        json_obj.obj = json_obj.obj.sort().reverse();
+                        $scope.CurrentConversation = json_obj;
+                        angular.extend($scope.CurrentConversation, json_obj);
+                        var group = json_obj.chat_group;// $filter('filter')($scope.CurrentConversation.obj, { username: '!' + self.userinfo.Username }, true);
+                        for (var j = 0; j < group.length; j++)
+                        {
+                            if (!$scope.CurrentConversation.with)
+                            {
+                                $scope.CurrentConversation.with = "";
+                              
+                            }
+                            if (group[j] && group[j] !='undefined')
+                                $scope.CurrentConversation.with += group[j]
+                            if (j < group.length-1)
+                                $scope.CurrentConversation.with += ", ";
+                        }
+                        
+                        self.setMainPage('Conversation.html', { closeMenu: true }, 'Conversation');
+                        setTimeout(function () { $("#lstmessages").animate({
+                            scrollTop: 1200
+                        }); }, 2000);
+
+                    } else {
+                        
+                        for (var i = 0; i < json_obj.obj.length; i++) {
+                            $scope.CurrentConversation.obj.unshift(json_obj.obj[i]);
+                        }
+                        setTimeout(function () {
+                            $("#lstmessages").animate({
+                                scrollTop: 0
+                            });
+                        }, 1000);
+
+                    }
+                    if (json_obj.obj.length > 9) {
+                        {
+                            $scope.CurrentConversation.hasmore = true;
+                           }
+                    } else{
+                        $scope.CurrentConversation.hasmore = false;  
+                    }
+                    $scope.isloading = false;
+                    $scope.$apply();
+
                 }
             });
         }
@@ -2179,6 +2294,11 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             self.setMainPage('Messages.html', { closeMenu: true }, 'Messages')
         }
         $scope.sendreply = function () {
+            if (!$scope.newmessage.text || $scope.newmessage.text.length == 0) {
+                $scope.replyempty = true;
+                
+                return;
+            }
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var destinationarray = [];
             var data = { action: 'input_reply', conversation_id: $scope.CurrentConversation.obj[0].conversation_id, text: $scope.newmessage.text, authorization: "Bearer " + access_token };
@@ -2315,8 +2435,14 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             return true;
         }
         $scope.savecomment = function () {
+            if (!$scope.newcomment.text ||$scope.newcomment.text.length == 0)
+            {
+                $scope.commentempty = true;
+                return;
+            }
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var data = { "action": "input_comment", "comment": $scope.newcomment.text, "activity_id": $scope.currentfeed.activity_id, authorization: "Bearer " + access_token };
+            
             $.ajax({
                 url: "http://www.bracketdash.com/api/api.php",
                 type: 'POST',
@@ -2472,7 +2598,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         case 1:
                             $scope.isloading = true;
                             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
-                            var data = { "action": "quit_activity", "activity_id": $scope.currentcon.activity_id, authorization: "Bearer " + access_token };
+                            var data = { "action": "quit_activity", "activity_id": id, authorization: "Bearer " + access_token };
                             $.ajax({
                                 url: "http://www.bracketdash.com/api/api.php",
                                 type: 'POST',
@@ -2682,6 +2808,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 self.getmyprofile(false);
             //self.setMainPage('NewActivity.html', {}, 'New Activity');
             self.getfeed('explore', 'Explore');
+
             ons.createPopover('popover.html').then(function (popover) {
                 $scope.popover = popover;
             });
@@ -2774,10 +2901,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             //$scope.version44 = true;
             //alert(device.platform.toLowerCase());
             if (device.platform.toLowerCase() === 'ios') {
-                //$('.headergap').addClass('ng-hide');
+                
                 $scope.ios = true;
-                //alert($scope.ios);
-            }
+                
+            }//alert($scope.ios);
             //document.addEventListener("backbutton", onBackKeyDown, false);
             ////alert($scope.version44);
             //function onBackKeyDown() {
