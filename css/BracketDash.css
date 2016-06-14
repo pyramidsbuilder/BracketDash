@@ -1542,6 +1542,7 @@ float:left;
 .aip-thumbnail img{
 	width:120px;
 	height:70px;
+    max-width: 100%;
 }
 .aip-thumbnail .play-button{
 	margin:20px 45px;
@@ -1685,11 +1686,9 @@ float:left;
 .expired {
 color:red !important;}
 
-@media only screen and (max-width: 300px) {
+@media only screen and (max-width: 350px) {
     .aip-thumbnail, .aip-thumbnail img, .section-thumbnail img, .section-avatar > img, bracket-section-thumbnail> img {
-        max-width: 6em !important;
-        margin-left: 2px !important;
-    }
+        }
     .contestant-section {
         padding: 0px;
     }
@@ -1702,15 +1701,59 @@ color:red !important;}
                    margin-left: 2px !important;
     }
     .avatar {
-        width: 50% !important;
-height: 50%;
+        /*width: 50% !important;*/
     }
     .bracket-section-frame {
         float:right;
         position:absolute;
     }
 
+    .section-username {
+        font-size:8px !important;
+        font-weight:normal !important;
+        max-width:40px !important;
+    }
+    .section-badge {
+        width:80px !important;
+    }
+  .section-thumbnail,  .section-thumbnail > img {
+        width: 80px !important;
+    }
+    .rank {
+        font-weight: normal !important;
+        font-size: 8px !important;
+    }
+}
+
+
+
+@media only screen and (max-width: 300px) {
+       .section-badge {
+        max-width:40px !important;
+    }
 }
 #mysearchicon {
 line-height:0.1em;
+}
+
+
+.btnhollow {
+    margin: 2px;
+    border-radius: 4px;
+    font-family: arial;
+    cursor: pointer;
+    border: 1px solid #949db5;
+    background-color:#bec4d2;
+    color:#293c6b;
+    font-size: 10px;
+    font-weight: normal;
+    
+    line-height:initial;
+    padding: 2px;
+}
+.btnload {
+    padding: 5px 45px;
+    font-size: 12px;
+    font-weight: bold;
+    
 }

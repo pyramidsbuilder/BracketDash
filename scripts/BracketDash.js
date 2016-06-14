@@ -624,7 +624,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 type: 'POST',
                 crossDomain: true,
                 url: 'http://www.bracketdash.com/api/api.php',
-                data: { action: 'search_activity', searchquery: q, limit: 10 },
+                data: { action: 'search_activity', searchquery: q, limit: 10,offset:0 },
                 success: function (data) {
                     console.log(data);
                     var obj = JSON.parse(data);
@@ -672,7 +672,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
                 else {
 
-                    if (self.CurrentPage == 'Explore') {
+                    if (self.CurrentPage == 'Explore' || self.CurrentPage=='Panel') {
                         $scope.currentfeed = $filter('filter')($scope.feed.obj, { activity_id: id }, true)[0];
                     }else
                     {
@@ -2000,6 +2000,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             $scope.uploadactivityid = id;
             $('#inputuploadprogress').click();
         }
+        $scope.triggerimageupload = function () {
+             $('#inputprofileimg').click();
+               
+        }
         $scope.showdialogprofilepic = function () {
             // alert(self.userinfo.Avatar_link);
             
@@ -2010,10 +2014,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             $('.rotate-ccw').click(function () {
                 $('.image-editor').cropit('rotateCCW');
             });
-            $('.upload').on('click', function () {
-                $('.upload').unbind('click');
-                $('#inputprofileimg').click();
-            });
+            //$('.upload').on('click', function () {
+            //    $('.upload').unbind('click');
+
+            //});
             $('#btnupload').on('click', function () {
                 //alert('');
                 
@@ -2074,8 +2078,59 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     $scope.result.css = 'successtoolbar';
                     //self.getmyprofile(false);
                     var cb = new Date();
+                    window.cache.clear(function () { return true; }, function (e) { alert(e); return false;});
+                    window.cache.cleartemp();
                     self.userinfo.Avatar_link = self.userinfo.Avatar_link + '?date=' + cb;
-                    
+                    self.setMainPage($scope.CurrentPageAddress, { closeMenu: false }, $scope.CurrentPage);
+                    //for (var i = 0; i < $scope.feed.obj.length; i++)
+                    //{
+                    //    try {
+                    //        alert($scope.feed.obj[i].activity_host_info.avatar_link);
+                    //        $scope.feed.obj[i].activity_host_info.avatar_link = $scope.feed.obj[i].activity_host_info.avatar_link + '?date=' + cb;
+                    //    } catch (e) { }
+                    //    try {
+                    //        for (var j = 0; j < $scope.feed.obj[i].contestants_info.length; j++) {
+                    //            try {
+                    //                $scope.feed.obj[i].contestants_info[j].avatar_link = $scope.feed.obj[i].contestants_info[j].avatar_link + '?date=' + cb;
+                    //            } catch (e) { }
+                    //            try {
+                    //                $scope.feed.obj[i].contestants_info[j].challenge.avatar_link = $scope.feed.obj[i].contestants_info[j].challenge.avatar_link + '?date=' + cb;
+                    //            } catch (e) { }
+                    //            try {
+                    //                for (var k = 0; k < $scope.feed.obj[i].contestants_info[j].response.length; j++) {
+                    //                    $scope.feed.obj[i].contestants_info[j].response[k].avatar_link = $scope.feed.obj[i].contestants_info[j].response[k].avatar_link + '?date=' + cb;
+                    //                }
+                    //            } catch (e) { }
+
+
+                    //        }
+                    //    } catch (e) { }
+                    //}
+                    //if ($scope.viewuserinfo && $scope.viewuserinfo.feedinprogress)
+                    //    {
+                    //for (var i = 0; i < $scope.viewuserinfo.feedinprogress.obj.length; i++) {
+                    //    try {
+                    //        $scope.viewuserinfo.feedinprogress.obj[i].activity_host_info.avatar_link = $scope.viewuserinfo.feedinprogress.obj[i].activity_host_info.avatar_link + '?date=' + cb;
+                    //    } catch (e) { }
+                    //    try {
+                    //        for (var j = 0; j < $scope.viewuserinfo.feedinprogress.obj[i].contestants_info.length; j++) {
+                    //            try {
+                    //                $scope.viewuserinfo.feedinprogress.obj[i].contestants_info[j].avatar_link = $scope.viewuserinfo.feedinprogress.obj[i].contestants_info[j].avatar_link + '?date=' + cb;
+                    //            } catch (e) { }
+                    //            try {
+                    //                $scope.viewuserinfo.feedinprogress.obj[i].contestants_info[j].challenge.avatar_link = $scope.viewuserinfo.feedinprogress.obj[i].contestants_info[j].challenge.avatar_link + '?date=' + cb;
+                    //            } catch (e) { }
+                    //            try {
+                    //                for (var k = 0; k < $scope.viewuserinfo.feedinprogress.obj[i].contestants_info[j].response.length; j++) {
+                    //                    $scope.viewuserinfo.feedinprogress.obj[i].contestants_info[j].response[k].avatar_link = $scope.viewuserinfo.feedinprogress.obj[i].contestants_info[j].response[k].avatar_link + '?date=' + cb;
+                    //                }
+                    //            } catch (e) { }
+
+
+                    //        }
+                    //    } catch (e) { }
+                    //}
+                    //}
                     $scope.isloading = false;
                     try { $scope.$apply(); } catch (e) { alert(e); }
                 },
@@ -2104,31 +2159,52 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             ctx.drawImage(img, 10, 10);
             alert(c.toDataURL());
         }
-        $scope.getnotifications = function (limit, offset) {
+        $scope.getnotifications = function (limit) {
             self.collapseall();
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             if (!limit)
-                limit = 10;
-            if (!offset)
-                offset = 0;
+                limit = 0;
+
             $.ajax({
                 type: 'GET',
                 url: "http://www.bracketdash.com/api/api.php",
                 crossDomain: true,
                 data: {
                     action: 'output_notifications',
-                    limit: limit,
-                    offset: offset,
+                    limit: 10,
+                    offset: limit,
                     authorization: "Bearer " + access_token
                 },
                 success: function (data) {
-                    $scope.notificationlimit = limit;
+                    //$scope.notificationlimit = limit;
                     var json_obj = JSON.parse(data);
-                    $scope.notifications = json_obj;
-                    angular.extend($scope.myaudience, json_obj);
-                    self.setMainPage('Notifications.html', { closeMenu: true }, 'Notifications');
+                   
+                    $scope.notificationlimit = parseInt(json_obj.offset);
 
+                    if (json_obj.offset == 0) {
+                        $scope.notifications = json_obj;
+                        angular.extend($scope.notifications, json_obj);
+
+                        self.setMainPage('Notifications.html', { closeMenu: true }, 'Notifications');
+
+                    } else {
+
+                        for (var i = 0; i < json_obj.obj.length; i++) {
+                            $scope.notifications.obj.push(json_obj.obj[i]);
+                        }
+
+                    }
+                    if (json_obj.obj.length > 9) {
+                        $scope.notifications.hasmore = true;
+                    } else
+                        $scope.notifications.hasmore = false;
+
+
+                    $scope.isloading = false;
+                    $scope.$apply();
+
+                   
                 }
             });
         }
@@ -2158,7 +2234,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                    
                     $scope.isloading = false;
                     var json_obj = JSON.parse(data);
-                    console.log(json_obj);
                     $scope.messageslimit = parseInt(json_obj.offset);
 
                     if (json_obj.offset == 0) {
@@ -2264,6 +2339,11 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             });
         }
         $scope.sendmessage = function () {
+            if (!$scope.compose.message || $scope.compose.message.length == 0) {
+                $scope.messageempty = true;
+
+                return;
+            }
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var privacysettings = { join_audience_settings: self.userinfo.accountsettings.join_audience_settings }
             var destinationarray = $scope.compose.usernames;
@@ -2614,7 +2694,25 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                         $scope.result.msg = 'You have quit this activity';
                                         $scope.result.css = 'successtoolbar';
                                         $scope.dialogvidoptions.hide();
+                                        try {
+                                            var act = $filter('filter')($scope.feed.obj, { activity_id: id }, true)[0];
+                                            var res = $filter('filter')(act.contestants_info.response, { contestant_username: self.userinfo.Username }, true)[0];
+                                            var ind = act.contestants_info.response.indexOf(res);
+                                            if (ind > -1)
+                                                act.contestants_info.response.splice(ind, 1);
+                                        } catch (e) { }
+                                        try {
+                                            var act = $filter('filter')($scope.feed.obj, { activity_id: id }, true)[0];
+                                            var res = $filter('filter')(act.contestants_info, { contestant_username: self.userinfo.Username }, true)[0];
+                                            res.quit_status = 'quit';
+                                            //var ind = act.contestants_info.indexOf(res);
+                                            //if (ind > -1)
+                                            //    act.contestants_info.splice(ind, 1);
+                                        } catch (e) { }
+
+                                        
                                         $scope.$apply();
+
                                     }
                                     else
                                     {

@@ -43,7 +43,7 @@
 
 <body id="body" style="visibility:hidden;" ng-controller="BracketDashController as bd">
     <div id="divOverlay" class="ng-hide slide-right"></div>
-    <video id="vid" src="" controls oncanplay="angular.element(this).scope().checkduration()"></video>
+    <video id="vid" src="" class="cropit-image-input" style="visibility:hidden;" controls oncanplay="angular.element(this).scope().checkduration()"></video>
 
     <ons-modal var="modloading" ng-show="isloading" >
         <ons-icon icon="ion-load-c" style="color:#FFF" spin="true"></ons-icon>
@@ -141,7 +141,7 @@
                 <input type="range" class="cropit-image-zoom-input" min="0" max="1" step="0.01"></div><div class="rotate-image-buttons">
                 <div class="rotate-ccw"><i class="fa fa-undo"></i></div><div class="rotate-cw"><i class="fa fa-repeat"></i></div></div>
                <button  ng-if="version44" ng-click="selectprofilepic()" style="height:30px;">Choose File</button>
-                <a ng-if="!version44"  style="cursor: pointer !important;" class="upload">Select Image</a>
+                <a ng-if="!version44"  style="cursor: pointer !important;" ng-click="triggerimageupload()" class="upload">Select Image</a>
                 <input type="file" class="cropit-image-input" id="inputprofileimg" accept="image/*"><button class="export">Save</button><button class="cancel pull-right" ng-click="dialogprofilepic.hide()">Cancel</button></div>
             
                 <!--<div>
@@ -508,7 +508,7 @@
                                        
                                     </div>
                                     <div style="text-align:center; margin-top:20px;" ng-if="currentfeed.comments.hasmore">
-                                    <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getcomments(currentfeed.activity_id,commentslimit+10)">Load more</ons-button>
+                                    <ons-button class="btnhollow btnload" ng-click="bd.getcomments(currentfeed.activity_id,commentslimit+10)">load more</ons-button>
                                     </div>
                                 </div>
                         </div>
@@ -655,7 +655,7 @@
                                     Do you really wish to quit this activity?<br />
                                     Keep in mind this action cannot be undone!
                                     <br />
-                                    <ons-botton class="button button--material btnsecond btnwide centered" modified="small" ng-click="quitactivity()">
+                                    <ons-botton class="button button--material btnsecond btnwide centered" modified="small" ng-click="quitactivity(currentcon.activity_id)">
                                         <div style="text-align:center">Quit</div>
                                     </ons-botton>
                                     <br />
@@ -721,7 +721,7 @@
                     </div>
                     <div ng-show="currentcon.mode ==2"  class="centered" >
                         <br /><br />
-                        <button class="button button--material btnprimary btnwide centered" modified="small" ng-click="quitactivity()">
+                        <button class="button button--material btnprimary btnwide centered" modified="small" ng-click="quitactivity(currentcon.activity_id)">
                            <div style="text-align:center">Quit Activity</div>
                         </button>                        
                         <br />
@@ -959,7 +959,7 @@
                             Account Settings
                         </ons-list-item>
 
-                        <ons-list-item class="menu-item" ng-click="bd.setMainPage('PrivacySettings.html', {closeMenu: true},'Privacy')">
+                        <ons-list-item class="menu-item ng-hide" ng-click="bd.setMainPage('PrivacySettings.html', {closeMenu: true},'Privacy')">
                             <ons-icon icon="fa-lock" size="18px"></ons-icon>
                             Privacy
                         </ons-list-item>
@@ -1057,8 +1057,7 @@
                         <div class="activity-wrapper" ng-if="f.activity_type == 'challenge'">
                             <div class="activity-header">
                                 <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
-                                    <img src="{{f.activity_host_info.avatar_link
-}}" alt="">
+                                    <img src="{{f.activity_host_info.avatar_link}}" alt="">
                                 </div>
                                 <div class="activity-header-txt">
                                     <div class="activity-header-txt-top-section">
@@ -1150,9 +1149,16 @@
                                                             <img src="{{con.avatar_link}}">
                                                         </div>
                                                         <div class="bracket-section-username">{{con.contestant_username}}</div>
-                                                    </div><div ng-click="playvideo(con.video_id)"  class="bracket-section-thumbnail">
+                                                    </div>
+                                                    <div ng-click="playvideo(con.video_id)"  class="bracket-section-thumbnail" ng-if="con.quit_status!='quit'">
                                                         <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
                                                         <img src="{{con.thumbnail_link}}" alt="">
+                                                    </div>
+                                                    <div  ng-if="con.quit_status=='quit'"
+                                                         class="aip-thumbnail bracket-section-thumbnail">
+                                                        <div class="upload-video-button">
+                                                            Quit Activity
+                                                        </div>
                                                     </div>
                                                     <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                                         <div class="likes-ratings">
@@ -1180,7 +1186,7 @@
 
                             <div class="activity-footer">
                                 <div class="activity-description">{{f.activity_description}}</div>
-                                <div class="activity-options-button"  ng-click="bd.expandfeed(f.activity_id);"></div>
+                                <div class="activity-options-button"  ng-click="bd.expandfeed(f.activity_id)"></div>
                             </div>
                         </div>
                         <div class="activity-wrapper" ng-if="f.activity_type == 'exhibition'">
@@ -1229,8 +1235,8 @@
                     
                     <div style="text-align:center; margin-top:20px;" ng-if="feed.hasmore">
                         
-                    <ons-button class="btnsmall button button--material btnsecond" ng-if="bd.CurrentPage == 'Explore'" ng-click="bd.getfeed('explore', 'Explore',feedlimit+10)">Load more</ons-button>
-                        <ons-button class="btnsmall button button--material btnsecond" ng-if="bd.CurrentPage == 'Panel'" ng-click="bd.getpanel('panel', 'Panel',feedlimit+10)">Load more</ons-button>
+                    <ons-button class="btnhollow btnload" ng-if="bd.CurrentPage == 'Explore'" ng-click="bd.getfeed('explore', 'Explore',feedlimit+10)">load more</ons-button>
+                        <ons-button class="btnhollow btnload" ng-if="bd.CurrentPage == 'Panel'" ng-click="bd.getpanel('panel', 'Panel',feedlimit+10)">load more</ons-button>
                     </div>
                 </div>
 
@@ -1296,7 +1302,7 @@
                 </ons-row>
             </div>
             <div data-role="content" class="demo-content">
-                <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feedinprogress.length==0">
+                <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feedinprogress.obj.length==0">
                     No Activities to show
                 </div>
                 
@@ -1520,7 +1526,7 @@
 
                 <div style="text-align:center; margin-top:20px;" ng-if="feed.hasmore">
 
-                    <ons-button class="btnsmall button button--material btnsecond"  ng-click="bd.getactivitylog(bd.userinfo.Username, false,'Activity Log',feedlimit+10)">Load more</ons-button>
+                    <ons-button class="btnhollow btnload"  ng-click="bd.getactivitylog(bd.userinfo.Username, false,'Activity Log',feedlimit+10)">load more</ons-button>
                 </div>
             </div>
 
@@ -1756,11 +1762,11 @@
                     </ons-list>
                     <div style="text-align:center; margin-top:20px;" ng-if="viewuserinfo.audience.hasmore">
 
-                        <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getaudience(viewuserinfo.Username, false,audiencelimit+10)">Load more</ons-button>
+                        <ons-button class="btnhollow btnload" ng-click="bd.getaudience(viewuserinfo.Username, false,audiencelimit+10)">load more</ons-button>
                     </div>
                 </div>
                 <div class="demo-content contentwrapper" ng-show="viewuserinfo.mode==3">
-                    <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feed.length==0">
+                    <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feedinprogress.obj.length==0">
                         No Activities to show
                     </div>
                     <div ng-repeat="f in viewuserinfo.feedinprogress.obj">
@@ -1959,13 +1965,13 @@
                         </div>
                     </div>
                     <div style="text-align:center; margin-top:20px;" ng-if="viewuserinfo.feed.hasmore">
-                        <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getactivityinprogress(feedlimit+10)">Load more</ons-button>
+                        <ons-button class="btnhollow btnload" ng-click="bd.getactivityinprogress(feedlimit+10)">load more</ons-button>
                     </div>
 
 
                 </div>
                 <div class="demo-content contentwrapper" ng-show="viewuserinfo.mode==4">
-                    <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feedinprogress.length==0">
+                    <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feedinprogress.obj.length==0">
                         No Activities to show
                     </div>
                     <div ng-repeat="f in viewuserinfo.feedinprogress.obj">
@@ -2160,7 +2166,7 @@
                         </div>
                     </div>
                     <div style="text-align:center; margin-top:20px;" ng-if="viewuserinfo.feed.status  && viewuserinfo.feed.status != 'complete'">
-                    <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getfeed(feedlimit+10)">Load more</ons-button>
+                    <ons-button class="btnhollow btnload" ng-click="bd.getfeed(feedlimit+10)">load more</ons-button>
                     </div>
 
                 </div>
@@ -2603,8 +2609,8 @@
                             </div>
                         </ons-list-item>
                     </ons-list>
-                            <div style="text-align:center; margin-top:20px;" ng-if="notifications.status  && notifications.status != 'complete'">
-                                <ons-button class="btnsmall button button--material btnsecond" ng-click="getnotifications(notificationlimit+10)">Load more</ons-button>
+                            <div style="text-align:center; margin-top:20px;" ng-if="notifications.hasmore">
+                                <ons-button class="btnhollow btnload" ng-click="getnotifications(notificationlimit+10)">load more</ons-button>
                             </div>
                 <div class="bottomgap"></div>
          </ons-page>
@@ -2633,7 +2639,7 @@
                         
                     </ons-list>
                     <div style="text-align:center; margin-top:20px;" ng-if="messages.hasmore">
-                        <ons-button class="btnsmall button button--material btnsecond" ng-click="getmessages(messageslimit+10)">Load more</ons-button>
+                        <ons-button class="btnhollow btnload" ng-click="getmessages(messageslimit+10)">load more</ons-button>
                     </div>
                 </ons-col>
             </ons-row>
@@ -2649,12 +2655,18 @@
                        modifier="inset" class="useractivitylist">
                 <ons-list-header style="text-overflow: ellipsis; height:auto;">
                     <ons-icon icon="fa-arrow-left" class="pull-left" ng-click="getmessages()"></ons-icon>
-                    Conversation between {{CurrentConversation.with}}
+                    Conversation 
                 </ons-list-header>
+                <ons-list-item style="padding:0px">
+                    <div style="text-align:center; margin-top:2px; margin-bottom:2px;">
+                        <ons-button class="btnhollow"
+                                    ng-repeat=" u in CurrentConversation.chat_group">{{u}}</ons-button>
+                    </div>
+                </ons-list-item>
                 <ons-list-item  >
                     <div style="text-align:center; margin-top:2px; margin-bottom:2px;" ng-if="CurrentConversation.hasmore">
-                        <ons-button class="btnsmall button button--material btnsecond" 
-                                    ng-click="getconversation(currentconversationid,conversationlimit+10)">Load older messages</ons-button>
+                        <ons-button class="btnhollow btnload" 
+                                    ng-click="getconversation(currentconversationid,conversationlimit+10)">load older messages</ons-button>
                     </div>
                 </ons-list-item>
             </ons-list>
@@ -3387,7 +3399,7 @@
                                         <div ng-repeat="u in b.contestants">
                                             <ons-botton class="button button--material btnsecond btnwide" modified="small"
                                                         ng-click="bd.popselectuser($event,$parent.$index,$index)">
-                                                <div style="max-height:30px;float:left;width:70%" class="userlist">
+                                                <div style="max-height:30px;float:left;width:70%;min-width: 80%;" class="userlist">
                                                     <div ng-if="u.Username.length > 0" style="width:100%;float:left;">
                                                         <div style="width:25%;float:left">
                                                             <img src="{{u.Avatar_link}}" class="avatar">
@@ -3542,7 +3554,7 @@
                 </ons-row>
             </div>
                 <div data-role="content" class="demo-content">
-                <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feedinprogress.length==0">
+                <div style="opacity:0.5; text-align:center; margin-top:50px;" ng-show="viewuserinfo.feedinprogress.obj.length==0">
                     No Activities to show
                 </div>
                 <input type="file" accept="video/*" class="cropit-image-input" id="inputuploadprogress"
@@ -3677,7 +3689,7 @@
                             <div class="activity-type"></div>
                         </div>
                 <div style="text-align:center; margin-top:20px;" ng-if="feed.hasmore">
-            <ons-button class="btnsmall button button--material btnsecond" ng-click="bd.getactivityinprogress(bd.userinfo.Username, false, 'Activities in progress', feedlimit+10)">Load more</ons-button>
+            <ons-button class="btnhollow btnload" ng-click="bd.getactivityinprogress(bd.userinfo.Username, false, 'Activities in progress', feedlimit+10)">load more</ons-button>
                 </div>
             <div class="bottomgap"></div>
         </ons-page>
@@ -3718,7 +3730,8 @@
                 </div>
                 <div class="comment-input-wrapper">
                     <div style="width:100%;     text-align: center;">
-                            <textarea data-id="5" ng-model="compose.message" class="comment-input" placeholder="message..."></textarea>
+                        <div class="error" ng-if="messageempty">Please enter a message.</div>
+                      <textarea data-id="5" ng-model="compose.message" class="comment-input" placeholder="message..."></textarea>
                         
                     </div>
                     <div class="centered"  style="width:100%;"><button class="button button--material  btnwide" style="color:white !important;" ng-click="sendmessage()">Send Message</button></div>
