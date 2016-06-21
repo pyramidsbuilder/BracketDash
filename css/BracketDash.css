@@ -1716,8 +1716,16 @@ color:red !important;}
     .section-badge {
         width:80px !important;
     }
-  .section-thumbnail,  .section-thumbnail > img {
+  .section-thumbnail,  .section-thumbnail > img,.bracket-section-thumbnail {
         width: 80px !important;
+    }
+    .bracket-section-thumbnail > .play-button,.section-thumbnail>.play-button, .bracket-section-thumbnail>.play-button  {
+        margin: 12px 27.5px !important;
+    }
+
+
+    .upload-video-button {
+        margin:20px 5px 20px 5px;
     }
     .rank {
         font-weight: normal !important;

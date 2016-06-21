@@ -448,7 +448,7 @@
                         </button>
                     </label>
                     <label class="tab-bar__item" ng-if="currentfeed.activity_host_info.username == bd.userinfo.Username && currentfeed.activity_status=='expired'
-                           && currentfeed.activity_type=='bracket' && currentfeed.next_round_status !='launched'">
+                           && currentfeed.activity_type=='bracket' && currentfeed.contestants_info.length >2 && currentfeed.next_round_status !='launched'">
                         <input type="radio" name="tab-bar-c" ng-model="currentfeed.mode" value="5">
                         <button class="tab-bar__button">
                             
@@ -552,7 +552,8 @@
                                         Select Video<span style="font-size:x-small"> (Max 5 minutes.)</span></a><br /><br />
 
 </div>
-                               <button ng-if="version44 && !file"  ng-click="selectfile('response',currentfeed.activity_id)" class="button button--material btnsecond btnwide">Choose File<span style="font-size:x-small"> (Max 5 minutes.)</span></button>
+                               <button ng-if="version44 && !file"  ng-click="selectfile('response',currentfeed.activity_id)"
+                                        class="button button--material btnsecond btnwide">Choose File & Save<span style="font-size:x-small"> (Max 5 minutes.)</span></button>
                                 <button ng-show="file && uploadbutton && validvideo" class="button button--material btnprimary btnwide" ng-click="addresponse(currentfeed.activity_id)">Upload {{file}}</button>
                                 <button ng-show="file && !uploadbutton" class="button btnsmall">{{file}}</button>
                             </div>
@@ -808,8 +809,14 @@
     <ons-icon icon="ion-load-c" class="checkmail" ng-if="checkingemail" spin="true"></ons-icon>
     <input type="password" class="text-input--underbar" ng-blur="validatepassword()" ng-model="newuser.registerpassword" placeholder="Select Password">
     <input type="password" class="text-input--underbar" ng-blur="validatepasswordconfirm()" ng-model="newuser.registerpasswordconfirm" placeholder="Confirm Password">
+    <label class="checkbox--noborder">
+     <input type="checkbox">
+      <div class="checkbox__checkmark"></div>
+      I agree
+    </label>
+                                                            
     <br><br>
-    <ons-button modifier="large" class="login-button" ng-disabled="registervalidation.emailstatus<1 || registervalidation.usernamestatus <1 || registervalidation.passwordstatus <1 || registervalidation.passwordconfirmstatus <1" ng-click="register()">Sign Up</ons-button>
+    <ons-button modifier="large" class="login-button" ng-disabled="registervalidation.emailstatus<1 || registervalidation.usernamestatus <1 || registervalidation.passwordstatus <1 || registervalidation.passwordconfirmstatus <1|| !registervalidation.accepttermstatus" ng-click="register()">Sign Up</ons-button>
     <br><br>
 </div></div>
         </ons-dialog>
@@ -832,6 +839,43 @@
             </div>
         </ons-dialog>
     </script>
+
+
+    <script type="text/ons-template" id="dialogterms.html">
+        <ons-dialog cancelable>
+            <ons-scroller class="terms-content-wrapper" style="max-height: 250px; width: 100%">
+
+                    <div class="header">
+                        Terms and Conditions Agreement
+                    </div>
+                    <div class="terms-content" style="padding:3px;">
+                        <p class="terms-last-modified-date">This document was last modified July 28th, 2015</p>
+                        <p>Please read these terms and conditions in their entirety before initiating use of the BracketDash Web Application  (officially referred to as the App. By using or accessing the App in any way, viewing or browsing the App, or adding your own content to the App, you are agreeing to be bound by these Terms and Conditions.</p>
+                        <h4>Intellectual Property</h4>
+                        The App and all of its original content are the sole property of BracketDash and are, as such, fully protected by the appropriate copyright laws, both domestic and international. Infringement on these rights will result in permanent termination of the account. Legal prosecution may follow pending review, in accordance to applicable laws.
+                        Original  content, such as songs, poems, or performances, uploaded to the site will remain property of the user who created it. BracketDash retains the right to host and share the video, but intellectual property remains the right of the user in accordance with governing laws.
+                        <h4>Content Agreements</h4>
+                        •&nbsp;Do not engage in or submit any illegal activity to this site.<br>
+                        •&nbsp;Do not engage in or submit any dangerous, harmful or violent acts to this site.<br>
+                        •&nbsp;Do not engage in or submit any forms of cyber bullying or harassment to this site, be it to other users or to the App creators. <br>
+                        •&nbsp;Do not submit any explicit, adult or pornographic material of any kind to this site.<br>
+                        •&nbsp;We are not responsible for any harm or damages related to any individual user.
+                        <h4>Termination</h4>
+                        BraketDash reserves the right to terminate your access to the App, without any advance notice, for any reason. Additionally, violation of any of the above content Agreements‚ will result in immediate and permanent termination of access. Legal prosecution may follow pending review, in accordance to applicable laws.
+                        <h4>Outside Links</h4>
+                        Braketdash may contain links to other websites or apps. The App does not maintain control over these links, and will accept no responsibility for activities performed on these third party sites or their services. The App strongly suggests users read any terms and conditions, along with privacy agreements, of any sites linked through BracketDash.
+                        <h4>Governing Law</h4>
+                        BracketDash is governed in accordance with the laws of Texas, United States of America.
+                        <h4>Changes to This Agreement</h4>
+                        BracketDash reserves the right to modify these Terms and Conditions at any time, with or without notice. It is the user's responsibility to review the Terms and Conditions. Your decision to continue to visit and make use of the App after such changes have been made constitutes your formal acceptance of the new Terms and Conditions. Therefore, we suggest users review the Terms and Conditions for changes, and terminate their use if they no longer agree.
+                        <h4>Contact Us</h4>
+                        If you have any questions about this Agreement, please feel free to contact us at <b>admin@bracketdash.com</b>
+                        <br><br>
+                    </div>
+                </div>
+</ons-dialog>
+    </script>
+
         <!-- Cordova reference -->
         <!-- -->
         <ons-toolbar fixed-style style="z-index:1000">
@@ -1029,11 +1073,16 @@
                                         </div>
                                         <div class="section-username">{{con.contestant_username}}</div>
                                     </div><div  class="section-thumbnail-and-ratings">
-                                        <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                        <div ng-click="playvideo(con.video_id)" class="section-thumbnail"  ng-if="con.quit_status!='quit'" data-video-link="{{con.video_link}}">
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                             <img src="{{con.thumbnail_link}}" alt="">
                                         </div>
-                                
+                                              <div ng-if="con.quit_status=='quit'"
+                                                   class="aip-thumbnail bracket-section-thumbnail">
+                                                  <div class="upload-video-button">
+                                                      Quit Activity
+                                                  </div>
+                                              </div>
                                     </div>
 
                                     <div class="section-ratings"  ng-click="bd.likevideo(f.activity_id,con.video_id)">
@@ -1087,7 +1136,9 @@
     <div class="likes-ratings"><div class="like-button" ></div><div class="like-count">{{f.contestants_info.challenge.likes}}</div></div>
     <div class="rank">Rank #{{f.contestants_info.challenge.rank}}</div>
 </div>
-                                        <a style="cursor: pointer !important; padding:9px;" class="section-options-button-wrapper" ng-click="bd.expandvideo(f.contestants_info.challenge,f.activity_id)">
+                                        <a style="cursor: pointer !important; padding:9px;" class="section-options-button-wrapper" 
+                                           ng-click="bd.expandvideo(f.contestants_info.challenge,f.activity_id)"
+                                            ng-if="f.contestants_info.challenge.contestant_username != bd.userinfo.Username">
                                             <div class="section-options-button"  
                                                  ></div>
                                         </a>
@@ -1211,7 +1262,7 @@
                                 </div>
 
                                 <div style="height:35px">
-                                    <a style="cursor: pointer !important; padding:9px;" class="bracket-section-options-button-wrapper" ng-click="bd.expandvideo(con,f.activity_id)">
+                                    <a style="cursor: pointer !important; padding:9px;" class="bracket-section-options-button-wrapper ng-hide" ng-click="bd.expandvideo(con,f.activity_id)">
                                         <div class="bracket-section-options-button"></div>
                                     </a>
  <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px; display:inline;float:left" ng-click="bd.likevideo(f.activity_id,con.video_id)">
@@ -1330,10 +1381,17 @@
                                     </div>
                                     <div class="section-username">{{con.contestant_username}}</div>
                                 </div><div class="section-thumbnail-and-ratings">
-                                    <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
-                                        <div class="play-button" data-vlink="{{con.video_link}}"></div>
-                                        <img src="{{con.thumbnail_link}}" alt="">
-                                    </div>
+                                   
+                                          <div ng-click="playvideo(con.video_id)" class="section-thumbnail" ng-if="con.quit_status!='quit'" data-video-link="{{con.video_link}}">
+                                              <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                              <img src="{{con.thumbnail_link}}" alt="">
+                                          </div>
+                                          <div ng-if="con.quit_status=='quit'"
+                                               class="aip-thumbnail bracket-section-thumbnail">
+                                              <div class="upload-video-button">
+                                                  Quit Activity
+                                              </div>
+                                          </div>
                                 </div>
                                           <div class="section-ratings" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                               <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
@@ -1385,41 +1443,36 @@
                                             <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id)"></div><div class="like-count">{{con.likes}}</div></div>
                                             <div class="rank">Rank #{{con.rank}}</div>
                                         </div>
-                                    </div><div class="section-options-button-wrapper">
-                                        <div class="section-options-button" ng-click="bd.expandvideo(con,f.activity_id)"></div>
                                     </div>
+                                    <a style="cursor: pointer !important; padding:9px;" class="section-options-button-wrapper"
+                                       ng-click="bd.expandvideo(f.contestants_info.challenge,f.activity_id)"
+                                       ng-if="f.contestants_info.challenge.contestant_username != bd.userinfo.Username">
+                                        <div class="section-options-button"></div>
+                                    </a>
                                 </div>
 
                             </div>
-                            <div class="oc_response_wrapper" ng-show="f.contestants_info.length > 1">
+                             <div class="oc_response_wrapper" ng-show="f.contestants_info.response[0].contestant_username">
                                 <div class="activity-divider">Response</div>
 
-                                <div class="contestant-section" ng-repeat="con in f.contestants_info" ng-if="$index > 0">
-                                    <div class="section-badge">
-                                        <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
-                                            <img src="{{con.avatar_link}}" alt="">
-                                        </div>
-                                        <div class="section-username">{{con.contestant_username}}</div>
-                                    </div><div class="section-thumbnail-and-ratings">
-                                        <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
-                                            <div class="play-button" data-vlink="{{con.video_link}}"></div>
-                                            <img src="{{con.thumbnail_link}}" alt="">
-                                        </div>
-                                 
-                                    </div>
-                                    
-
-                                    
-                                    <div class="section-ratings" style="padding: 10px;margin-top: 7px;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
-    <div class="likes-ratings"><div class="like-button" ></div><div class="like-count">{{con.likes}}</div></div>
-    <div class="rank">Rank #{{con.rank}}</div>
-</div>
-                                    <a style="cursor: pointer !important; padding:9px;"  ng-click="bd.expandvideo(con,f.activity_id)" 
-                                       class="section-options-button-wrapper">
-                                        <div class="section-options-button"></div>
-                                    </a>
-
-                                </div>
+                                 <div class="contestant-section" ng-repeat="con in f.contestants_info.response">
+                                     <div class="section-badge">
+                                         <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
+                                             <img src="{{con.avatar_link}}" alt="">
+                                         </div>
+                                         <div class="section-username">{{con.contestant_username}}</div>
+                                     </div><div class="section-thumbnail-and-ratings">
+                                         <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
+                                             <img src="{{con.thumbnail_link}}" alt="">
+                                         </div><div class="section-ratings">
+                                             <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')"></div><div class="like-count">{{con.likes}}</div></div>
+                                             <div class="rank">Rank #{{con.rank}}</div>
+                                         </div>
+                                     </div><div class="section-options-button-wrapper">
+                                         <div class="section-options-button" ng-click="bd.expandvideo(con,f.activity_id)"></div>
+                                     </div>
+                                 </div>
                             </div>
                         </div>
                         <div class="activity-footer">
@@ -1451,9 +1504,16 @@
                                                         <img src="{{con.avatar_link}}">
                                                     </div>
                                                     <div class="bracket-section-username">{{con.contestant_username}}</div>
-                                                </div><div ng-click="playvideo(con.video_id)" class="bracket-section-thumbnail">
+                                                </div>
+                                                <div ng-click="playvideo(con.video_id)" class="bracket-section-thumbnail" ng-if="con.quit_status!='quit'">
                                                     <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
                                                     <img src="{{con.thumbnail_link}}" alt="">
+                                                </div>
+                                                <div ng-if="con.quit_status=='quit'"
+                                                     class="aip-thumbnail bracket-section-thumbnail">
+                                                    <div class="upload-video-button">
+                                                        Quit Activity
+                                                    </div>
                                                 </div>
                                                 <div class="bracket-section-ratings"  style="padding-bottom: 15px;margin-top: 7px;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                                     <div class="likes-ratings">
@@ -1502,7 +1562,7 @@
                                 <img src="{{con.thumbnail_link}}">
                             </div>
                             <div style="height:35px">
-                                <a style="cursor: pointer !important; padding:9px;" class="bracket-section-options-button-wrapper" ng-click="bd.expandvideo(con,f.activity_id)">
+                                <a style="cursor: pointer !important; padding:9px;" class="bracket-section-options-button-wrapper  ng-hide" ng-click="bd.expandvideo(con,f.activity_id)">
                                     <div class="bracket-section-options-button"></div>
                                 </a>
                                 <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px; display:inline;float:left" ng-click="bd.likevideo(f.activity_id,con.video_id)">
@@ -2348,15 +2408,15 @@
                             <ons-row>
                                 <ons-col>
                                     <div style="text-align: center; padding: 10px 0;">
-                                        <input type="text" class="text-input--underbar" required style="width:95%"
+                                        <input type="password" class="text-input--underbar" required style="width:95%"
                                                placeholder="Current Password" ng-model="changesettings.registeroldpassword" value="">
                                     </div>
                                     <div style="text-align: center; padding: 10px 0;">
-                                        <input type="text" class="text-input--underbar" required style="width:95%"
+                                        <input type="password" class="text-input--underbar" required style="width:95%"
                                                placeholder="New Password" ng-model="changesettings.registerpassword" value="">
                                     </div>
                                     <div style="text-align: center; padding: 10px 0;">
-                                        <input type="text" class="text-input--underbar" required style="width:95%"
+                                        <input type="password" class="text-input--underbar" required style="width:95%"
                                                placeholder="Confirm Password" ng-model="changesettings.registerpasswordconfirm" value="">
                                     </div>
                                     {{changesettings.registerpasswordvalid}}
@@ -2521,8 +2581,13 @@
                             <ons-icon icon="ion-load-c" class="checkmail"  ng-if="checkingemail"  spin="true"></ons-icon>
                             <input type="password" class="text-input--underbar" ng-blur="validatepassword()"  ng-model="newuser.registerpassword" placeholder="Select Password">
                             <input type="password" class="text-input--underbar" ng-blur="validatepasswordconfirm()"  ng-model="newuser.registerpasswordconfirm" placeholder="Confirm Password">
-                            <br><br>
-                            <ons-button modifier="large" class="login-button" ng-disabled ="registervalidation.emailstatus<1 || registervalidation.usernamestatus <1 || registervalidation.passwordstatus <1 || registervalidation.passwordconfirmstatus <1" ng-click="register()">Sign Up</ons-button>
+                            <label class="checkbox" style=" float: left; font-size:13px;">
+                                <input ng-model="newuser.accepttermstatus" type="checkbox">
+                                <div class="checkbox__checkmark"></div>
+                                I agree to <a href="javascript:;" ng-click="dialogterms.show()">terms and conditions</a>.
+                            </label>
+                             <br><br>
+                            <ons-button modifier="large" class="login-button" ng-disabled ="registervalidation.emailstatus<1 || registervalidation.usernamestatus <1 || registervalidation.passwordstatus <1 || registervalidation.passwordconfirmstatus <1 || !newuser.accepttermstatus" ng-click="register()">Sign Up</ons-button>
                             <br><br>
                         </div>
                     </ons-col>
@@ -2910,7 +2975,8 @@
                                     <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                     <img src="{{con.thumbnail_link}}">
                                 </div>
-                                <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id)"></div><div class="like-count">{{con.likes}}</div></div>
+                                <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id)"></div>
+                                <div class="like-count">{{con.likes}}</div></div>
                             </div><div class="activity-footer">
                                 <div class="activity-description">{{con.thumbnail_link}}</div>
                                 <div class="activity-options-button" ng-show="!showsingleactivity.isinvitation"></div>
@@ -3357,7 +3423,7 @@
                                 <a ng-if="!version44 && !file" class="button button--material btnsecond btnwide"  
                                         ng-click="triggervideoupload()" style="cursor: pointer !important;" data-tap-disabled="true">Select Video<span style="font-size:x-small"> (Max 5 minutes.)</span></a>
                                 <button ng-if="(version44) && !file" class="button button--material btnsecond btnwide"  
-                                        ng-click="selectfile('activity')" >Choose File <span style="font-size:x-small"> (Max 5 minutes.)</span></button>
+                                        ng-click="selectfile('activity')" >Choose File & Save<span style="font-size:x-small"> (Max 5 minutes.)</span></button>
                                 <button ng-show="file && uploadbutton" class="button button--material btnsecond btnwide" 
                                         ng-click="triggervideoupload()">Selected {{file}}</button>
                                 <button ng-show="file && !uploadbutton" class="button btnsmall">{{file}}</button>
@@ -3420,7 +3486,7 @@
                             </div>
 
                         </div>
-                        <div ng-show="NewActivity.type!=''">
+                        <div ng-show="NewActivity.type!='' && !(version44 && (NewActivity.type=='challenge'||NewActivity.type=='exhibition') )">
                             <div style="text-align: center; padding: 10px 0;">
                                 <ons-botton class="button button--material btnwide " ng-click="bd.addactivity()" modified="small">
                                     Create Activity
