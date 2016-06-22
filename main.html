@@ -1480,7 +1480,7 @@
                             <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
                         </div>
                     </div>
-                    <div class="activity-wrapper" style="text-align:center;" ng-if="f.activity_type == 'bracket'">
+                    <div class="activity-wrapper" ng-if="f.activity_type == 'bracket'">
                         <div class="activity-header">
                             <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
                                 <img src="{{f.activity_host_info.avatar_link}}" alt="">
@@ -1536,7 +1536,7 @@
 
                         </div>
 
-                        <div class="activity-footer" ng-click="bd.expandfeed(f.activity_id);">
+                        <div class="activity-footer" >
                             <div class="activity-description">{{f.activity_description}}</div>
                             <div class="activity-options-button" ng-click="bd.expandfeed(f.activity_id);"></div>
                         </div>
@@ -2869,25 +2869,25 @@
                                     </div>
 
                                 </div>
-                                <div class="oc_response_wrapper" ng-show="showsingleactivity.contestants_info.length > 1">
+                                <div class="oc_response_wrapper" ng-show="showsingleactivity.contestants_info.response[0].contestant_username">
                                     <div class="activity-divider">Response</div>
 
-                                    <div class="contestant-section" ng-repeat="con in showsingleactivity.contestants_info" ng-if="$index > 0">
+                                    <div class="contestant-section" ng-repeat="con in showsingleactivity.contestants_info.response">
                                         <div class="section-badge">
                                             <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
                                                 <img src="{{con.avatar_link}}" alt="">
                                             </div>
                                             <div class="section-username">{{con.contestant_username}}</div>
-                                        </div><div ng-click="playvideo(con.video_id)" ng-if="!showsingleactivity.isinvitation" class="section-thumbnail-and-ratings">
-                                            <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                        </div><div class="section-thumbnail-and-ratings">
+                                            <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
                                                 <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                                 <img src="{{con.thumbnail_link}}" alt="">
-                                            </div><div ng-if="!showsingleactivity.isinvitation" class="section-ratings">
-                                                <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id)"></div><div class="like-count">{{con.likes}}</div></div>
+                                            </div><div class="section-ratings">
+                                                <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(showsingleactivity.activity_id,con.video_id,'response')"></div><div class="like-count">{{con.likes}}</div></div>
                                                 <div class="rank">Rank #{{con.rank}}</div>
                                             </div>
-                                        </div><div ng-if="!showsingleactivity.isinvitation" class="section-options-button-wrapper">
-                                            <div class="section-options-button" ng-click="bd.expandvideo(con,f.activity_id)"></div>
+                                        </div><div class="section-options-button-wrapper">
+                                            <div class="section-options-button" ng-click="bd.expandvideo(con,showsingleactivity.activity_id)"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -3064,7 +3064,7 @@
                                 </div>
                                 <div ng-show="searchresult.activity.length >0">
                                     <div class="main-search-divider">Activities</div><div class="main-search-content">
-                                        <div class="main-search-list-wrapper" ng-repeat="activity in searchresult.activity" ng-click="bd.getsingleactivity(activity.id,activity.title)">
+                                        <div class="main-search-list-wrapper" ng-repeat="activity in searchresult.activity" ng-click="bd.getsingleactivity(activity.id,'Single Activity')">
                                             <div class="main-search-list-avatar">
                                                 <img src="{{activity.Avatar_link}}" alt="">
                                             </div>

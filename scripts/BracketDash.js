@@ -679,6 +679,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         $scope.currentfeed = $filter('filter')($scope.feed.obj, { activity_id: id }, true)[0];
                     }else
                     {
+                        if (self.CurrentPage == 'Single Activity')
+                        {
+                            $scope.currentfeed = $scope.showsingleactivity;
+                        }else
                         $scope.currentfeed = $filter('filter')($scope.viewuserinfo.feedinprogress.obj, { activity_id: id }, true)[0];
                     }
                         self.feedexpand = id;
