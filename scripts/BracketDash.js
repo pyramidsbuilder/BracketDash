@@ -1587,7 +1587,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         //self.setMainPage('BioContent.html', { closeMenu: true }, "Bio");
                         $scope.isloading = false;
                         if (navigate)
-                            self.setMainPage('BioContent.html', { closeMenu: true }, $scope.viewuserinfo.Fullname + '\'s profile');
+                            self.setMainPage('BioContent.html', { closeMenu: true }, 'BioContent');
 
                         self.getaudience(profile_username, false);
 
@@ -3146,7 +3146,18 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 $scope.requestlogin();
                 return;
             }
-            var act = $filter('filter')($scope.feed.obj, { activity_id: activityid }, true)[0];
+            var act = null;
+            if (self.CurrentPage == "BioContent" || self.CurrentPage == "Activities" || self.CurrentPage == "Activity Log")
+            {
+                act = $filter('filter')($scope.viewuserinfo.feedinprogress.obj, { activity_id: activityid }, true)[0];
+            }
+            if (self.CurrentPage == "Single Activity") {
+                act = $scope.showsingleactivity;
+            }
+            if (self.CurrentPage == "Explore" || self.CurrentPage == "Panel") {
+                act = $filter('filter')($scope.feed.obj, { activity_id: activityid }, true)[0];
+            }
+           // var act = $filter('filter')($scope.feed.obj, { activity_id: activityid }, true)[0];
             if (act.activity_status == 'expired')
             {
                 $scope.result.id = -1;

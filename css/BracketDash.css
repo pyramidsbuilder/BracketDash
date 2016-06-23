@@ -1731,6 +1731,9 @@ color:red !important;}
         font-weight: normal !important;
         font-size: 8px !important;
     }
+   .contestant-section > .section-thumbnail-and-ratings {
+        margin-left:3px !important;
+    }
 }
 
 

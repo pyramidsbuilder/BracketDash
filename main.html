@@ -1114,7 +1114,8 @@
                                     </div>
                                     <div class="activity-title">{{f.activity_title}}</div>
                                     <div class="activity-type"> ({{f.activity_category}} / {{f.activity_type}})</div>
-                                    <div class="active-status" ng-class="{expired: f.activity_status=='expired'}">{{f.activity_status=='expired'? 'Expired': 'Countdown: ' + f.countdown}}</div>
+                                    <div class="active-status" ng-class="{expired: f.activity_status=='expired'}">
+                                    {{f.activity_status=='expired'? 'Expired': 'Countdown: ' + f.countdown}}</div>
                                 </div>
                             </div>
                             <div class="activity-body">
@@ -1301,7 +1302,7 @@
             <div class="profilewrapper">
                 <ons-row>
                     <ons-col>
-                        <ons-list ng-if="bd.userinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
+                        <ons-list ng-if="bd.isloggedin && bd.userinfo.Username &&viewuserinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
                             <ons-list-item ng-if="!isusernameinarray(viewuserinfo.audience,bd.userinfo.Username)" ng-click="joinaudience(viewuserinfo.Username)" class="centered">
                                 <ons-icon icon="ion-android-person-add" size="28px"></ons-icon>
                                 Join Audience
@@ -1603,7 +1604,7 @@
                         <div class="profilewrapper">
                             <ons-row>
                                 <ons-col>
-                                    <ons-list ng-if="bd.userinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
+                                    <ons-list ng-if="bd.isloggedin && bd.userinfo.Username &&viewuserinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
                                         <ons-list-item ng-if="!isusernameinarray(viewuserinfo.audience,bd.userinfo.Username)" ng-click="joinaudience(viewuserinfo.Username)" class="centered">
                                             <ons-icon icon="ion-android-person-add" size="28px"></ons-icon>
                                             Join Audience
@@ -1726,12 +1727,12 @@
                 <div class="profilewrapper">
                     <ons-row>
                         <ons-col>
-                            <ons-list ng-if="viewuserinfo && viewuserinfo.Username != bd.userinfo.Username">
-                                <ons-list-item modifier="tappable" ng-if="!isusernameinarray" ng-click="joinaudience(viewuserinfo.Username)" class="centered">
-                                    <ons-icon  icon="ion-android-person-add" size="28px"></ons-icon>
+                            <ons-list ng-if="bd.isloggedin && bd.userinfo.Username &&viewuserinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
+                                <ons-list-item ng-if="!isusernameinarray(viewuserinfo.audience,bd.userinfo.Username)" ng-click="joinaudience(viewuserinfo.Username)" class="centered">
+                                    <ons-icon icon="ion-android-person-add" size="28px"></ons-icon>
                                     Join Audience
                                 </ons-list-item>
-                                <ons-list-item modifier="tappable" ng-if="isusernameinarray" ng-click="leaveaudience(viewuserinfo.Username)" class="centered">
+                                <ons-list-item ng-if="isusernameinarray(viewuserinfo.audience,bd.userinfo.Username)" ng-click="leaveaudience(viewuserinfo.Username)" class="centered">
                                     <ons-icon icon="ion-android-person-add" size="28px"></ons-icon>
                                     Leave Audience
                                 </ons-list-item>
@@ -1891,41 +1892,48 @@
                             <div class="activity-body">
                                 <div class="oc_challenge_wrapper">
                                     <div class="activity-divider">Challenge</div>
-                                    <div class="contestant-section" ng-repeat="con in f.contestants_info" ng-if="$index == 0">
+                                    <div class="contestant-section">
                                         <div class="section-badge">
-                                            <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
-                                                <img src="{{con.avatar_link}}" alt="">
-                                            </div><div class="section-username">{{con.contestant_username}}</div>
+                                            <div class="section-avatar" ng-click="getprofile(f.contestants_info.challenge.contestant_username,true)">
+                                                <img src="{{f.contestants_info.challenge.avatar_link}}" alt="">
+                                            </div><div class="section-username">{{f.contestants_info.challenge.contestant_username}}</div>
                                         </div>
-                                        <div ng-click="playvideo(con.video_id)" class="section-thumbnail-and-ratings">
-                                            <div class="section-thumbnail" data-video-link="{{con.video_link}}">
-                                                <div class="play-button" data-vlink="{{con.video_link}}"></div><img src="{{con.thumbnail_link}}" alt="">
+                                        <div class="section-thumbnail-and-ratings">
+                                            <div ng-click="playvideo(f.contestants_info.challenge.video_id)" class="section-thumbnail" data-video-link="{{f.contestants_info.challenge.video_link}}">
+                                                <div class="play-button" data-vlink="{{f.contestants_info.challenge.video_link}}"></div><img src="{{f.contestants_info.challenge.thumbnail_link}}" alt="">
                                             </div>
-                                            <div class="section-ratings">
-                                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
-                                                <div class="rank">Rank #{{con.rank}}</div>
-                                            </div>
-                                        </div><div class="section-options-button-wrapper">
-                                            <div class="section-options-button" ng-click="bd.expandvideo(con,f.activity_id)"></div>
+
                                         </div>
+                                        <div class="section-ratings" style="padding: 10px;margin-top: 7px;" ng-click="bd.likevideo(f.activity_id,f.contestants_info.challenge.video_id,'challenge')">
+                                            <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{f.contestants_info.challenge.likes}}</div></div>
+                                            <div class="rank">Rank #{{f.contestants_info.challenge.rank}}</div>
+                                        </div>
+                                        <a style="cursor: pointer !important; padding:9px;" class="section-options-button-wrapper"
+                                           ng-click="bd.expandvideo(f.contestants_info.challenge,f.activity_id)"
+                                           ng-if="f.contestants_info.challenge.contestant_username != bd.userinfo.Username">
+                                            <div class="section-options-button"></div>
+                                        </a>
+
+
+
                                     </div>
 
                                 </div>
-                                <div class="oc_response_wrapper" ng-show="f.contestants_info.length > 1">
+                                <div class="oc_response_wrapper" ng-show="f.contestants_info.response[0].contestant_username">
                                     <div class="activity-divider">Response</div>
 
-                                    <div class="contestant-section" ng-repeat="con in f.contestants_info" ng-if="$index > 0">
+                                    <div class="contestant-section" ng-repeat="con in f.contestants_info.response">
                                         <div class="section-badge">
                                             <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
                                                 <img src="{{con.avatar_link}}" alt="">
                                             </div>
                                             <div class="section-username">{{con.contestant_username}}</div>
-                                        </div><div ng-click="playvideo(con.video_id)" class="section-thumbnail-and-ratings">
-                                            <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                        </div><div class="section-thumbnail-and-ratings">
+                                            <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
                                                 <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                                 <img src="{{con.thumbnail_link}}" alt="">
                                             </div><div class="section-ratings">
-                                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                                <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')"></div><div class="like-count">{{con.likes}}</div></div>
                                                 <div class="rank">Rank #{{con.rank}}</div>
                                             </div>
                                         </div><div class="section-options-button-wrapper">
@@ -1933,6 +1941,7 @@
                                         </div>
                                     </div>
                                 </div>
+                                
                             </div>
                             <div class="activity-footer">
                                 <div class="activity-description">{{f.activity_description}}</div>
@@ -2093,43 +2102,51 @@
                                 </div>
                             </div>
                             <div class="activity-body">
+
                                 <div class="oc_challenge_wrapper">
                                     <div class="activity-divider">Challenge</div>
-                                    <div class="contestant-section" ng-repeat="con in f.contestants_info" ng-if="$index == 0">
+                                    <div class="contestant-section">
                                         <div class="section-badge">
-                                            <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
-                                                <img src="{{con.avatar_link}}" alt="">
-                                            </div><div class="section-username">{{con.contestant_username}}</div>
+                                            <div class="section-avatar" ng-click="getprofile(f.contestants_info.challenge.contestant_username,true)">
+                                                <img src="{{f.contestants_info.challenge.avatar_link}}" alt="">
+                                            </div><div class="section-username">{{f.contestants_info.challenge.contestant_username}}</div>
                                         </div>
-                                        <div ng-click="playvideo(con.video_id)" class="section-thumbnail-and-ratings">
-                                            <div class="section-thumbnail" data-video-link="{{con.video_link}}">
-                                                <div class="play-button" data-vlink="{{con.video_link}}"></div><img src="{{con.thumbnail_link}}" alt="">
+                                        <div class="section-thumbnail-and-ratings">
+                                            <div ng-click="playvideo(f.contestants_info.challenge.video_id)" class="section-thumbnail" data-video-link="{{f.contestants_info.challenge.video_link}}">
+                                                <div class="play-button" data-vlink="{{f.contestants_info.challenge.video_link}}"></div><img src="{{f.contestants_info.challenge.thumbnail_link}}" alt="">
                                             </div>
-                                            <div class="section-ratings">
-                                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
-                                                <div class="rank">Rank #{{con.rank}}</div>
-                                            </div>
-                                        </div><div class="section-options-button-wrapper">
-                                            <div class="section-options-button" ng-click="bd.expandvideo(con,f.activity_id)"></div>
+
                                         </div>
+                                        <div class="section-ratings" style="padding: 10px;margin-top: 7px;" ng-click="bd.likevideo(f.activity_id,f.contestants_info.challenge.video_id,'challenge')">
+                                            <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{f.contestants_info.challenge.likes}}</div></div>
+                                            <div class="rank">Rank #{{f.contestants_info.challenge.rank}}</div>
+                                        </div>
+                                        <a style="cursor: pointer !important; padding:9px;" class="section-options-button-wrapper"
+                                           ng-click="bd.expandvideo(f.contestants_info.challenge,f.activity_id)"
+                                           ng-if="f.contestants_info.challenge.contestant_username != bd.userinfo.Username">
+                                            <div class="section-options-button"></div>
+                                        </a>
+
+
+
                                     </div>
 
                                 </div>
-                                <div class="oc_response_wrapper" ng-show="f.contestants_info.length > 1">
+                                <div class="oc_response_wrapper" ng-show="f.contestants_info.response[0].contestant_username">
                                     <div class="activity-divider">Response</div>
 
-                                    <div class="contestant-section" ng-repeat="con in f.contestants_info" ng-if="$index > 0">
+                                    <div class="contestant-section" ng-repeat="con in f.contestants_info.response">
                                         <div class="section-badge">
                                             <div class="section-avatar" ng-click="getprofile(con.contestant_username,true)">
                                                 <img src="{{con.avatar_link}}" alt="">
                                             </div>
                                             <div class="section-username">{{con.contestant_username}}</div>
-                                        </div><div ng-click="playvideo(con.video_id)" class="section-thumbnail-and-ratings">
-                                            <div class="section-thumbnail" data-video-link="{{con.video_link}}">
+                                        </div><div class="section-thumbnail-and-ratings">
+                                            <div ng-click="playvideo(con.video_id)" class="section-thumbnail" data-video-link="{{con.video_link}}">
                                                 <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                                 <img src="{{con.thumbnail_link}}" alt="">
                                             </div><div class="section-ratings">
-                                                <div class="likes-ratings"><div class="like-button"></div><div class="like-count">{{con.likes}}</div></div>
+                                                <div class="likes-ratings"><div class="like-button" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')"></div><div class="like-count">{{con.likes}}</div></div>
                                                 <div class="rank">Rank #{{con.rank}}</div>
                                             </div>
                                         </div><div class="section-options-button-wrapper">
@@ -2243,7 +2260,7 @@
                         <div class="profilewrapper">
                             <ons-row>
                                 <ons-col>
-                                    <ons-list ng-if="bd.userinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
+                                    <ons-list ng-if="bd.isloggedin && bd.userinfo.Username &&viewuserinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
                                         <ons-list-item ng-if="!isusernameinarray(viewuserinfo.audience,bd.userinfo.Username)" ng-click="joinaudience(viewuserinfo.Username)" class="centered">
                                             <ons-icon icon="ion-android-person-add" size="28px"></ons-icon>
                                             Join Audience
@@ -2781,8 +2798,7 @@
         <ons-template id="SingleActivity.html">
             <ons-page>
                 <div ng-class="ios? 'iosheader' : 'headergap'"></div>
-                <ons-scroller style="height: 80%; width: 100%">
-
+                
                                 <div class="demo-content contentwrapper">
                         <div class="activity-wrapper" ng-if="showsingleactivity.activity_type == 'battle'">
                             <div class="activity-header">
@@ -2809,7 +2825,7 @@
                                         <div class="section-username">{{con.contestant_username}}</div>
                                         <div class="section-username" ng-show="showsingleactivity.isinvitation">{{con.contestant_fullname}}</div>
                                     </div>
-                                    <div ng-show="!showsingleactivity.isinvitation" ng-click="playvideo(con.video_id)"
+                                    <div ng-show="!showsingleactivity.isinvitation" 
                                          class="section-thumbnail-and-ratings">
                                         <div ng-click="playvideo(con.video_id)" ng-if="!showsingleactivity.isinvitation" class="section-thumbnail" data-video-link="{{con.video_link}}">
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
@@ -2984,8 +3000,8 @@
                         </div>
 
                     </div>
-                    </ons-scroller>
-                    <div class="tab-bar" ng-show="showsingleactivity.isinvitation">
+            
+                        <div class="tab-bar" ng-show="showsingleactivity.isinvitation">
                         <label class="tab-bar__item btnaccept" ng-click="invitationrespond(true,'accept',showsingleactivity.activity_id)">
                             <input type="radio" name="tab-bar-a">
                             <button class="tab-bar__button">
@@ -3325,7 +3341,7 @@
                 <div class="profilewrapper">
                     <ons-row>
                         <ons-col>
-                            <ons-list ng-if="bd.userinfo.Username &&viewuserinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
+                            <ons-list ng-if="bd.isloggedin && bd.userinfo.Username &&viewuserinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
                                 <ons-list-item ng-if="!isusernameinarray(viewuserinfo.audience,bd.userinfo.Username)" ng-click="joinaudience(viewuserinfo.Username)" class="centered">
                                     <ons-icon icon="ion-android-person-add" size="28px"></ons-icon>
                                     Join Audience
@@ -3568,7 +3584,7 @@
             <div class="profilewrapper">
                 <ons-row>
                     <ons-col>
-                        <ons-list ng-if="bd.userinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
+                        <ons-list ng-if="bd.isloggedin && bd.userinfo.Username &&viewuserinfo.Username && viewuserinfo.Username != bd.userinfo.Username">
                             <ons-list-item ng-if="!isusernameinarray(viewuserinfo.audience,bd.userinfo.Username)" ng-click="joinaudience(viewuserinfo.Username)" class="centered">
                                 <ons-icon icon="ion-android-person-add" size="28px"></ons-icon>
                                 Join Audience
@@ -3687,8 +3703,6 @@
                         <div class="aip-options-button" data-activity-type="bracket" data-activity-host="mosta2" ></div>
                         </div>
                     </div>
-
-
                     <div class="aip-wrapper" ng-if="f.activity_type == 'battle'">
                     <div class="aip-header">
                         <div class="aip-host-avatar"  ng-click="getprofile(f.activity_host_info.username,true)">
