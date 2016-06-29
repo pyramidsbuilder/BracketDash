@@ -61,7 +61,7 @@ div{
     margin:5px auto;
 }
 .exhibition-thumbnail, .exhibition-thumbnail>img{
-    width:280px;
+    width:100%;
     height:158px;
 }
 .exhibition-thumbnail>.play-button{
@@ -311,7 +311,7 @@ div{
     margin:5px auto;
 }
 .exhibition-thumbnail, .exhibition-thumbnail>img{
-    width:460px;
+    width:100%;
     height:259px;
 }
 .exhibition-thumbnail>.play-button{

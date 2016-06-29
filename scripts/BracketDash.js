@@ -10,7 +10,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         $scope.audiencelimit = 10;
         $scope.bio = {};
         $scope.NewActivity = {
-            type: '', title: '', description: '', round: 1, category: 'entertainment', visibility: 'public',duration:'',validvideo:true,
+            type: '', title: '', description: '', round: 1, category: 'entertainment', visibility: 'public',duration:'3600',validvideo:true,
             branchlength: 4, branches: [], contestants: [], video_links: { "webm": null, "ogg": null, "mp4": null, "phone": null, "tablet": null ,thumbnail:null}
         };
         $scope.validvideo = true;
@@ -89,12 +89,16 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         };
         self.isloggedin = false;
         self.checklogin = function () {
+            
             if (self.token() == null || self.token().length == 0) {
                 self.isloggedin = false;
             }
             else {
                 self.isloggedin = true;
             }
+            //alert(self.isloggedin);
+            $scope.$apply();
+            return self.isloggedin;
         };
         self.userinfo = null;
 
@@ -235,17 +239,17 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 crossDomain: true,
                 success: function (data) {
                     $scope.isloading = false;
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     //alert(data);
                     if (obj.request_status == 'success') {
                         var access_token = obj.response.access_token;
-                        console.log(access_token);
+                      //  console.log(access_token);
                         var exp = obj.response.exp;
-                        console.log(exp);
+                       // console.log(exp);
                         var username = obj.response.username;
-                        console.log(username);
+                        //console.log(username);
                         self.storetoken(access_token, username, exp, true);
                         self.getfeed('explore', 'Explore')
                         self.isloggedin = true;
@@ -366,7 +370,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             }
         }
         self.addactivity = function (mode) {
-              self.validateactivity();
+            if (mode != 'finish')
+                self.validateactivity();
             
             // self.formatnewactivity();
               if ($scope.version44 && ($scope.NewActivity.type == 'challenge' || $scope.NewActivity.type == 'exhibition'))
@@ -383,7 +388,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
                 var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
                 //console.log(JSON.stringify(self.formatnewactivity()));
-                console.log(access_token);
+                //console.log(access_token);
                 data = { action: 'new_activity', activity_data_array: JSON.stringify(self.formatnewactivity()), authorization: "Bearer " + access_token };
                 //alert('saving');
                 $.ajax({
@@ -392,23 +397,23 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     data: data,
                     crossDomain: true,
                     success: function (data) {
-                        console.log(data);
+                        //console.log(data);
                         var obj = JSON.parse(data);
-                        console.log(obj);
+                        //console.log(obj);
                         if (obj.status == 'success') {
                           
 
                             $scope.result.id = 1;
                             $scope.result.msg = 'Activity Added Successfuly';
                             $scope.result.css = 'successtoolbar';
-                            if ($scope.NewActivity.type == 'challenge' || $scope.NewActivity.type == 'exhebition')
+                            if ($scope.NewActivity.type == 'challenge' || $scope.NewActivity.type == 'exhibition')
                             {
                                 self.getpanel('panel', 'Panel');
                             }
                             else
                                 self.getactivityinprogress(self.userinfo.Username, true, 'Activities in progress');
                             $scope.NewActivity = {
-                                type: '', title: '', description: '', round: 1, category: 'entertainment', visibility: 'public', duration: '', validvideo: true,
+                                type: '', title: '', description: '', round: 1, category: 'entertainment', visibility: 'public', duration: '3600', validvideo: true,
                                 branchlength: 4, branches: [], contestants: [], video_links: { "webm": null, "ogg": null, "mp4": null, "phone": null, "tablet": null ,thumbnail:null}
                             };
                             
@@ -592,9 +597,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 crossDomain: true,
                 success: function (data) {
                     $scope.isloading = false;
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     if (obj.request_status == 'success') {
                         var access_token = obj.response.access_token;
                         var exp = obj.response.exp;
@@ -629,7 +634,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 url: 'http://www.bracketdash.com/api/api.php',
                 data: { action: 'search_activity', searchquery: q, limit: 10,offset:0 },
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
                     $scope.searchresult.activity = obj.search_result;
                     angular.extend($scope.searchresult.activity, obj.search_result);
@@ -640,11 +645,13 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         url: 'http://www.bracketdash.com/api/api.php',
                         data: { action: 'search_user', searchquery: q, limit: 10,offset:0 },
                         success: function (userdata) {
-                            console.log(userdata);
+                            //console.log(userdata);
                             var objuser = JSON.parse(userdata);
                             $scope.searchresult.people = objuser.search_result;
                             angular.extend($scope.searchresult.people, objuser.search_result);
                             $scope.$apply();
+                            self.setMainPage('Search.html', {}, 'Search');
+
                         },
                         error: function (jqXHR, textStatus, errorThrown) {
                             alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
@@ -683,7 +690,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         {
                             $scope.currentfeed = $scope.showsingleactivity;
                         }else
-                        $scope.currentfeed = $filter('filter')($scope.viewuserinfo.feedinprogress.obj, { activity_id: id }, true)[0];
+                            $scope.currentfeed = $filter('filter')($scope.viewuserinfo.feedinprogress.obj, { activity_id: id }, true)[0];
                     }
                         self.feedexpand = id;
                         
@@ -710,8 +717,13 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
                     self.feedexpand = id;
                     $scope.currentprogressfeed = $filter('filter')($scope.viewuserinfo.feedinprogress.obj, { activity_id: id },true)[0];
+                    if ($scope.currentprogressfeed.activity_host_info.username == self.userinfo.Username)
+                        $scope.currentprogressfeed.mode = 1;
+                    else
+                        $scope.currentprogressfeed.mode = 2;
+
                     $scope.dialoginprogress.show();
-                    $scope.currentprogressfeed.mode = 1;
+                
                     try {
 
                     } catch (e) { alert(e); }
@@ -829,9 +841,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 data: data,
                                 crossDomain: true,
                                 success: function (data) {
-                                    console.log(data);
+                                    //console.log(data);
                                     var obj = JSON.parse(data);
-                                    console.log(obj);
+                                    //console.log(obj);
                                     if (obj.status == 'success') {
                                         $scope.result = { id: 1, msg: 'Activity Deleted Successfuly', css: 'successtoolbar' };
                                         self.hidecomments(id);
@@ -872,9 +884,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 data: data,
                                 crossDomain: true,
                                 success: function (data) {
-                                    console.log(data);
+                                    //console.log(data);
                                     var obj = JSON.parse(data);
-                                    console.log(obj);
+                                    //console.log(obj);
                                     if (obj.status == 'success') {
                                         $scope.result = { id: 1, msg: 'Next Round has been launched for ' + $scope.currentfeed.activity_title, css: 'successtoolbar' };
                                         self.hidecomments(id);
@@ -916,9 +928,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 data: data,
                                 crossDomain: true,
                                 success: function (data) {
-                                    console.log(data);
+                                    //console.log(data);
                                     var obj = JSON.parse(data);
-                                    console.log(obj);
+                                    //console.log(obj);
                                     if (obj == 'done') {
                                         $scope.result = { id: 1, msg: 'Activity Launched Successfuly', css: 'successtoolbar' };
                                         //self.hidecomments(id);
@@ -949,9 +961,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     data: data,
                     crossDomain: true,
                     success: function (data) {
-                            console.log(data);
+                            //console.log(data);
                             var obj = JSON.parse(data);
-                            console.log(obj);
+                            //console.log(obj);
                             if (obj == 'success') {
                                // $('#confirmationtoolbar').css('display', 'none');
                                 $scope.result = { id: 1, msg: 'You have joined ' + username + ' audience!', css: 'successtoolbar' };
@@ -978,9 +990,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     if (obj.status == 'success') {
                         $scope.result = { id: 1, msg: 'You have joined ' + username, css: 'successtoolbar' };
                                             
@@ -1004,9 +1016,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     if (obj == 'success') {
                         $scope.result = { id: 1, msg: 'You have left ' + username + ' audience!', css: 'successtoolbar' };
                         $scope.isusernameinarray = false;
@@ -1036,9 +1048,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     if (obj == 'success') {
                         $scope.result = { id: 1, msg: 'You have joined ' + username + ' audience!', css: 'successtoolbar' };
                        // $scope.isusernameinarray = false;
@@ -1076,9 +1088,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     if (obj == 'success') {
                        // $scope.$apply();
                     }
@@ -1107,7 +1119,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         self.hidecomments = function (id) {
             if (self.feedexpand == id) {
                 $scope.currentfeed = {};
-                $scope.commentdialog.hide();
+                try { $scope.commentdialog.hide(); } catch (e) { }
                 self.feedexpand = -1;
                
             }
@@ -1311,6 +1323,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         $scope.viewuserinfo = json_obj;
                         angular.extend($scope.viewuserinfo, json_obj);
                         $scope.isloading = false;
+                        self.isuserinaudience(profile_username);
                         self.getbio(profile_username, navigate);
                         $scope.$apply();
                     },
@@ -1358,7 +1371,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 crossDomain: true,
                 success: function (data) {
                     var json_obj = JSON.parse(data);
-                    console.log(data);
+                    //console.log(data);
                     for (var i = 0; i < json_obj.search_result.length; i++) {
                         json_obj.search_result[i].selected = false;
 
@@ -1525,9 +1538,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 crossDomain: true,
                                 success: function (data) {
                                     $scope.isloading = false;
-                                    console.log(data);
+                                    //console.log(data);
                                     var obj = JSON.parse(data);
-                                    console.log(obj);
+                                    //console.log(obj);
                                     if (obj.status == 'success') {
                                         //self.getcomments($scope.currentfeed.activity_id);
                                         //doChange('#profile');
@@ -1559,10 +1572,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         }
         self.getbio = function ajax_bio(profile_username, navigate) {
             if (profile_username == null) {
-                console.log("self.userinfo" + JSON.stringify(self.userinfo))
+                //console.log("self.userinfo" + JSON.stringify(self.userinfo))
                 profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
                 $scope.viewuserinfo = self.userinfo;
-                console.log("viewuserinfo" + JSON.stringify($scope.viewuserinfo))
+                //console.log("viewuserinfo" + JSON.stringify($scope.viewuserinfo))
 
             }
             else {
@@ -1586,7 +1599,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         //console.log("bio" + JSON.stringify($scope.viewuserinfo.bio))
                         //self.setMainPage('BioContent.html', { closeMenu: true }, "Bio");
                         $scope.isloading = false;
-                        if (navigate)
+                        if (navigate && $scope.viewuserinfo.mode == 1)
                             self.setMainPage('BioContent.html', { closeMenu: true }, 'BioContent');
 
                         self.getaudience(profile_username, false);
@@ -1617,11 +1630,11 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     data: { action: action, limit: 10, offset: limit },
                     crossDomain: true,
                     success: function (data) {
-                        console.log(data);
+                        //console.log(data);
                         var json_obj = JSON.parse(data);
-                        console.log(json_obj);
+                        //console.log(json_obj);
                         var obj = json_obj.obj;
-                        console.log(obj);
+                        //console.log(obj);
                         $scope.feedlimit = parseInt(json_obj.offset);
                         try {
                             if (json_obj.offset == 0) {
@@ -1665,11 +1678,11 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     crossDomain: true,
                     success: function (data) {
 
-                        console.log(data);
+                        //console.log(data);
                         var json_obj = JSON.parse(data);
-                        console.log(json_obj);
+                        //console.log(json_obj);
                         var obj = json_obj.obj;
-                        console.log(obj);
+                        //console.log(obj);
                         $scope.feed = json_obj.obj;
                         angular.extend($scope.feed, json_obj.obj);
 
@@ -1699,11 +1712,11 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var json_obj = JSON.parse(data);
-                    console.log(json_obj);
+                    //console.log(json_obj);
                     var obj = json_obj.obj;
-                    console.log(obj);
+                    //console.log(obj);
                     $scope.feedlimit = parseInt(json_obj.offset);
                     try {
                         if (json_obj.offset == 0) {
@@ -1717,7 +1730,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             }
 
                         }
-                        if (obj.length > 9) {
+                        if (json_obj.obj.length > 9) {
                             $scope.feed.hasmore = true;
                         } else
                             $scope.feed.hasmore = false;
@@ -1773,10 +1786,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             }
 
                         }
-                        if (obj.length == 0) {
-                            $scope.feed.hasmore = false;
+                        if (json_obj.obj.length > 9) {
+                            $scope.viewuserinfo.feedinprogress.hasmore = true;
                         } else
-                            $scope.feed.hasmore = true;
+                            $scope.viewuserinfo.feedinprogress.hasmore = false;
 
                         $scope.isloading = false;
                         $scope.$apply();
@@ -1830,8 +1843,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             $scope.viewuserinfo.feedinprogress = json_obj;
                             angular.extend($scope.viewuserinfo.feedinprogress, json_obj);
                             //alert($scope.viewuserinfo.mode)
-                            if (navigate && $scope.viewuserinfo.mode != 1)
-                                self.setMainPage('activity_log.html', { closeMenu: true }, 'Activity Log');
+                            if (navigate && $scope.viewuserinfo.mode == 3)
+                                self.setMainPage('BioContent.html', { closeMenu: true }, 'BioContent');
                         } else {
 
                             for (var i = 0; i < json_obj.obj.length; i++) {
@@ -1839,13 +1852,13 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             }
 
                         }
-                        if (obj.length > 9) {
-                            $scope.feed.hasmore =true ;
+                        if (json_obj.obj.length > 9) {
+                            $scope.viewuserinfo.feedinprogress.hasmore = true;
                         } else
-                            $scope.feed.hasmore = false;
+                            $scope.viewuserinfo.feedinprogress.hasmore = false;
 
-
-                        if (navigate && $scope.viewuserinfo.mode != 1)
+                        //alert(navigate);
+                        if (navigate && $scope.viewuserinfo.mode == 3)
                             self.setMainPage('activity_log.html', { closeMenu: true }, 'Activities');
                         $scope.$apply();
                     } catch (e) { alert(e);}
@@ -1869,7 +1882,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var json_obj = JSON.parse(data);
                     $scope.showsingleactivity = json_obj;
                     angular.extend($scope.showsingleactivity, json_obj);
@@ -1897,7 +1910,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var json_obj = JSON.parse(data);
                     $scope.showsingleactivity = json_obj;
                     angular.extend($scope.showsingleactivity, json_obj);
@@ -1954,7 +1967,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         $scope.viewuserinfo.audience = json_obj.obj;
                         angular.extend($scope.viewuserinfo.audience, json_obj.obj);
 
-                        if (navigate)
+                        if (navigate && $scope.viewuserinfo.mode == 2)
                             self.setMainPage('BioContent.html', { closeMenu: true }, 'Audience');
 
                         self.getactivitylog(username, true);
@@ -1965,13 +1978,12 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 $scope.viewuserinfo.audience.push(json_obj.obj[i]);
                             }
 
-                        }
-                        if (obj.length >9) {
+                    }
+                    if (json_obj.obj.length > 9) {
                             $scope.viewuserinfo.audience.hasmore = true;
                         } else
                             $scope.viewuserinfo.audience.hasmore = false;
-
-
+                    
                     //alert(JSON.stringify(json_obj.obj));
                     if ($filter('filter')($scope.viewuserinfo.audience, { Username: self.userinfo.Username },true).length > 0) {
                       //  alert(self.userinfo.Username);
@@ -1991,6 +2003,31 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
             });
         }
+        self.isuserinaudience = function ajax_join_audience_status(profile_username) {
+                var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
+                
+                $.ajax({
+                    type: 'GET',
+                    url: "http://www.bracketdash.com/api/api.php",
+
+                    data: { action: 'join_audience_status', profile_username: profile_username, authorization: "Bearer " + access_token },
+                    crossDomain: true,
+                    success: function (data) {
+                        if (data.status == "leave")
+                            $scope.isusernameinarray = true;
+                        if (data.status == "join")
+                            $scope.isusernameinarray = false;
+                        var json_obj = JSON.parse(data);
+                        $scope.isloading = false;
+                        $scope.$apply();
+                        //$scope.invitationdialog.show();
+                    },
+                    error: function (data) {
+                        $scope.isloading = false;
+                    }
+                });
+            
+        }
         $scope.playvideo = function (videolink) {
             if (videolink && videolink.indexOf("http") > -1)
                 $scope.isplaying = $sce.trustAsResourceUrl(videolink);
@@ -2005,11 +2042,18 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         $scope.triggervideoupload = function () { $('#inputupload').trigger('click');; }
         $scope.triggerresponseupload = function () { $('#inputuploadresponse').trigger('click');; }
         $scope.triggerprogressupload = function (id) {
+            if ($scope.isuploading == 1)
+            {
+                ons.notification.alert({
+                    message: 'There is an upload in progress please try later'
+                });
+                return;
+            }
             $scope.uploadactivityid = id;
-            $('#inputuploadprogress').click();
+            $('#inputuploadprogress').trigger('click');;
         }
         $scope.triggerimageupload = function () {
-             $('#inputprofileimg').click();
+            $('#inputprofileimg').trigger('click');;
                
         }
         $scope.showdialogprofilepic = function () {
@@ -2032,7 +2076,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             });
 
             $('#btnuploadresponse').on('click', function () {
-                $('#inputuploadresponse').click();
+                $('#inputuploadresponse').trigger('click');;
             });
             $('.export').click(function () {
                 var imageData = $('.image-editor').cropit('export');
@@ -2077,18 +2121,21 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 url: "https://www.bracketdash.com/api/api.php",
                 data: { action: 'save_profile_picture', profile_picture_file: profile_picture_file, authorization: "Bearer " + access_token },
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     $scope.dialogprofilepic.hide();
                     $scope.result.id = 1;
                     $scope.result.msg = 'Profile Picture Updated!';
                     $scope.result.css = 'successtoolbar';
                     //self.getmyprofile(false);
                     var cb = new Date();
+
+                    self.userinfo.Avatar_link = self.userinfo.Avatar_link + '?date=' + cb;
+                    $scope.isloading = false;
+                    try { $scope.$apply(); } catch (e) { alert(e); }
                     window.cache.clear(function () { return true; }, function (e) { alert(e); return false;});
                     window.cache.cleartemp();
-                    self.userinfo.Avatar_link = self.userinfo.Avatar_link + '?date=' + cb;
                     self.setMainPage($scope.CurrentPageAddress, { closeMenu: false }, $scope.CurrentPage);
                     //for (var i = 0; i < $scope.feed.obj.length; i++)
                     //{
@@ -2139,8 +2186,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     //    } catch (e) { }
                     //}
                     //}
-                    $scope.isloading = false;
-                    try { $scope.$apply(); } catch (e) { alert(e); }
                 },
                 error: function (jqXHR, textStatus, errorThrown) {
                     alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
@@ -2355,7 +2400,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var privacysettings = { join_audience_settings: self.userinfo.accountsettings.join_audience_settings }
             var destinationarray = $scope.compose.usernames;
-            var data = { action: 'input_message', destination: destinationarray, text: $scope.compose.message, authorization: "Bearer " + access_token };
+            //alert(destinationarray);
+            //alert(JSON.stringify(destinationarray));
+            var data = { action: 'input_message', destination: JSON.stringify(destinationarray), text: $scope.compose.message, authorization: "Bearer " + access_token };
             $.ajax({
                 url: "http://www.bracketdash.com/api/api.php",
                 type: 'POST',
@@ -2363,9 +2410,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 crossDomain: true,
                 success: function (data) {
                     //alert(data);
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     //alert(JSON.stringify(obj));
                     $scope.result.id = 1;
                     $scope.result.msg = 'Message Sent!';
@@ -2425,7 +2472,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 },
                 success: function (data) {
                     var json_obj = JSON.parse(data);;
-                    console.log(json_obj);
+                    //console.log(json_obj);
                     var profilesettings = json_obj.profile_settings;
                     var accountsettings = json_obj.account_settings;
                     var privacysettings =json_obj.privacy_settings;
@@ -2451,6 +2498,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         self.explore = function () {
 
         }
+
         self.savesettings = function () {
             var data = { action: 'save_account_settings', account_settings_updates: AccountSettingsForm };
             $.ajax({
@@ -2459,9 +2507,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     
 
                 },
@@ -2510,9 +2558,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 crossDomain: true,
                 success: function (data) {
                     // alert(data);
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
 
 
                 },
@@ -2537,9 +2585,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 data: data,
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     if (obj.status == 'success') {
                         self.getcomments($scope.currentfeed.activity_id);
                         $scope.newcomment = {};
@@ -2578,9 +2626,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                     crossDomain: true,
                                     success: function (data) {
                                         $scope.isloading = false;
-                                        console.log(data);
+                                        //console.log(data);
                                         var obj = JSON.parse(data);
-                                        console.log(obj);
+                                        //console.log(obj);
                                         if (obj.status == 'success') {
                                             //self.getcomments($scope.currentfeed.activity_id);
                                             //doChange('#profile');
@@ -2636,9 +2684,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 crossDomain: true,
                                 success: function (data) {
                                     $scope.isloading = false;
-                                    console.log(data);
+                                    //console.log(data);
                                     var obj = JSON.parse(data);
-                                    console.log(obj);
+                                    //console.log(obj);
                                     if (obj.status == 'success') {
                                         //self.getcomments($scope.currentfeed.activity_id);
                                         //doChange('#profile');
@@ -2694,14 +2742,15 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 crossDomain: true,
                                 success: function (data) {
                                     $scope.isloading = false;
-                                    console.log(data);
+                                    //console.log(data);
                                     var obj = JSON.parse(data);
-                                    console.log(obj);
+                                    //console.log(obj);
                                     if (obj.status == 'success') {
                                         $scope.result.id = 1;
                                         $scope.result.msg = 'You have quit this activity';
                                         $scope.result.css = 'successtoolbar';
                                         $scope.dialogvidoptions.hide();
+                                        $scope.dialoginprogress.hide();
                                         try {
                                             var act = $filter('filter')($scope.feed.obj, { activity_id: id }, true)[0];
                                             var res = $filter('filter')(act.contestants_info.response, { contestant_username: self.userinfo.Username }, true)[0];
@@ -2754,10 +2803,16 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
         $scope.newlink = {name:null};
         $scope.addlink = function () {
+            if (!self.userinfo.profilesettings.links)
+            {
+                self.userinfo.profilesettings.links = [$scope.newlink.name];
+            }
+            else { 
             var ind = self.userinfo.profilesettings.links.indexOf($scope.newlink.name);
 
             if (ind == -1)
                 self.userinfo.profilesettings.links.push($scope.newlink.name);
+            }
             $scope.newlink.name = null;
         }
         $scope.removelink = function (link) {
@@ -2843,6 +2898,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 //myVideo.src = $scope.isplaying;
                 //myVideo.load();
                 //myVideo.play();
+                //$scope.$apply();
             }
             else {
 
@@ -3177,9 +3233,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 },
                 crossDomain: true,
                 success: function (data) {
-                    console.log(data);
+                    //console.log(data);
                     var obj = JSON.parse(data);
-                    console.log(obj);
+                    //console.log(obj);
                     //alert(mode);
                     //alert(videoid);
                     setTimeout(
@@ -3233,6 +3289,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 progress: function (loaded, total) {
                     //alert(loaded + 'bytes loaded');
                     $scope.uploadprogress = parseInt(loaded / total * 100) +' %' ; //();
+
                     try {
                         $scope.$apply();
                     } catch (e) { }
@@ -3241,7 +3298,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
                 processing: function () {
                    // alert(JSON.stringify(data));
-                    console.log('done uploading, started processing');
+                    //console.log('done uploading, started processing');
+                    //$scope.fileuploadresult = 'File uploaded successfully, currently processing';
+                    //try{
+                    //    $scope.$apply();}catch(e){};
                 },
 
                 uploaded: function (assemblyJson) {
@@ -3294,7 +3354,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         //    $scope.uploadcreateactivity = false;
                         //    self.addactivity();
                         //}
-                        console.log(assemblyJson);
+                        //console.log(assemblyJson);
                     } catch (e) { alert(e);}
                 },
 
@@ -3471,7 +3531,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
                 var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
                 //console.log(JSON.stringify(self.formatnewactivity()));
-                console.log(access_token);
+                //console.log(access_token);
                 data = { action: 'input_open_challenge_response', activity_id: activityid, video_links_array: JSON.stringify($scope.NewResponse.video_links_array), authorization: "Bearer " + access_token };
                 $.ajax({
                     url: "http://www.bracketdash.com/api/api.php",
@@ -3618,9 +3678,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                     data: data,
                                     crossDomain: true,
                                     success: function (data) {
-                                        console.log(data);
+                                        //console.log(data);
                                         var obj = JSON.parse(data);
-                                        console.log(obj);
+                                        //console.log(obj);
                                         if (obj.status == 'success') {
                                             $scope.result = { id: 1, msg: 'Video has been deleted ', css: 'successtoolbar' };
                                             //self.hidecomments(id);
@@ -3653,29 +3713,30 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         $scope.uploadresponse = false;
         $scope.newvidvalid = true;
         $scope.setFiles = function (element, auto, uplaodbtn,mode,id) {
-            $scope.file = $(element).val().substr($(element).val().lastIndexOf("\\") + 1);
-            //$scope.$apply();
-            $scope.uploadbutton = uplaodbtn;
-            //if (auto)
-            //{ $scope.initupload();}
-            $scope.validvideo = true;
-            if (mode == 'response')
-            {
-                //$scope.validatevideo(element);
+            try {
+                $scope.file = $(element).val().substr($(element).val().lastIndexOf("\\") + 1);
+                //$scope.$apply();
+                $scope.uploadbutton = uplaodbtn;
+                //if (auto)
+                //{ $scope.initupload();}
+                $scope.validvideo = true;
+                if (mode == 'response') {
+                    //$scope.validatevideo(element);
 
-            }
-            if (mode == 'activity') {
-               // $scope.validatevideo(element);
-            }
-            if (mode == 'progress') {
-               // $scope.validatevideo(element, true);
+                }
+                if (mode == 'activity') {
+                    // $scope.validatevideo(element);
+                }
+                if (mode == 'progress') {
+                    // $scope.validatevideo(element, true);
 
                     $scope.uploadcreateprogress = true;
                     self.initupload();
-                
-            }
 
-            $scope.$apply();
+                }
+
+                $scope.$apply();
+            } catch (e) { alert(e)}
         };
         $scope.validatevideo = function (element, progress) {
             var URL = window.URL || window.webkitURL
@@ -3748,6 +3809,12 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         }
         $scope.selectfile = function (mode,id) {
             try {
+                if ($scope.isuploading == 1) {
+                    ons.notification.alert({
+                        message: 'There is an upload in progress please try again later'
+                    });
+                    return;
+                }
                 if (mode == 'activity')
                 {
                     self.validateactivity(true);
@@ -3834,11 +3901,15 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             } catch (e) { }
                             return;
                         }
-                    if (data.ok != "ASSEMBLY_COMPLETED") {
-                        //alert('not ready.. processing');
-                        setTimeout(function () { $scope.checkfileprocessed(assemblyID) }, 7000);
-                    }
-                    else {
+                        if (data.ok != "ASSEMBLY_COMPLETED") {
+                            //alert('not ready.. processing');
+                            if (data.ok == "ASSEMBLY_EXECUTING") {
+                                //alert('not ready.. processing');
+                                $scope.fileuploadresult = 'File uploaded, processing in progress';
+                            }
+                            setTimeout(function () { $scope.checkfileprocessed(assemblyID) }, 5000);
+                        }
+                        else {
                         //alert('DONE' + assemblyID);
                         $scope.fileuploadresult = 'File uploaded successfully';
                         //  alert(data.results.mp4[0].url);
@@ -3996,7 +4067,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 $scope.isloading = true;
 
                 window.plugins.Base64.encodeFile(data.filepath, function (base64) {
-                    console.log('file base64 encoding: ' + base64);
+                    //console.log('file base64 encoding: ' + base64);
                     $("#image-editor").cropit('destroy');
                     $scope.cropit(base64);
                 });
@@ -4241,11 +4312,11 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 data: data,
                                 crossDomain: true,
                                 success: function (data) {
-                                    console.log(data);
+                                    //console.log(data);
                                     var obj = JSON.parse(data);
-                                    console.log(obj);
+                                    //console.log(obj);
                                     if (obj.status == 'success') {
-                                        $scope.result = { id: 1, msg: 'In order to secure your account, please confirm your email', css: 'successtoolbar' };
+                                        $scope.result = { id: 1, msg: 'Confirmation email has been re-sent.', css: 'successtoolbar' };
                                         $scope.$apply();
                                     }
                                 },
@@ -4352,13 +4423,13 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                 var reader = new FileReader();
                                 reader.onloadend = function (evt) {
                                     var url = evt.target.result;//base64 data uri
-                                    console.log(url)
+                                    //console.log(url)
                                     reader.abort();
                                 };
                                 reader.readAsDataURL(f);
 
                             }, function (error) {
-                                console("Unable to retrieve file properties: " + error.code);
+                                //console("Unable to retrieve file properties: " + error.code);
 
                             });
                         }
@@ -4388,7 +4459,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                             reader.onloadend = function (evt) {
                                 var url = evt.target.result;//base64 data uri
 
-                                console.log(url)
+                                //console.log(url)
                                 reader.abort();
                             };
                             reader.readAsDataURL(f);
@@ -4505,15 +4576,15 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
     var FileUploader = function () {};
     FileUploader.prototype = {
          win : function (r) {
-            console.log("Code = " + r.responseCode);
-            console.log("Response = " + r.response);
-            console.log("Sent = " + r.bytesSent);
+            //console.log("Code = " + r.responseCode);
+            //console.log("Response = " + r.response);
+            //console.log("Sent = " + r.bytesSent);
         },
 
         fail : function (error) {
-            alert("An error has occurred: Code = " + error.code);
-            console.log("upload error source " + error.source);
-            console.log("upload error target " + error.target);
+            //alert("An error has occurred: Code = " + error.code);
+            //console.log("upload error source " + error.source);
+            //console.log("upload error target " + error.target);
         },
         upload: function () {
             var ft = new FileTransfer();
@@ -4571,9 +4642,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         } else {
                             if (results.error ) {
                                 options.error(results);
-                            } else{
-                                check(results.assembly_ssl_url);
-                            }
+                            } else {
+                                    check(results.assembly_ssl_url);
+                                }
+                            
                         }
                     }).error(options.error);
                 }, 2000);

@@ -1698,7 +1698,7 @@ color:red !important;}
     }
     .aip-bracket-section-content div {
            max-width: 6em !important;
-                   margin-left: 2px !important;
+           
     }
     .avatar {
         /*width: 50% !important;*/
@@ -1734,6 +1734,10 @@ color:red !important;}
    .contestant-section > .section-thumbnail-and-ratings {
         margin-left:3px !important;
     }
+
+   .play-button {
+    margin: 20px 22px !important;
+}
 }
 
 
@@ -1767,4 +1771,7 @@ line-height:0.1em;
     font-size: 12px;
     font-weight: bold;
     
+}
+.resulttoolbar {
+    z-index:1 !important;
 }
