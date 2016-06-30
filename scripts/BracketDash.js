@@ -1859,7 +1859,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
                         //alert(navigate);
                         if (navigate && $scope.viewuserinfo.mode == 3)
-                            self.setMainPage('activity_log.html', { closeMenu: true }, 'Activities');
+                            self.setMainPage('BioContent.html', { closeMenu: true }, 'Activities');
                         $scope.$apply();
                     } catch (e) { alert(e);}
                 },
