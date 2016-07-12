@@ -111,6 +111,8 @@ height:22px !important;
 }
 .userlist {
     min-width:100%;
+        min-width: 90%;
+    margin-bottom: 8px;
 }
 .userlist .avatar {
     width:30px !important;height:30px !important;
@@ -1738,8 +1740,10 @@ color:red !important;}
    .play-button {
     margin: 20px 22px !important;
 }
+   .exhibition-thumbnail .play-button {
+    margin: 65px 100.5px !important;
+    }
 }
-
 
 
 @media only screen and (max-width: 300px) {
@@ -1775,3 +1779,21 @@ line-height:0.1em;
 .resulttoolbar {
     z-index:1 !important;
 }
+.liked {
+    opacity:1 !important;
+}
+.unliked {
+   
+    opacity:.5 !important;
+}
+
+
+   .trim-button {
+      max-width: 250px;
+      display: inline-block;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;  
+      line-height: 15px;
+      position: relative;
+   }

@@ -674,6 +674,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         self.expandfeed = function (id, progress) {
             if (!progress) {
                 if (self.feedexpand == id) {
+                    alert(id);
                     $scope.currentfeed = {};
                     $scope.commentdialog.hide();
                     self.feedexpand = -1;
@@ -937,6 +938,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                                         $scope.dialoginprogress.hide();
                                         $scope.$apply();
                                     }
+                                    self.getpanel('panel', 'Panel');
                                 },
                                 error: function (jqXHR, textStatus, errorThrown) {
                                     alert("Error, status = " + textStatus + ", " + "error thrown: " + errorThrown);
@@ -1444,6 +1446,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
         }
         $scope.checkuser = function ($event, user) {
+            try {
+               
             if ($scope.NewActivity.type == 'bracket') {
                 if (user.selected) {
                     if ($scope.NewActivity.branches[$scope.currentbranchuser.branch_no].contestants[0].Username == user.Username || $scope.NewActivity.branches[$scope.currentbranchuser.branch_no].contestants[1].Username == user.Username) {
@@ -1491,9 +1495,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     $scope.usersearchresult.push(user);
                 }
                 else {
-
                     if (user.selected == true) {
-
                         $scope.NewActivity.contestants.push(newuser);
 
                         var selecteduser = $filter('filter')($scope.usersearchresult, { Username: user.Username },true)[0];
@@ -1504,6 +1506,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
             }
             $scope.searchuserquery.q = '';
+            
+                 } catch (e) {alert(e); }
         }
         $scope.startreplaceuser = function ($event, con, activity_id) {
             
@@ -1611,7 +1615,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 });
             }
             else {
-                self.setMainPage('BioContent.html', { closeMenu: true }, $scope.viewuserinfo.Fullname + '\'s profile');
+                self.setMainPage('BioContent.html', { closeMenu: true }, 'BioContent');
             }
 
         }
@@ -1627,7 +1631,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 $.ajax({
                     type: 'GET',
                     url: "http://www.bracketdash.com/api/api.php",
-                    data: { action: action, limit: 10, offset: limit },
+                    data: { action: action, limit: 10, offset: limit, session_username: profile_username },
                     crossDomain: true,
                     success: function (data) {
                         //console.log(data);
@@ -1825,7 +1829,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             //var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
-            var data = { action: 'activity_log', profile_username: username.toString(), limit: 10,offset: limit, authorization: "Bearer " + access_token };
+            var data = {
+                action: 'activity_log', profile_username: username.toString(), limit: 10, offset: limit,
+                authorization: "Bearer " + access_token, session_username: self.userinfo.Username
+            };
             //$scope.isloading = true;
             $.ajax({
                 type: 'GET',
@@ -1873,7 +1880,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             $scope.isloading = true;
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
-            var data = { action: "output_activity", activity_id: activity_id };
+            var data = { action: "output_activity", activity_id: activity_id, session_username : profile_username };
             $('#confirmationtoolbar').css('display','none');
             $.ajax({
                 type: 'GET',
@@ -2131,12 +2138,12 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     //self.getmyprofile(false);
                     var cb = new Date();
 
-                    self.userinfo.Avatar_link = self.userinfo.Avatar_link + '?date=' + cb;
-                    $scope.isloading = false;
-                    try { $scope.$apply(); } catch (e) { alert(e); }
-                    window.cache.clear(function () { return true; }, function (e) { alert(e); return false;});
+                    window.cache.clear(function () { return true; }, function (e) { return false;});
                     window.cache.cleartemp();
                     self.setMainPage($scope.CurrentPageAddress, { closeMenu: false }, $scope.CurrentPage);
+                    self.userinfo.Avatar_link = self.userinfo.Avatar_link + '?date=' + cb;
+                    $scope.isloading = false;
+                    try { $scope.$apply(); } catch (e) {  }
                     //for (var i = 0; i < $scope.feed.obj.length; i++)
                     //{
                     //    try {
@@ -2218,7 +2225,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             if (!limit)
                 limit = 0;
-
+            $scope.isloading = true;
             $.ajax({
                 type: 'GET',
                 url: "http://www.bracketdash.com/api/api.php",
@@ -2238,7 +2245,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     if (json_obj.offset == 0) {
                         $scope.notifications = json_obj;
                         angular.extend($scope.notifications, json_obj);
-
                         self.setMainPage('Notifications.html', { closeMenu: true }, 'Notifications');
 
                     } else {
@@ -2927,18 +2933,19 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             if (value == 'hour(s)') {
                 $scope.selectdurationnumber = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10', '11', '12', '13', '14', '15', '16', '17', '18', '19'
                     , '20', '21', '22', '23', '24'];
+                $scope.NewActivity.duration = $scope.durationnumber * 60 * 60;
             }
             if (value == 'day(s)') {
                 $scope.selectdurationnumber = ['1', '2', '3', '4', '5', '6', '7'];
+                $scope.NewActivity.duration = $scope.durationnumber * 60 * 60 * 24;
             }
             if (value == 'week(s)') {
                 $scope.selectdurationnumber = ['1', '2', '3', '4'];
+                $scope.NewActivity.duration = $scope.durationnumber * 60 * 60 * 24 * 7;
             }
-           // $scope.durationnumber = '';
         });
 
         $scope.$watch('durationnumber', function (value) {
-            
             $scope.durationnumber = value;
             if ($scope.durationtype == 'hour(s)') {
                 $scope.NewActivity.duration = $scope.durationnumber * 60 *60;
@@ -3252,7 +3259,11 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                         if (!mode)
                             var con = $filter('filter')(act.contestants_info, { video_id: videoid }, true)[0];
                         con.likes = obj.count;
-
+                        if (con.like_status == 'liked')
+                            con.like_status = 'unliked';
+                        else
+                            con.like_status = 'liked';
+               
                     }), 1000);
                    // $scope.$apply();
                 }
