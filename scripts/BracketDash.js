@@ -1,4 +1,3 @@
-
 angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 .controller('BracketDashController', function ($scope, $rootScope, $filter, $sce, $filechooser, Transloadit) {
         $scope.version44 = false;
@@ -4735,3 +4734,4 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         }
     };
 }]);
+
