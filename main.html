@@ -3997,12 +3997,13 @@
                         <div class="aip-body">
                             <div class="aip-section" ng-repeat="con in f.contestants_info">
                                 <div ng-if="con.invitation_status =='a'" class="aip-contestant-options-button" ng-click="startreplaceuser($event,con,f.activity_id)"></div>
-                                <a style="cursor: pointer !important;"  ng-click="playvideo(con.video_id)">
                                     <div ng-if="con.thumbnail_link.length > 0" class="aip-thumbnail">
-                                        <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
-                                        <img src="{{con.thumbnail_link}}" alt="">
-                                    </div>
-                                </a>
+                                        <a style="cursor: pointer !important;" ng-click="playvideo(con.video_id)">
+                                            <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
+                                            <img src="{{con.thumbnail_link}}" alt="">
+                                        </a>
+
+</div>
                                     <div ng-if="con.thumbnail_link.length == 0 && !version44 && !file && con.contestant_username == bd.userinfo.Username"
                                          class="aip-thumbnail"
                                     >

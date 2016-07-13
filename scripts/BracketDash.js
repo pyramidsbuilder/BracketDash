@@ -673,7 +673,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         self.expandfeed = function (id, progress) {
             if (!progress) {
                 if (self.feedexpand == id) {
-                    alert(id);
                     $scope.currentfeed = {};
                     $scope.commentdialog.hide();
                     self.feedexpand = -1;
@@ -2121,7 +2120,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
         $scope.saveprofilepicture = function save_profile_picture(profile_picture_file) {
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
             $scope.isloading = true;
-
+            $scope.$apply();
             $.ajax({
                 type: 'POST',
                 url: "https://www.bracketdash.com/api/api.php",
@@ -2137,12 +2136,22 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                     //self.getmyprofile(false);
                     var cb = new Date();
 
+                    self.userinfo.Avatar_link = self.userinfo.Avatar_link + '?date=' + cb;
+                    try { $scope.$apply(); } catch (e) { }
+                    try { 
                     window.cache.clear(function () { return true; }, function (e) { return false;});
                     window.cache.cleartemp();
+                    } catch (e) { }
+                    try { 
+                        if ($scope.isbrowser)
+                            window.location.reload(true);
+                    } catch (e) { }
+                    //alert($scope.isloading);
+                    //alert($scope.CurrentPageAddress, $scope.CurrentPage);
                     self.setMainPage($scope.CurrentPageAddress, { closeMenu: false }, $scope.CurrentPage);
-                    self.userinfo.Avatar_link = self.userinfo.Avatar_link + '?date=' + cb;
+                    
                     $scope.isloading = false;
-                    try { $scope.$apply(); } catch (e) {  }
+                    
                     //for (var i = 0; i < $scope.feed.obj.length; i++)
                     //{
                     //    try {
@@ -2216,8 +2225,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             var ctx = c.getContext("2d");
             var img = document.getElementById(id);
             ctx.drawImage(img, 10, 10);
-            alert(c.toDataURL());
-        }
+            }
         $scope.getnotifications = function (limit) {
             self.collapseall();
             var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
@@ -3065,7 +3073,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 $scope.dialogterms = dialogterms;
             });
 
-            
+            if (!ons.platform.isWebView())
+            {
+                $scope.isbrowser=true;
+            }
             if (device.platform.toLowerCase() === 'android' && device.version.indexOf('4.4') === 0
                           ) {
                 $scope.version44 = true;
