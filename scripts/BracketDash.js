@@ -290,6 +290,12 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             });
             return true;
         }
+        self.help = function () {
+
+            self.setMainPage('Help.html', { closeMenu: true }, 'Help');
+
+        }
+
         self.logout = function () {
             localStorage.removeItem('profile_username');
             localStorage.removeItem('access_token');
@@ -1932,7 +1938,29 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 }
             });
         }
-        self.gotoactivityinprogress = function () {
+
+        self.marknotificationseen = function (notificationid) {
+            $scope.isloading = true;
+            var access_token = (localStorage.access_token != null) ? localStorage.access_token : sessionStorage.access_token;
+            var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
+            var data = { action: "mark_seen_notification", notification_id: notificationid, authorization: "Bearer " + access_token };
+            $.ajax({
+                type: 'GET',
+                url: "http://www.bracketdash.com/api/api.php",
+
+                data: data,
+                crossDomain: true,
+                success: function (data) {
+                    self.userinfo.notification_no = self.userinfo.notification_no - 1;
+                    try { $scope.$apply(); } catch (e) { }
+                },
+                error: function (data) {
+                    $scope.isloading = false;
+                }
+            });
+        }
+
+        self.gotoactivityinprogress = function (notificationid) {
             var material;
             var mod = material ? 'material' : undefined;
             ons.notification.confirm({
@@ -1944,6 +1972,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
                             break;
                         case 1:
+                            self.marknotificationseen(notificationid);
                             self.getactivityinprogress(self.userinfo.Username, true, 'In Progress');
                             return true;
                             break;

@@ -1073,6 +1073,12 @@
                         Compose
                     </ons-list-item>
                 </ons-list>
+                
+                <ons-list-item  class="menu-item" ng-click="bd.help()">
+                    <ons-icon icon="fa-question" size="18px"></ons-icon>
+                    &nbsp;Help
+                </ons-list-item>
+
                 <ons-list-item ng-show="bd.isloggedin" class="menu-item" ng-click="bd.logout()">
                     <ons-icon icon="fa-sign-out" size="18px"></ons-icon>
                     Logout
@@ -2884,8 +2890,9 @@
                     </div>
                 </ons-list-item>
 
-                <ons-list-item ng-click="bd.gotoactivityinprogress();" class="timeline-li"
+                <ons-list-item ng-click="bd.gotoactivityinprogress(n.id);" class="timeline-li"
                                modifier="tappable" ng-repeat="n in notifications.obj" ng-if="n.type!='invitation'">
+                    
                     <div style="float:left; width:100%; max-width:95%;">
                         <div style="width:60px;float:left">  <img src="{{n.origin_avatar}}" class="avatar"></div>
                         <div style="float:left" ng-if="n.type=='invitation'">
@@ -3252,7 +3259,7 @@
                         </div>
                     </div>
                     <div class="activity-body" ng-repeat="con in showsingleactivity.contestants_info">
-                        <!--{{con | json}}
+                        <!--
                             <div ng-click="playvideo(con.video_id)" ng-if="!showsingleactivity.isinvitation" class="exhibition-thumbnail">
                                 <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                 <img src="{{con.thumbnail_link}}">
@@ -4108,6 +4115,77 @@
                     <div class="centered" style="width:100%;"><button class="button button--material  btnwide" style="color:white !important;" ng-click="sendmessage()">Send Message</button></div>
                     <br /><br />
                     <div class="centered" style="width:100%;"><button class="button button--material btnsecond btnwide" ng-click="self.goback(2)">Cancel</button></div>
+                </div>
+            </div>
+            <div class="bottomgap"></div>
+        </ons-page>
+    </ons-template>
+
+    <ons-template id="Help.html">
+        <ons-page>
+            <div ng-class="ios? 'iosheader' : 'headergap'"></div>
+            <div class="demo-content contentwrapper">
+                <div class="help-content-wrapper">
+                    <div class="header">
+                        Help
+                    </div>
+                    <div class="help-content">
+                        <h3>How to:</h3>
+                        <h4>Create Activity</h4>
+                        <ul>
+                            <li>Go to profile &gt; New Activity</li>
+                            <li>Select an activity type. (Challenge, Battle, Bracket or Exhibition)</li>
+                            <li>Fill form in the new activity section.</li>
+                            <li>To upload your performance video, click(on mobile device tap/ tap and hold for ios) upload video button, select your video from your device then proceed to upload your video.</li>
+                            <li>In the case of Open Challenge and Exhibition, you can launch the activity after uploading the video.</li>
+                            <li>In the case of Battle or Bracket, you ought to select contestants that will be involved in the activity prior to creating the activity.</li>
+                            <li>For battle and bracket, after form submission, each contestant selected to be part of the activity will receive an invitation.</li>
+                            <li>After submitting a battle or a bracket, the host should follow up on his activity in progress page. <br>Once selected contestants have accepted the invitation, they will be able to view the activity on their activity in progress page and upload their performance. <br>When all videos have been submitted, the host can finally proceed onto launching the activity.</li>
+                        </ul>
+
+                        <h4>Respond to a challenge</h4>
+                        <ul>
+                            <li>Click on the <a style="text-decoration: underline; font-style: italic;" class="option-button" href="#">option button</a> in the footer of the activity.</li>
+                            <li>On response tab selected, click(on mobile device tap/ tap and hold for ios) on upload video button.</li>
+                            <li>Upon video selection, wait for the upload to complete, preview the video, then proceed to submit your response to the challenge.</li>
+                        </ul>
+
+                        <h4>How to vote on bracketdash</h4>
+                        <ul>
+                            <li>Simply click the check button besides the thumbnail(User has to be logged in).</li>
+                        </ul>
+
+                        <h4>View/Accept Invitation</h4>
+                        <ul>
+                            <li>Go to Notifications menu</li>
+                            <li>Click on invitation, and make sure to accept invitation.</li>
+                            <li>Once you have accepted the invitation, you can go to activities in progress and upload your performance video.</li>
+                            <li>To upload your performance video, click(on mobile device tap/ tap and hold for ios) upload video button, select your video from your device then proceed to upload your video.</li>
+                        </ul>
+
+                        <h4>View updates about activities in progress</h4>
+                        <ul>
+                            <li>Go to Notifications menu</li>
+                            <li>Click on the notification in question and you will be redirected towards the activity.</li>
+                        </ul>
+
+                        <h4>Replace contestant</h4>
+                        <ul>
+                            <li>In the case where a contestant within an activity in progress declines the invitation or quits the activity, the host can replace the contestant by simply clicking the option button and selecting a new contestant.</li>
+                        </ul>
+                        <h4>Join Audience</h4>
+                        <ul>
+                            <li>To join a user's audience, one needs to go to their profile while logged in and click on the "join audience" button at the top of the profile page.</li>
+                        </ul>
+                        <h4>Leave Audience</h4>
+                        <ul>
+                            <li>To leave a user's audience, one needs to go to their profile while logged in and click on the "leave audience" button at the top of the profile page.</li>
+                        </ul>
+                        <h4>View activities of user whose audience, you have joined?</h4>
+                        <ul>
+                            <li>Go to panel.</li>
+                        </ul>
+                    </div>
                 </div>
             </div>
             <div class="bottomgap"></div>
