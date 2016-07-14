@@ -1945,7 +1945,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             var data = { action: "mark_seen_notification", notification_id: notificationid, authorization: "Bearer " + access_token };
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: "http://www.bracketdash.com/api/api.php",
 
                 data: data,
