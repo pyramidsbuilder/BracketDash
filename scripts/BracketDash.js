@@ -455,14 +455,31 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             if (!$scope.newuser.registerusername || $scope.newuser.registerusername.toString().length == 0) {
                 $scope.registervalidation.usernamestatus = -1;
                 $scope.registervalidation.reason = 'Please enter your username.';
-            } else { $scope.checkusername(); }
+            } else {
+                if (/[^a-zA-Z0-9]/.test($scope.newuser.registerusername)) {
+                    $scope.registervalidation.usernamestatus = -1;
+                    $scope.registervalidation.reason = 'Please enter a valid username.';
+                }
+                else {
+                    $scope.registervalidation.usernamestatus = 1;
+                    $scope.checkusername();
+                }
+
+            }
         }
         $scope.validateusername2 = function () {
-
             if (!$scope.changesettings.registerusername || $scope.changesettings.registerusername.toString().length == 0) {
-                
+
                 $scope.changesettings.registerusernamevalid = 'Please enter your username.';
-            } else { $scope.checkusername2(); }
+            } else {
+                if (/[^a-zA-Z0-9]/.test($scope.changesettings.registerusername)) {
+                    $scope.changesettings.registerusernamevalid = 'Username should not contain spaces or special characters.';
+                }
+                else {
+                    $scope.changesettings.registerusernamevalid = '';
+                    $scope.checkusername2();
+                }
+            }
         }
         $scope.validatepassword = function () {
             if (!$scope.newuser.registerpassword || $scope.newuser.registerpassword.toString().length == 0) {
@@ -3321,8 +3338,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             if ($scope.uploadcreateresponse) { file= $('#inputuploadresponse').get(0).files[0]; }
             if ($scope.uploadcreateprogress) { file = $('#inputuploadprogress').get(0).files[0]; }
             //transloadit.uploadFile(file);
-            cordova.plugins.backgroundMode.setDefaults({title:'BracketDash is uploading your file.', text: 'Uploading...' });
-            cordova.plugins.backgroundMode.enable();
+            try{
+                cordova.plugins.backgroundMode.setDefaults({title:'BracketDash is uploading your file.', text: 'Uploading...' });
+                cordova.plugins.backgroundMode.enable();
+            }catch(e){}
             Transloadit.upload(file, {
                 params: {
                     auth: { key: "7e36b0800fec11e5b74aa7b807288d6d" },
@@ -3357,7 +3376,9 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
                 uploaded: function (assemblyJson) {
                     try {
-                        cordova.plugins.backgroundMode.disable();
+                        try{
+                            cordova.plugins.backgroundMode.disable();
+                        }catch(e){}
                         var control = $("#file_input");
                         control.replaceWith(control = control.clone(true));
                         $scope.uploadprogress = '';

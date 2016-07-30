@@ -1925,8 +1925,16 @@
                     <ons-list-item>
                         <div class="prop-desc">
                             <ons-icon icon="fa-book"></ons-icon>
-                            links:{{viewuserinfo.bio.links}}
+                            Links
+                            <ons-list modifier="inset" class="useractivitylist" >
+                                <ons-list-item class="timeline-li"
+                                               style="min-height: 30px;" modifier="tappable" ng-repeat="link in viewuserinfo.bio.links">
+                                    <div style="float:left; width:100%; max-width:95%;">
+                                        <div style="width:90%;float:left"> {{link}} </div>
+                                    </div>
+                                </ons-list-item>
 
+                            </ons-list>
                         </div>
                     </ons-list-item>
 
