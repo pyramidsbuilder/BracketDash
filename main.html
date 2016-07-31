@@ -845,12 +845,15 @@
 
             <div ng-if="logintocontinue == 'register'">
                 <div class="login-form">
-                    <div class="error" ng-if="registervalidation.emailstatus<0 || registervalidation.usernamestatus <0 || registervalidation.passwordstatus <0 || registervalidation.passwordconfirmstatus <0 ">{{registervalidation.reason}}</div>
                     <input type="text" class="text-input--underbar txtsignup" ng-model="newuser.registerfullname" placeholder="Full Name">
+                    <div class="error" ng-if="registervalidation.usernamestatus <0">{{registervalidation.usernametxt}}</div>
                     <input type="text" class="text-input--underbar txtsignup" ng-model="newuser.registerusername" placeholder="Username">
                     <ons-icon icon="ion-load-c" class="checkmail" ng-if="checkingusername" spin="true"></ons-icon>
+                    <div class="error" ng-if="registervalidation.emailstatus <0">{{registervalidation.emailtxt}}</div>
                     <input type="email" class="text-input--underbar" ng-model="newuser.registeremail" placeholder="Email">
                     <ons-icon icon="ion-load-c" class="checkmail" ng-if="checkingemail" spin="true"></ons-icon>
+                    <div class="error" ng-if="registervalidation.passwordstatus <0">{{registervalidation.passwordtxt}}</div>
+                    <div class="error" ng-if="registervalidation.passwordconfirmstatus <0">{{registervalidation.passwordconfirmtxt}}</div>
                     <input type="password" class="text-input--underbar" ng-blur="validatepassword()" ng-model="newuser.registerpassword" placeholder="Select Password">
                     <input type="password" class="text-input--underbar" ng-blur="validatepasswordconfirm()" ng-model="newuser.registerpasswordconfirm" placeholder="Confirm Password">
                     <label class="checkbox" style=" float: left; font-size:13px;">
@@ -2832,15 +2835,19 @@
             <ons-row>
                 <ons-col>
                     <div class="login-form">
-                        <div class="error" ng-if="registervalidation.emailstatus<0 || registervalidation.usernamestatus <0 || registervalidation.passwordstatus <0 || registervalidation.passwordconfirmstatus <0 ">{{registervalidation.reason}}</div>
                         <input type="text" class="text-input--underbar txtsignup" ng-model="newuser.registerfullname" placeholder="Full Name">
+                        <div class="error" ng-if="registervalidation.usernamestatus <0">{{registervalidation.usernametxt}}</div>
                         <input type="text" class="text-input--underbar txtsignup" ng-model="newuser.registerusername" placeholder="Username">
                         <ons-icon icon="ion-load-c" class="checkmail" ng-if="checkingusername" spin="true"></ons-icon>
-                        <input type="email" class="text-input--underbar" ng-model="newuser.registeremail" placeholder="Email">
+                        <div class="error" ng-if="registervalidation.emailstatus <0">{{registervalidation.emailtxt}}</div>
+                     <input type="email" class="text-input--underbar" ng-model="newuser.registeremail" placeholder="Email">
                         <ons-icon icon="ion-load-c" class="checkmail" ng-if="checkingemail" spin="true"></ons-icon>
+                        <div class="error" ng-if="registervalidation.passwordstatus <0">{{registervalidation.passwordtxt}}</div>
+                        <div class="error" ng-if="registervalidation.passwordconfirmstatus <0">{{registervalidation.passwordconfirmtxt}}</div>
                         <input type="password" class="text-input--underbar" ng-blur="validatepassword()" ng-model="newuser.registerpassword" placeholder="Select Password">
+                        
                         <input type="password" class="text-input--underbar" ng-blur="validatepasswordconfirm()" ng-model="newuser.registerpasswordconfirm" placeholder="Confirm Password">
-                        <label class="checkbox" style=" float: left; font-size:13px;">
+                         <label class="checkbox" style=" float: left; font-size:13px;">
                             <input ng-model="newuser.accepttermstatus" type="checkbox">
                             <div class="checkbox__checkmark"></div>
                             I agree to <a href="javascript:;" ng-click="dialogterms.show()">terms and conditions</a>.
