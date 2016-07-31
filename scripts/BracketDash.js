@@ -465,7 +465,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                // alert(/^[A-Za-z][a-z0-9\-\_\s]+$/i.test($scope.newuser.registerusername));
                 if (!/^[A-Za-z][a-z0-9\-\_\s]+$/i.test($scope.newuser.registerusername) || $scope.newuser.registerusername.indexOf(" ") > -1) {
                     $scope.registervalidation.usernamestatus = -1;
-                    $scope.registervalidation.usernametxt = 'Please enter a valid username..';
+                    $scope.registervalidation.usernametxt = 'Please enter a valid username.';
                 }
                 else {
                     $scope.registervalidation.usernamestatus = 1;
