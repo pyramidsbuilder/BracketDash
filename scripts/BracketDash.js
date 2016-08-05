@@ -435,108 +435,73 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             }
         }
         $scope.newuser = { registeremail: null, registerfullname: null, registerpassword: null, registerusername: null, registerpasswordconfirm: null }
-        $scope.registervalidation = { status: true, reason: 'unchecked', usernamestatus: 0,usernametxt:'', emailstatus: 0,emailtxt:'', passwordstatus: 0,passwordtxt:'', passwordconfirmstatus :0,passwordconfirmtxt:'', accepttermstatus:false,accepttermstxt:''};
+        $scope.registervalidation = { status: true, reason: 'unchecked', usernamestatus: 0, emailstatus: 0, passwordstatus: 0, passwordconfirmstatus :0, accepttermstatus:false};
         $scope.validateemail = function () {
             if (!$scope.newuser.registeremail || $scope.newuser.registeremail.toString().length == 0) {
                 $scope.registervalidation.emailstatus = -1;
-                $scope.registervalidation.emailtxt = 'Please enter your email address.';
+                $scope.registervalidation.reason = 'Please enter your email address.';
                 
-            } else {
-                $scope.checkmail();
-                if ($scope.registervalidation.emailtxt == "Please enter your email address.") $scope.registervalidation.emailtxt = "";
-            }
+            } else { $scope.checkmail(); }
             
         }
         $scope.validateemail2 = function () {
             if (!$scope.changesettings.registeremail || $scope.changesettings.registeremail.toString().length == 0) {
                 $scope.registeremailvalidation = 'Please enter your email address.';
-            } else {
-                $scope.checkmail2();
-             
-            }
+            } else { $scope.checkmail2(); }
 
         }
         $scope.validateusername = function () {
 
             if (!$scope.newuser.registerusername || $scope.newuser.registerusername.toString().length == 0) {
                 $scope.registervalidation.usernamestatus = -1;
-                $scope.registervalidation.usernametxt = 'Please enter your username.';
-            } else {
-               // alert(/^[A-Za-z][a-z0-9\-\_\s]+$/i.test($scope.newuser.registerusername));
-                if (!/^[A-Za-z][a-z0-9\-\_\s]+$/i.test($scope.newuser.registerusername) || $scope.newuser.registerusername.indexOf(" ") > -1) {
-                    $scope.registervalidation.usernamestatus = -1;
-                    $scope.registervalidation.usernametxt = 'Please enter a valid username.';
-                }
-                else {
-                    $scope.registervalidation.usernamestatus = 1;
-                    if ($scope.registervalidation.usernametxt == "Please enter a valid username.") $scope.registervalidation.usernametxt = "";
-                    $scope.checkusername();
-                }
-
-            }
+                $scope.registervalidation.reason = 'Please enter your username.';
+            } else { $scope.checkusername(); }
         }
         $scope.validateusername2 = function () {
-            if (!$scope.changesettings.registerusername || $scope.changesettings.registerusername.toString().length == 0) {
 
+            if (!$scope.changesettings.registerusername || $scope.changesettings.registerusername.toString().length == 0) {
+                
                 $scope.changesettings.registerusernamevalid = 'Please enter your username.';
-            } else {
-                if (!/^[A-Za-z][a-z0-9\-\_\s]+$/i.test($scope.changesettings.registerusername) || $scope.changesettings.registerusername.indexOf(" ") > -1) {
-                    $scope.changesettings.registerusernamevalid = 'Please enter a valid username.';
-                }
-                else {
-                    $scope.changesettings.registerusernamevalid = '';
-                    $scope.checkusername2();
-                }
-            }
+            } else { $scope.checkusername2(); }
         }
         $scope.validatepassword = function () {
             if (!$scope.newuser.registerpassword || $scope.newuser.registerpassword.toString().length == 0) {
                 $scope.registervalidation.passwordstatus = -1;
-                $scope.registervalidation.passwordtxt = 'Please enter your password.';
+                $scope.registervalidation.reason = 'Please enter your password.';
             }
-            else {
-                $scope.registervalidation.passwordstatus = 1;
-                if ($scope.registervalidation.passwordtxt == "Please enter your password.") $scope.registervalidation.passwordtxt = "";
-            }
+            else { $scope.registervalidation.passwordstatus = 1; }
             
         }
         $scope.validatepasswordconfirm = function () {
             if (!$scope.newuser.registerpasswordconfirm || $scope.newuser.registerpasswordconfirm.toString().length == 0) {
                 $scope.registervalidation.passwordconfirmstatus = -1;
-                $scope.registervalidation.passwordconfirmtxt = 'Please enter your password.';
+                $scope.registervalidation.reason = 'Please enter your password.' ;
             }
             else  if ($scope.newuser.registerpassword != $scope.newuser.registerpasswordconfirm) {
                 $scope.registervalidation.passwordconfirmstatus = -1;
-                $scope.registervalidation.passwordconfirmtxt = 'Passwords do not match.';
+                $scope.registervalidation.reason = 'Passwords do not match.';
             }
             else
-            {
-                $scope.registervalidation.passwordconfirmstatus = 1;
-                if ($scope.registervalidation.passwordconfirmtxt == "Passwords do not match.") $scope.registervalidation.passwordconfirmtxt = "";
-                //$scope.registervalidation.reason = 'Passwords do not match.';
-            }
+            {$scope.registervalidation.passwordconfirmstatus = 1;}
         }
         $scope.checkingemail = false;
         $scope.checkmail = function () {
-            $scope.checkingemail = true;
             $.ajax({
                 url: "http://www.bracketdash.com/api/api.php",
                 type: 'post',
                 data: { action: 'check_email', Email_Address: $scope.newuser.registeremail, email: $scope.newuser.registeremail },
                 crossDomain: true,
                 success: function (data) {
-                    $scope.checkingemail = false;
                     var obj = JSON.parse(data);
                     if (obj.response.indexOf("Email already in our system") > -1) {
                         
                         $scope.registervalidation.emailstatus = -1;
-                        $scope.registervalidation.emailtxt = obj.response;
+                        $scope.registervalidation.reason = obj.response;
                     }
                     else {
                         $scope.registervalidation.emailstatus = 1;
-                        if ($scope.registervalidation.emailtxt.indexOf("Email already in our system") > -1) $scope.registervalidation.emailtxt = "";
-                        
                     }
+                    $scope.checkingemail = false;
                     $scope.$apply();
                 },
                 error: function (data) { alert(JSON.stringify(data)); $scope.isloading = false; }
@@ -578,11 +543,10 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                        
                     if (obj.response.indexOf("already taken") > -1) {
                         $scope.registervalidation.usernamestatus = -1;
-                        $scope.registervalidation.usernametxt = obj.response;
+                        $scope.registervalidation.reason = obj.response;
                     }
                     else {
-                        //$scope.registervalidation.usernamestatus = 1;
-                        //$scope.validateusername();
+                        $scope.registervalidation.usernamestatus = 1;
                     }
 
                     $scope.$apply();
@@ -1871,7 +1835,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             //var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             var data = {
                 action: 'activity_log', profile_username: username.toString(), limit: 10, offset: limit,
-                authorization: "Bearer " + access_token, session_username: self.userinfo ? self.userinfo.Username : ''
+                authorization: "Bearer " + access_token, session_username: self.userinfo.Username
             };
             //$scope.isloading = true;
             $.ajax({
@@ -3357,10 +3321,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             if ($scope.uploadcreateresponse) { file= $('#inputuploadresponse').get(0).files[0]; }
             if ($scope.uploadcreateprogress) { file = $('#inputuploadprogress').get(0).files[0]; }
             //transloadit.uploadFile(file);
-            try{
-                //cordova.plugins.backgroundMode.setDefaults({title:'BracketDash is uploading your file.', text: 'Uploading...' });
-                //cordova.plugins.backgroundMode.enable();
-            }catch(e){}
+            
             Transloadit.upload(file, {
                 params: {
                     auth: { key: "7e36b0800fec11e5b74aa7b807288d6d" },
@@ -3395,9 +3356,6 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
 
                 uploaded: function (assemblyJson) {
                     try {
-                        try{
-                           // cordova.plugins.backgroundMode.disable();
-                        }catch(e){}
                         var control = $("#file_input");
                         control.replaceWith(control = control.clone(true));
                         $scope.uploadprogress = '';

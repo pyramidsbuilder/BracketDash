@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="com.bracketdash.mobile" ios-CFBundleVersion="1.0.2"  version="1.0.2" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
+<widget id="com.bracketdash.mobile" ios-CFBundleVersion="0.0.8" version="0.6.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
     <name>BracketDash</name>
     <description>
         BracketDash Mobile App
@@ -9,8 +9,6 @@
     </author>
     <content src="index.html" />
     <plugin name="org.apache.cordova.file-transfer"/>
-    <plugin name="cordova-plugin-whitelist" version="1" />
-
   <plugin spec="https://github.com/tiltshiftfocus/cordova-plugin-cache.git" source="git" />
   <plugin spec="https://github.com/apache/cordova-plugin-device.git" source="git"/>
   <plugin spec="https://github.com/cdibened/filechooser.git" source="git" />
@@ -23,8 +21,7 @@
   <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="StatusBarBackgroundColor" value="#c13234" />
 <preference name="DisallowOverscroll" value="true" />
-    <allow-intent href="*" />
-<access origin="*" />
+    <access origin="*" />
   <access origin="transloadit.com" />
   <access origin="*.transloadit.com" />
 
