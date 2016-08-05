@@ -9,6 +9,8 @@
     </author>
     <content src="index.html" />
     <plugin name="org.apache.cordova.file-transfer"/>
+    <plugin name="cordova-plugin-whitelist" version="1" />
+
   <plugin spec="https://github.com/tiltshiftfocus/cordova-plugin-cache.git" source="git" />
   <plugin spec="https://github.com/apache/cordova-plugin-device.git" source="git"/>
   <plugin spec="https://github.com/cdibened/filechooser.git" source="git" />
@@ -21,7 +23,8 @@
   <preference name="StatusBarOverlaysWebView" value="false" />
     <preference name="StatusBarBackgroundColor" value="#c13234" />
 <preference name="DisallowOverscroll" value="true" />
-    <access origin="*" />
+    <allow-intent href="*" />
+<access origin="*" />
   <access origin="transloadit.com" />
   <access origin="*.transloadit.com" />
 
