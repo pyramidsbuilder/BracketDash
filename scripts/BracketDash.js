@@ -1981,7 +1981,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             var profile_username = (localStorage.profile_username != null) ? localStorage.profile_username : sessionStorage.profile_username;
             var data = { action: "mark_seen_notification", notification_id: notificationid, authorization: "Bearer " + access_token };
             $.ajax({
-                type: 'GET',
+                type: 'POST',
                 url: "http://www.bracketdash.com/api/api.php",
 
                 data: data,
@@ -3358,8 +3358,8 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
             if ($scope.uploadcreateprogress) { file = $('#inputuploadprogress').get(0).files[0]; }
             //transloadit.uploadFile(file);
             try{
-                cordova.plugins.backgroundMode.setDefaults({title:'BracketDash is uploading your file.', text: 'Uploading...' });
-                cordova.plugins.backgroundMode.enable();
+                //cordova.plugins.backgroundMode.setDefaults({title:'BracketDash is uploading your file.', text: 'Uploading...' });
+                //cordova.plugins.backgroundMode.enable();
             }catch(e){}
             Transloadit.upload(file, {
                 params: {
@@ -3396,7 +3396,7 @@ angular.module('app', ['onsen', 'ngAnimate', 'ngSanitize'])
                 uploaded: function (assemblyJson) {
                     try {
                         try{
-                            cordova.plugins.backgroundMode.disable();
+                           // cordova.plugins.backgroundMode.disable();
                         }catch(e){}
                         var control = $("#file_input");
                         control.replaceWith(control = control.clone(true));
