@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="mobile-web-app-capable" content="yes" />
-
+    <meta http-equiv="Content-Security-Policy"   content="default-src *;style-src * 'self' 'unsafe-inline' 'unsafe-eval';script-src * 'self' 'unsafe-inline' 'unsafe-eval';">
     <!-- JS dependencies (order matters!) -->
     <script src="scripts/platformOverrides.js"></script>
     <script src="lib/angular/angular.js"></script>
@@ -200,7 +200,7 @@
                             <label class="checkbox checkbox--noborder">
                                 <input type="checkbox" ng-model="user.selected" ng-change="checkuser($event,user)">
                                 <div style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark"></div>
-                                <div style="float:left; width:80%; max-width:80%;">
+                                <div style="float:left; width:80%; max-width:80%;" >
                                     <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
                                     <div style="max-width:60%;float:left;padding-top:5px;">
                                         {{user.Fullname}}<br />
@@ -227,7 +227,7 @@
                             <label class="checkbox checkbox--noborder">
                                 <input type="checkbox" ng-model="NewActivity.branches[currentbranchuser.branch_no].contestants[currentbranchuser.userindex].selected" ng-change="checkuser($event,user)">
                                 <div style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark"></div>
-                                <div style="float:left; width:80%; max-width:80%;">
+                                <div style="float:left; width:80%; max-width:80%;" >
                                     <div style="float:left;max-width:40px">  <img src="{{NewActivity.branches[currentbranchuser.branch_no].contestants[currentbranchuser.userindex].Avatar_link}}" class="avatar"></div>
                                     <div style="max-width:60%;float:left;padding-top:5px;">
                                         {{NewActivity.branches[currentbranchuser.branch_no].contestants[currentbranchuser.userindex].Fullname}}
@@ -262,12 +262,12 @@
                         <input type="checkbox" ng-model="user.selected" class="checkbox_input" ng-change="checkuser($event,user)">
                         <div style="float:left;width:17%" class="checkbox__checkmark "></div>
                         <div style="float:left; width:83%; max-width:80%; margin-top:-5px">
-                            <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
-                            <div style="max-width:60%;float:left;padding-top:5px;">
-                                {{user.Fullname}}<br />
-                                <span class="subtext"> {{user.Username}}</span>
-                            </div>
-
+                                <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+                                <div style="max-width:60%;float:left;padding-top:5px;">
+                                    {{user.Fullname}}<br />
+                                    <span class="subtext"> {{user.Username}}</span>
+                                </div>
+                           
                         </div>
                     </label>
 
@@ -352,7 +352,7 @@
                         <label class="checkbox checkbox--noborder">
                             <input type="checkbox" ng-model="user.selected" ng-change="addusertomessage($event,user)">
                             <div style="float:left;width:20%" class="checkbox__checkmark checkbox--noborder__checkmark"></div>
-                            <div style="float:left; width:80%; max-width:80%;">
+                            <div style="float:left; width:80%; max-width:80%;" >
                                 <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
                                 <div style="max-width:60%;float:left;padding-top:5px;">
                                     {{user.Fullname}}<br />
@@ -370,13 +370,13 @@
                             <input type="checkbox" class="chekbox_input" ng-model="user.selected" ng-change="addusertomessage($event,user)">
                             <div style="float:left;width:17%" class="checkbox__checkmark "></div>
                             <div style="float:left; width:83%; max-width:80%; margin-top:-5px">
-                                <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
-                                <div style="max-width:60%;float:left;padding-top:5px">
-                                    {{user.Fullname}}<br />
-                                    <span class="subtext"> {{user.Username}}</span>
+                                    <div style="float:left;max-width:40px">  <img src="{{user.Avatar_link}}" class="avatar"></div>
+                                    <div style="max-width:60%;float:left;padding-top:5px">
+                                        {{user.Fullname}}<br />
+                                        <span class="subtext"> {{user.Username}}</span>
+                                    </div>
                                 </div>
-                            </div>
-                        </label>
+</label>
                     </ons-list-item>
                 </ons-list>
 
@@ -594,7 +594,7 @@
                                         class="button button--material btnsecond btnwide">
                                     Choose File & Save<span style="font-size:x-small"> (Max 5 minutes.)</span>
                                 </button>
-                                <button ng-show="file && uploadbutton && validvideo" class="button button--material btnprimary btnwide trim-button" ng-click="addresponse(currentfeed.activity_id)">Upload {{file}}</button>
+                                <button ng-show="file && uploadbutton && validvideo" class="button button--material btnprimary btnwide trim-button"  ng-click="addresponse(currentfeed.activity_id)">Upload {{file}}</button>
                                 <button ng-show="file && !uploadbutton" class="button btnsmall">{{file}}</button>
                             </div>
                             <div class="container" ng-show="isuploading ==1">
@@ -1073,8 +1073,8 @@
                         Compose
                     </ons-list-item>
                 </ons-list>
-
-                <ons-list-item class="menu-item" ng-click="bd.help()">
+                
+                <ons-list-item  class="menu-item" ng-click="bd.help()">
                     <ons-icon icon="fa-question" size="18px"></ons-icon>
                     &nbsp;Help
                 </ons-list-item>
@@ -1145,15 +1145,15 @@
                                     </div>
                                 </div>
 
-                                <div class="section-ratings">
-                                    <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                    <div class="section-ratings" >
+                                        <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
 
-                                        <div class="likes-ratings"><div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{con.likes}}</div></div>
-                                        <div class="rank">Rank #{{con.rank}}</div>
+                                            <div class="likes-ratings"><div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{con.likes}}</div></div>
+                                            <div class="rank">Rank #{{con.rank}}</div>
 
-                                    </a>
-                                </div>
-                                <a class="section-options-button-wrapper" style="cursor: pointer !important; padding:9px;"
+                                        </a>
+                                    </div>
+                                <a class="section-options-button-wrapper" style="cursor: pointer !important; padding:9px;" 
                                    ng-click="bd.expandvideo(con,f.activity_id)">
 
                                     <div style="cursor: pointer !important;" class="section-options-button"></div>
@@ -1165,7 +1165,7 @@
                         </div>
                         <div class="activity-footer ng-binding">
                             <div class="activity-description">{{f.activity_description}}</div>
-                            <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id);"><div class=" activity-options-button"></div></a>
+                            <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id);"><div  class=" activity-options-button"></div></a>
                         </div>
                     </div>
                     <div class="activity-wrapper" ng-if="f.activity_type == 'challenge'">
@@ -1199,7 +1199,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="section-ratings" style="padding: 10px;margin-top: 7px;">
+                                    <div class="section-ratings" style="padding: 10px;margin-top: 7px;" >
                                         <a style="cursor: pointer !important; padding:9px;" ng-click="bd.likevideo(f.activity_id,f.contestants_info.challenge.video_id,'challenge')">
                                             <div class="likes-ratings">
                                                 <div class="like-button"
@@ -1234,18 +1234,18 @@
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                             <img src="{{con.thumbnail_link}}" alt="">
                                         </div><div class="section-ratings">
-                                            <a style="cursor: pointer !important; padding:9px;" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
-                                                <div class="likes-ratings">
-                                                    <div class="like-button"
-                                                         ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{con.likes}}</div>
-                                                </div>
-                                            </a>
+                                                  <a style="cursor: pointer !important; padding:9px;" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
+                                                      <div class="likes-ratings">
+                                                          <div class="like-button"
+                                                               ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{con.likes}}</div>
+                                                      </div>
+                                                  </a>
                                             <div class="rank">Rank #{{con.rank}}</div>
                                         </div>
                                     </div><div class="section-options-button-wrapper">
-                                        <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
-                                            <div class="section-options-button"></div>
-                                        </a>
+                                              <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
+                                                  <div class="section-options-button" ></div>
+                                              </a>
                                     </div>
                                 </div>
                             </div>
@@ -1299,7 +1299,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px;">
-                                                    <a style="cursor: pointer !important; padding:9px;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                                    <a style="cursor: pointer !important; padding:9px;"  ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                                         <div class="likes-ratings">
                                                             <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
                                                             <div class="like-count">{{con.likes}}</div>
@@ -1494,7 +1494,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="section-ratings">
+                                <div class="section-ratings" >
                                     <a ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                         <div class="likes-ratings"><div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{con.likes}}</div></div>
                                         <div class="rank">Rank #{{con.rank}}</div>
@@ -1548,7 +1548,7 @@
                                             <a ng-click="bd.likevideo(f.activity_id,con.video_id,'challenge')">
                                                 <div class="likes-ratings">
                                                     <div class="like-button"
-                                                         ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{con.likes}}</div>
+                                                         ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}" ></div><div class="like-count">{{con.likes}}</div>
                                                 </div>
                                             </a>
                                             <div class="rank">Rank #{{con.rank}}</div>
@@ -1576,22 +1576,22 @@
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                             <img src="{{con.thumbnail_link}}" alt="">
                                         </div><div class="section-ratings">
-                                            <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
-                                                <div class="likes-ratings"><div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{con.likes}}</div></div>
-                                            </a>
-                                            <div class="rank">Rank #{{con.rank}}</div>
+                                                  <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
+                                                      <div class="likes-ratings"><div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{con.likes}}</div></div>
+                                                  </a>
+                                                      <div class="rank">Rank #{{con.rank}}</div>
                                         </div>
                                     </div><div class="section-options-button-wrapper">
-                                        <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
-                                            <div class="section-options-button"></div>
-                                        </a>
+                                              <a  style="cursor: pointer !important;"  ng-click="bd.expandvideo(con,f.activity_id)">
+                                                  <div class="section-options-button"></div>
+                                              </a>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="activity-footer">
                             <div class="activity-description">{{f.activity_description}}</div>
-                            <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id);">
+                            <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id);" >
                                 <div class="activity-options-button"></div>
                             </a>
                         </div>
@@ -1638,7 +1638,7 @@
                                                     </div>
                                                 </div>
                                                 <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px;">
-                                                    <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                                    <a  style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                                         <div class="likes-ratings">
                                                             <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
                                                             <div class="like-count">{{con.likes}}</div>
@@ -1662,7 +1662,7 @@
 
                         <div class="activity-footer">
                             <div class="activity-description">{{f.activity_description}}</div>
-                            <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id);">
+                            <a style="cursor: pointer !important;"  ng-click="bd.expandfeed(f.activity_id);">
                                 <div class="activity-options-button"></div>
                             </a>
                         </div>
@@ -1691,7 +1691,7 @@
                                 <a style="cursor: pointer !important; padding:9px;" class="bracket-section-options-button-wrapper  ng-hide" ng-click="bd.expandvideo(con,f.activity_id)">
                                     <div class="bracket-section-options-button"></div>
                                 </a>
-                                <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px; display:inline;float:left">
+                                <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px; display:inline;float:left" >
                                     <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                         <div class="likes-ratings">
                                             <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
@@ -1707,7 +1707,7 @@
                         <div class="activity-footer">
                             <div class="activity-description">{{con.thumbnail_link}}</div>
 
-                            <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id);">
+                            <a style="cursor: pointer !important;"  ng-click="bd.expandfeed(f.activity_id);">
                                 <div class="activity-options-button"></div>
                             </a>
                         </div>
@@ -2004,7 +2004,7 @@
                                     </div>
                                 </div>
                                 <div class="section-ratings">
-                                    <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                    <a style="cursor: pointer !important;"  ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                         <div class="likes-ratings"><div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{con.likes}}</div></div>
                                         <div class="rank">Rank #{{con.rank}}</div>
                                     </a>
@@ -2021,7 +2021,7 @@
                         <div class="activity-footer ng-binding">
                             <div class="activity-description">{{f.activity_description}}</div>
                             <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id);">
-                                <div class="activity-options-button"></div>
+                                <div class="activity-options-button" ></div>
                             </a>
                         </div>
                     </div>
@@ -2089,19 +2089,19 @@
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                             <img src="{{con.thumbnail_link}}" alt="">
                                         </div><div class="section-ratings">
-                                            <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
-                                                <div class="likes-ratings">
-                                                    <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
+                                                  <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
+                                                      <div class="likes-ratings">
+                                                          <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
 
-                                                    <div class="like-count">{{con.likes}}</div>
-                                                </div>
-                                                <div class="rank">Rank #{{con.rank}}</div>
-                                            </a>
+                                                          <div class="like-count">{{con.likes}}</div>
+                                                      </div>
+                                                      <div class="rank">Rank #{{con.rank}}</div>
+                                                  </a>
                                         </div>
                                     </div><div class="section-options-button-wrapper">
-                                        <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
-                                            <div class="section-options-button"></div>
-                                        </a>
+                                              <a  style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
+                                                  <div class="section-options-button"></div>
+                                              </a>
                                     </div>
                                 </div>
                             </div>
@@ -2109,7 +2109,7 @@
                         <div class="activity-footer">
                             <div class="activity-description">{{f.activity_description}}</div>
                             <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id);">
-                                <div class="activity-options-button"></div>
+                                <div class="activity-options-button" ></div>
                             </a>
                         </div>
                     </div>
@@ -2154,8 +2154,9 @@
                                                         Inappropriate Content
                                                     </div>
                                                 </div>
-                                                <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px;">
-                                                    <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                                <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px;"
+                                                    >
+                                                    <a  style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                                         <div class="likes-ratings">
                                                             <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
                                                             <div class="like-count">{{con.likes}}</div>
@@ -2184,8 +2185,8 @@
                             </a>
                         </div>
                     </div>
-
-
+                    
+                    
                     <div class="activity-wrapper" ng-if="f.activity_type == 'exhibition'">
                         <div class="activity-header">
                             <div class="activity-host-avatar" ng-click="getprofile(f.activity_host_info.username,true)">
@@ -2201,10 +2202,10 @@
                             </div>
                         </div>
 
-
+            
 
                         <div class="activity-body" ng-repeat="con in f.contestants_info">
-                            <div ng-click="playvideo(con.video_id)" class="exhibition-thumbnail" style="width:80%;">
+                            <div ng-click="playvideo(con.video_id)" class="exhibition-thumbnail"  style="width:80%;">
                                 <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                 <img src="{{con.thumbnail_link}}">
                             </div>
@@ -2213,7 +2214,7 @@
                                     <div class="bracket-section-options-button"></div>
                                 </a>
                                 <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px; display:inline;float:left">
-                                    <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                    <a  style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                         <div class="likes-ratings">
                                             <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
                                             <div class="like-count">{{con.likes}}</div>
@@ -2277,9 +2278,9 @@
                                         <div class="rank">Rank #{{con.rank}}</div>
                                     </div>
                                 </div><div class="section-options-button-wrapper">
-                                    <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
-                                        <div class="section-options-button"></div>
-                                    </a>
+                                          <a  style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)" >
+                                              <div class="section-options-button"></div>
+                                          </a>
                                 </div>
                                 <div class="vs-divider" ng-show="f.contestants_info.length ==2 && $index ==0"><div>VS</div></div>
                             </div>
@@ -2322,7 +2323,7 @@
                                         </div>
 
                                     </div>
-                                    <div class="section-ratings" style="padding: 10px;margin-top: 7px;">
+                                    <div class="section-ratings" style="padding: 10px;margin-top: 7px;" >
                                         <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,f.contestants_info.challenge.video_id,'challenge')">
                                             <div class="likes-ratings"><div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div><div class="like-count">{{f.contestants_info.challenge.likes}}</div></div>
                                             <div class="rank">Rank #{{f.contestants_info.challenge.rank}}</div>
@@ -2353,22 +2354,22 @@
                                             <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                             <img src="{{con.thumbnail_link}}" alt="">
                                         </div><div class="section-ratings">
-                                            <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
-                                                <div class="likes-ratings">
-                                                    <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"
-                                                         ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
+                                                  <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
+                                                      <div class="likes-ratings">
+                                                          <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"
+                                                               ng-click="bd.likevideo(f.activity_id,con.video_id,'response')">
 
-                                                    </div>
+                                                          </div>
 
-                                                    <div class="like-count">{{con.likes}}</div>
-                                                </div>
-                                            </a>
+                                                          <div class="like-count">{{con.likes}}</div>
+                                                      </div>
+                                                  </a>
                                             <div class="rank">Rank #{{con.rank}}</div>
                                         </div>
                                     </div><div class="section-options-button-wrapper">
-                                        <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
-                                            <div class="section-options-button"></div>
-                                        </a>
+                                              <a  style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
+                                                  <div class="section-options-button" ></div>
+                                              </a>
                                     </div>
                                 </div>
                             </div>
@@ -2416,7 +2417,7 @@
                                                         </div>
                                                     </a>
                                                 </div>
-                                                <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
+                                                <a  style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
                                                     <div class="bracket-section-options-button-wrapper">
                                                         <div class="bracket-section-options-button"></div>
                                                     </div>
@@ -2462,11 +2463,10 @@
                                 <img src="{{con.thumbnail_link}}">
                             </div>
                             <div class="likes-ratings">
-                                <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                <a style="cursor: pointer !important;"  ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                     <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
                                     <div class="like-count">{{con.likes}}</div>
-                                </a>
-                            </div>
+                                </a></div>
                         </div><div class="activity-footer">
                             <div class="activity-description">{{con.thumbnail_link}}</div>
                             <div class="activity-options-button"></div>
@@ -2892,7 +2892,7 @@
 
                 <ons-list-item ng-click="bd.gotoactivityinprogress(n.id);" class="timeline-li"
                                modifier="tappable" ng-repeat="n in notifications.obj" ng-if="n.type!='invitation'">
-
+                    
                     <div style="float:left; width:100%; max-width:95%;">
                         <div style="width:60px;float:left">  <img src="{{n.origin_avatar}}" class="avatar"></div>
                         <div style="float:left" ng-if="n.type=='invitation'">
@@ -3068,18 +3068,18 @@
                                     <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                     <img src="{{con.thumbnail_link}}" alt="">
                                 </div><div ng-if="!showsingleactivity.isinvitation" class="section-ratings">
-                                    <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
-                                        <div class="likes-ratings">
-                                            <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
-                                            <div class="like-count">{{con.likes}}</div>
-                                        </div>
-                                        <div class="rank">Rank #{{con.rank}}</div>
-                                    </a>
-                                </div>
+                                          <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                                              <div class="likes-ratings">
+                                                  <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"
+                                                       ></div>
+                                                  <div class="like-count">{{con.likes}}</div>
+                                              </div>
+                                              <div class="rank">Rank #{{con.rank}}</div>
+                                          </a>                                         </div>
                             </div><div ng-show="!showsingleactivity.isinvitation" class="section-options-button-wrapper">
-                                <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
-                                    <div class="section-options-button"></div>
-                                </a>
+                                      <a  style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)" >
+                                          <div class="section-options-button"></div>
+                                      </a>   
                             </div>
                             <div class="vs-divider" ng-if="showsingleactivity.contestants_info.length ==2 && $index ==0"><div>VS</div></div>
                         </div>
@@ -3125,16 +3125,17 @@
                                     <div ng-if="!showsingleactivity.isinvitation" class="section-ratings">
                                         <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id,'challenge')">
                                             <div class="likes-ratings">
-                                                <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
+                                                <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"
+                                                     ></div>
                                                 <div class="like-count">{{con.likes}}</div>
                                             </div>
                                         </a>
                                         <div class="rank">Rank #{{con.rank}}</div>
                                     </div>
                                 </div><div ng-if="!showsingleactivity.isinvitation" class="section-options-button-wrapper">
-                                    <a ng-click="bd.expandvideo(con,f.activity_id)" style="cursor: pointer !important;">
-                                        <div class="section-options-button"></div>
-                                    </a>
+                                          <a ng-click="bd.expandvideo(con,f.activity_id)" style="cursor: pointer !important;" >
+                                              <div class="section-options-button" ></div>
+                                          </a>
                                 </div>
                             </div>
 
@@ -3153,25 +3154,25 @@
                                         <div class="play-button" data-vlink="{{con.video_link}}"></div>
                                         <img src="{{con.thumbnail_link}}" alt="">
                                     </div><div class="section-ratings">
-                                        <a style="cursor: pointer !important;" ng-click="bd.likevideo(showsingleactivity.activity_id,con.video_id,'response')">
-                                            <div class="likes-ratings">
-                                                <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
-                                                <div class="like-count">{{con.likes}}</div>
-                                            </div>
-                                            <div class="rank">Rank #{{con.rank}}</div>
-                                        </a>
-                                    </div>
+                                              <a  style="cursor: pointer !important;" ng-click="bd.likevideo(showsingleactivity.activity_id,con.video_id,'response')">
+                                                  <div class="likes-ratings">
+                                                      <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"
+                                                           ></div>
+                                                      <div class="like-count">{{con.likes}}</div>
+                                                  </div>
+                                                  <div class="rank">Rank #{{con.rank}}</div>
+                                              </a> </div>
                                 </div><div class="section-options-button-wrapper">
-                                    <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,showsingleactivity.activity_id)">
-                                        <div class="section-options-button"></div>
-                                    </a>
+                                          <a  style="cursor: pointer !important;" ng-click="bd.expandvideo(con,showsingleactivity.activity_id)" >
+                                              <div class="section-options-button"></div>
+                                          </a>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="activity-footer">
                         <div class="activity-description">{{showsingleactivity.activity_description}}</div>
-                        <a style="cursor: pointer !important;" ng-if="!showsingleactivity.isinvitation"
+                        <a style="cursor: pointer !important;" ng-if="!showsingleactivity.isinvitation" 
                            ng-click="bd.expandfeed(showsingleactivity.activity_id);">
                             <div class="activity-options-button"></div>
                         </a>
@@ -3207,7 +3208,7 @@
                                                 <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
                                                 <img src="{{con.thumbnail_link}}" alt="">
                                             </div>
-                                            <div ng-if="!showsingleactivity.isinvitation" class="bracket-section-ratings">
+                                            <div ng-if="!showsingleactivity.isinvitation" class="bracket-section-ratings" >
                                                 <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                                     <div class="likes-ratings">
                                                         <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
@@ -3215,8 +3216,9 @@
                                                     </div>
                                                 </a>
                                             </div>
-                                            <a style="cursor: pointer !important;" ng-click="bd.expandvideo(con,f.activity_id)">
-                                                <div ng-if="!showsingleactivity.isinvitation" class="bracket-section-options-button-wrapper">
+                                            <a style="cursor: pointer !important;"  ng-click="bd.expandvideo(con,f.activity_id)">
+                                                <div ng-if="!showsingleactivity.isinvitation" class="bracket-section-options-button-wrapper"
+                                                    >
                                                     <div class="bracket-section-options-button"></div>
                                                 </div>
                                             </a>
@@ -3273,8 +3275,9 @@
                             <a style="cursor: pointer !important; padding:9px;" class="bracket-section-options-button-wrapper ng-hide" ng-click="bd.expandvideo(con,f.activity_id)">
                                 <div class="bracket-section-options-button"></div>
                             </a>
-                            <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px; display:inline;float:left">
-                                <a style="cursor: pointer !important;" ng-click="bd.likevideo(f.activity_id,con.video_id)">
+                            <div class="bracket-section-ratings" style="padding-bottom: 15px;margin-top: 7px; display:inline;float:left"
+                                >
+                                <a style="cursor: pointer !important;"  ng-click="bd.likevideo(f.activity_id,con.video_id)">
                                     <div class="likes-ratings">
                                         <div class="like-button" ng-class="{liked: con.like_status=='liked',unliked: con.like_status=='unliked'}"></div>
                                         <div class="like-count">{{con.likes}}</div>
@@ -3465,13 +3468,13 @@
                             <div style="float:left;width:17%" class="checkbox__checkmark "></div>
                             <div style="float:left; width:83%; max-width:80%; margin-top:-5px">
                                 <div style="width:40%;float:left">  <img src="{{user.Avatar_link}}" class="avatar"></div>
-                                <div style="max-width:60%;float:left">
-                                    {{user.Fullname}}
-                                    <span class="subtext"> {{user.Username}}</span>
+                                    <div style="max-width:60%;float:left">
+                                        {{user.Fullname}}
+                                        <span class="subtext"> {{user.Username}}</span>
+                                    </div>
                                 </div>
-                            </div>
 
-                        </label>
+</label>
 
                     </ons-list-item>
                 </ons-list>
@@ -3679,7 +3682,7 @@
                 There is an activity upload in progress, please come back later
             </div>
             <div class="demo-content contentwrapper" ng-hide="(NewActivity.type =='challenge'  || NewActivity.type == 'exhibition') && isuploading==1">
-
+                
                 <div ng-show="NewActivity.type!=''">
                     <div class="error" ng-if="newactivityvalidation.status==false">{{newactivityvalidation.reason}}</div>
                     <div style="text-align: center; padding: 10px 0;">
@@ -3938,24 +3941,24 @@
                                             <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
                                             <img src="{{con.thumbnail_link}}" alt="">
                                         </div>
-                                        <div ng-if="con.thumbnail_link.length == 0 && !version44 && !file && con.contestant_username == bd.userinfo.Username"
-                                             class="aip-thumbnail">
-                                            <a ng-click="triggerprogressupload(f.activity_id)">
-                                                <div class="upload-video-button">
-                                                    Upload Video
-                                                </div>
-                                            </a>
-                                        </div>
+                                            <div ng-if="con.thumbnail_link.length == 0 && !version44 && !file && con.contestant_username == bd.userinfo.Username"
+                                                 class="aip-thumbnail">
+                                                <a ng-click="triggerprogressupload(f.activity_id)">
+                                                    <div class="upload-video-button">
+                                                        Upload Video
+                                                    </div>
+                                                </a>
+                                            </div>
+                                        
+                                            <div ng-if="con.thumbnail_link.length == 0 && version44 && !file && con.contestant_username == bd.userinfo.Username"
+                                                 class="aip-thumbnail">
+                                                <a ng-click="selectfile('progress',f.activity_id)">
+                                                    <div class="upload-video-button">
+                                                        Upload Video
+                                                    </div>
 
-                                        <div ng-if="con.thumbnail_link.length == 0 && version44 && !file && con.contestant_username == bd.userinfo.Username"
-                                             class="aip-thumbnail">
-                                            <a ng-click="selectfile('progress',f.activity_id)">
-                                                <div class="upload-video-button">
-                                                    Upload Video
+                                                </a>
                                                 </div>
-
-                                            </a>
-                                        </div>
                                         <div ng-if="con.thumbnail_link.length == 0  && con.contestant_username != bd.userinfo.Username"
                                              class="aip-thumbnail">
                                             <div class="upload-video-button">
@@ -3976,7 +3979,7 @@
                         </div>
 
                         <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id,true);">
-                            <div class="aip-footer">
+                            <div  class="aip-footer">
                                 <div class="aip-description">{{f.activity_description}}</div>
                                 <div class="aip-options-button" data-activity-type="bracket" data-activity-host="mosta2"></div>
                             </div>
@@ -4001,33 +4004,35 @@
                         <div class="aip-body">
                             <div class="aip-section" ng-repeat="con in f.contestants_info">
                                 <div ng-if="con.invitation_status =='a'" class="aip-contestant-options-button" ng-click="startreplaceuser($event,con,f.activity_id)"></div>
-                                <div ng-if="con.thumbnail_link.length > 0" class="aip-thumbnail">
-                                    <a style="cursor: pointer !important;" ng-click="playvideo(con.video_id)">
-                                        <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
-                                        <img src="{{con.thumbnail_link}}" alt="">
-                                    </a>
+                                    <div ng-if="con.thumbnail_link.length > 0" class="aip-thumbnail">
+                                        <a style="cursor: pointer !important;" ng-click="playvideo(con.video_id)">
+                                            <div class="play-button" data-vlink="{{con.avatar_link}}"></div>
+                                            <img src="{{con.thumbnail_link}}" alt="">
+                                        </a>
 
-                                </div>
-                                <div ng-if="con.thumbnail_link.length == 0 && !version44 && !file && con.contestant_username == bd.userinfo.Username"
-                                     class="aip-thumbnail">
-                                    <a style="cursor: pointer !important;" ng-click="triggerprogressupload(f.activity_id)">
+</div>
+                                    <div ng-if="con.thumbnail_link.length == 0 && !version44 && !file && con.contestant_username == bd.userinfo.Username"
+                                         class="aip-thumbnail"
+                                    >
+                                        <a style="cursor: pointer !important;" ng-click="triggerprogressupload(f.activity_id)">
 
-                                        <div class="upload-video-button">
-                                            Upload Video
-                                        </div>
-                                    </a>
-                                </div>
+                                            <div class="upload-video-button">
+                                                Upload Video
+                                            </div>
+                                        </a>
+</div>
 
-                                <div ng-if="con.thumbnail_link.length == 0 && version44 && !file && con.contestant_username == bd.userinfo.Username"
-                                     class="aip-thumbnail">
-                                    <a style="cursor: pointer !important;" ng-click="selectfile('progress',f.activity_id)">
+                                    <div ng-if="con.thumbnail_link.length == 0 && version44 && !file && con.contestant_username == bd.userinfo.Username"
+                                         class="aip-thumbnail"
+                                    >
+                                        <a style="cursor: pointer !important;" ng-click="selectfile('progress',f.activity_id)">
 
-                                        <div class="upload-video-button">
-                                            Upload Video
-                                        </div>
-                                    </a>
-                                </div>
-
+                                            <div class="upload-video-button">
+                                                Upload Video
+                                            </div>
+                                        </a>
+</div>
+                               
                                 <div ng-if="con.thumbnail_link.length == 0  && con.contestant_username != bd.userinfo.Username"
                                      class="aip-thumbnail">
                                     <div class="upload-video-button">
@@ -4048,7 +4053,7 @@
                             </div>
 
                             <a style="cursor: pointer !important;" ng-click="bd.expandfeed(f.activity_id,true);">
-                                <div class="aip-footer">
+                                <div  class="aip-footer">
                                     <div class="aip-description">{{f.activity_description}}</div>
                                     <div class="aip-options-button" data-activity-type="bracket" data-activity-host="mosta2"></div>
                                 </div>
@@ -4188,5 +4193,5 @@
     </ons-template>
 
 </body>
-</html>
+</html> 
 

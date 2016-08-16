@@ -13,6 +13,10 @@
         document.addEventListener( 'resume', onResume.bind( this ), false );
         //setup();
         // TODO: Cordova has been loaded. Perform any initialization that requires Cordova here.
+        try {
+            navigator.splashscreen.hide();
+        } catch (e) { }
+
     };
 
     function onPause() {
